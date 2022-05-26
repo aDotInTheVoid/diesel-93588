@@ -10,7 +10,7 @@ pub trait SqliteExpressionMethods: Expression + Sized {
         Self::SqlType: SqlType,
         T: AsExpression<Self::SqlType>,
     {
-        Grouped(Is::new(self, other.as_expression()))
+        loop {}
     }
     #[allow(clippy::wrong_self_convention)]
     fn is_not<T>(self, other: T) -> dsl::IsNot<Self, T>
@@ -18,7 +18,7 @@ pub trait SqliteExpressionMethods: Expression + Sized {
         Self::SqlType: SqlType,
         T: AsExpression<Self::SqlType>,
     {
-        Grouped(IsNot::new(self, other.as_expression()))
+        loop {}
     }
 }
 impl<T: Expression> SqliteExpressionMethods for T {}

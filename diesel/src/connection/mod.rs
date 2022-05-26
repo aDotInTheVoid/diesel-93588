@@ -88,33 +88,17 @@ where
         F: FnOnce(&mut Self) -> Result<T, E>,
         E: From<Error>,
     {
-        Self::TransactionManager::transaction(self, f)
+        loop {}
     }
     fn begin_test_transaction(&mut self) -> QueryResult<()> {
-        match Self::TransactionManager::transaction_manager_status_mut(self) {
-            TransactionManagerStatus::Valid(valid_status) => {
-                assert_eq!(None, valid_status.transaction_depth())
-            }
-            TransactionManagerStatus::InError => panic!("Transaction manager in error"),
-        };
-        Self::TransactionManager::begin_transaction(self)
+        loop {}
     }
     fn test_transaction<T, E, F>(&mut self, f: F) -> T
     where
         F: FnOnce(&mut Self) -> Result<T, E>,
         E: Debug,
     {
-        let mut user_result = None;
-        let _ = self
-            .transaction::<
-            (),
-            _,
-            _,
-        >(|conn| {
-                user_result = f(conn).ok();
-                Err(Error::RollbackTransaction)
-            });
-        user_result.expect("Transaction did not succeed")
+        loop {}
     }
     #[diesel_derives::__diesel_public_if(
         feature = "i-implement-a-third-party-backend-and-opt-into-breaking-changes"

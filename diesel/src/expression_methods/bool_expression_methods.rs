@@ -11,7 +11,7 @@ pub trait BoolExpressionMethods: Expression + Sized {
         T: AsExpression<ST>,
         And<Self, T::Expression>: Expression,
     {
-        Grouped(And::new(self, other.as_expression()))
+        loop {}
     }
     fn or<T, ST>(self, other: T) -> dsl::Or<Self, T, ST>
     where
@@ -20,7 +20,7 @@ pub trait BoolExpressionMethods: Expression + Sized {
         T: AsExpression<ST>,
         Or<Self, T::Expression>: Expression,
     {
-        Grouped(Or::new(self, other.as_expression()))
+        loop {}
     }
 }
 impl<T> BoolExpressionMethods for T

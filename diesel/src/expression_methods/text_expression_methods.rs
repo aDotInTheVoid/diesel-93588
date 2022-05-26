@@ -10,21 +10,21 @@ pub trait TextExpressionMethods: Expression + Sized {
         Self::SqlType: SqlType,
         T: AsExpression<Self::SqlType>,
     {
-        Grouped(Concat::new(self, other.as_expression()))
+        loop {}
     }
     fn like<T>(self, other: T) -> dsl::Like<Self, T>
     where
         Self::SqlType: SqlType,
         T: AsExpression<Self::SqlType>,
     {
-        Grouped(Like::new(self, other.as_expression()))
+        loop {}
     }
     fn not_like<T>(self, other: T) -> dsl::NotLike<Self, T>
     where
         Self::SqlType: SqlType,
         T: AsExpression<Self::SqlType>,
     {
-        Grouped(NotLike::new(self, other.as_expression()))
+        loop {}
     }
 }
 impl<T> TextExpressionMethods for T

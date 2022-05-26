@@ -6,49 +6,49 @@ pub trait IntervalDsl: Sized + From<i32> + Mul<Self, Output = Self> {
     fn days(self) -> PgInterval;
     fn months(self) -> PgInterval;
     fn milliseconds(self) -> PgInterval {
-        (self * 1000.into()).microseconds()
+        loop {}
     }
     fn seconds(self) -> PgInterval {
-        (self * 1000.into()).milliseconds()
+        loop {}
     }
     fn minutes(self) -> PgInterval {
-        (self * 60.into()).seconds()
+        loop {}
     }
     fn hours(self) -> PgInterval {
-        (self * 60.into()).minutes()
+        loop {}
     }
     fn weeks(self) -> PgInterval {
-        (self * 7.into()).days()
+        loop {}
     }
     fn years(self) -> PgInterval {
-        (self * 12.into()).months()
+        loop {}
     }
     fn microsecond(self) -> PgInterval {
-        self.microseconds()
+        loop {}
     }
     fn millisecond(self) -> PgInterval {
-        self.milliseconds()
+        loop {}
     }
     fn second(self) -> PgInterval {
-        self.seconds()
+        loop {}
     }
     fn minute(self) -> PgInterval {
-        self.minutes()
+        loop {}
     }
     fn hour(self) -> PgInterval {
-        self.hours()
+        loop {}
     }
     fn day(self) -> PgInterval {
-        self.days()
+        loop {}
     }
     fn week(self) -> PgInterval {
-        self.weeks()
+        loop {}
     }
     fn month(self) -> PgInterval {
-        self.months()
+        loop {}
     }
     fn year(self) -> PgInterval {
-        self.years()
+        loop {}
     }
 }
 impl IntervalDsl for i32 {

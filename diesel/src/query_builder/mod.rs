@@ -98,7 +98,9 @@ pub trait QueryBuilder<DB: Backend> {
     fn push_sql(&mut self, sql: &str);
     fn push_identifier(&mut self, identifier: &str) -> QueryResult<()>;
     fn push_bind_param(&mut self);
-    fn push_bind_param_value_only(&mut self) {}
+    fn push_bind_param_value_only(&mut self) {
+        loop {}
+    }
     fn finish(self) -> String;
 }
 pub trait Query {
@@ -116,7 +118,7 @@ pub trait QueryFragment<DB: Backend, SP = self::private::NotSpecialized> {
         feature = "i-implement-a-third-party-backend-and-opt-into-breaking-changes"
     )]
     fn to_sql(&self, out: &mut DB::QueryBuilder, backend: &DB) -> QueryResult<()> {
-        self.walk_ast(AstPass::to_sql(out, backend))
+        loop {}
     }
     #[diesel_derives::__diesel_public_if(
         feature = "i-implement-a-third-party-backend-and-opt-into-breaking-changes"
@@ -127,23 +129,19 @@ pub trait QueryFragment<DB: Backend, SP = self::private::NotSpecialized> {
         metadata_lookup: &mut DB::MetadataLookup,
         backend: &'b DB,
     ) -> QueryResult<()> {
-        self.walk_ast(AstPass::collect_binds(out, metadata_lookup, backend))
+        loop {}
     }
     #[diesel_derives::__diesel_public_if(
         feature = "i-implement-a-third-party-backend-and-opt-into-breaking-changes"
     )]
     fn is_safe_to_cache_prepared(&self, backend: &DB) -> QueryResult<bool> {
-        let mut result = true;
-        self.walk_ast(AstPass::is_safe_to_cache_prepared(&mut result, backend))?;
-        Ok(result)
+        loop {}
     }
     #[diesel_derives::__diesel_public_if(
         feature = "i-implement-a-third-party-backend-and-opt-into-breaking-changes"
     )]
     fn is_noop(&self, backend: &DB) -> QueryResult<bool> {
-        let mut result = true;
-        self.walk_ast(AstPass::is_noop(&mut result, backend))?;
-        Ok(result)
+        loop {}
     }
 }
 impl<T: ?Sized, DB> QueryFragment<DB> for Box<T>

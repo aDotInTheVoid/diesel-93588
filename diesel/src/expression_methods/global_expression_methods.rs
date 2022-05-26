@@ -11,7 +11,7 @@ pub trait ExpressionMethods: Expression + Sized {
         Self::SqlType: SqlType,
         T: AsExpression<Self::SqlType>,
     {
-        Grouped(Eq::new(self, other.as_expression()))
+        loop {}
     }
     #[doc(alias = "<>")]
     fn ne<T>(self, other: T) -> dsl::NotEq<Self, T>
@@ -19,7 +19,7 @@ pub trait ExpressionMethods: Expression + Sized {
         Self::SqlType: SqlType,
         T: AsExpression<Self::SqlType>,
     {
-        Grouped(NotEq::new(self, other.as_expression()))
+        loop {}
     }
     #[doc(alias = "in")]
     fn eq_any<T>(self, values: T) -> dsl::EqAny<Self, T>
@@ -27,7 +27,7 @@ pub trait ExpressionMethods: Expression + Sized {
         Self::SqlType: SqlType,
         T: AsInExpression<Self::SqlType>,
     {
-        Grouped(In::new(self, values.as_in_expression()))
+        loop {}
     }
     #[doc(alias = "in")]
     fn ne_all<T>(self, values: T) -> dsl::NeAny<Self, T>
@@ -35,15 +35,15 @@ pub trait ExpressionMethods: Expression + Sized {
         Self::SqlType: SqlType,
         T: AsInExpression<Self::SqlType>,
     {
-        Grouped(NotIn::new(self, values.as_in_expression()))
+        loop {}
     }
     #[allow(clippy::wrong_self_convention)]
     fn is_null(self) -> dsl::IsNull<Self> {
-        Grouped(IsNull::new(self))
+        loop {}
     }
     #[allow(clippy::wrong_self_convention)]
     fn is_not_null(self) -> dsl::IsNotNull<Self> {
-        Grouped(IsNotNull::new(self))
+        loop {}
     }
     #[doc(alias = ">")]
     fn gt<T>(self, other: T) -> dsl::Gt<Self, T>
@@ -51,7 +51,7 @@ pub trait ExpressionMethods: Expression + Sized {
         Self::SqlType: SqlType,
         T: AsExpression<Self::SqlType>,
     {
-        Grouped(Gt::new(self, other.as_expression()))
+        loop {}
     }
     #[doc(alias = ">=")]
     fn ge<T>(self, other: T) -> dsl::GtEq<Self, T>
@@ -59,7 +59,7 @@ pub trait ExpressionMethods: Expression + Sized {
         Self::SqlType: SqlType,
         T: AsExpression<Self::SqlType>,
     {
-        Grouped(GtEq::new(self, other.as_expression()))
+        loop {}
     }
     #[doc(alias = "<")]
     fn lt<T>(self, other: T) -> dsl::Lt<Self, T>
@@ -67,7 +67,7 @@ pub trait ExpressionMethods: Expression + Sized {
         Self::SqlType: SqlType,
         T: AsExpression<Self::SqlType>,
     {
-        Grouped(Lt::new(self, other.as_expression()))
+        loop {}
     }
     #[doc(alias = "<=")]
     fn le<T>(self, other: T) -> dsl::LtEq<Self, T>
@@ -75,7 +75,7 @@ pub trait ExpressionMethods: Expression + Sized {
         Self::SqlType: SqlType,
         T: AsExpression<Self::SqlType>,
     {
-        Grouped(LtEq::new(self, other.as_expression()))
+        loop {}
     }
     fn between<T, U>(self, lower: T, upper: U) -> dsl::Between<Self, T, U>
     where
@@ -83,9 +83,7 @@ pub trait ExpressionMethods: Expression + Sized {
         T: AsExpression<Self::SqlType>,
         U: AsExpression<Self::SqlType>,
     {
-        Grouped(
-            Between::new(self, And::new(lower.as_expression(), upper.as_expression())),
-        )
+        loop {}
     }
     fn not_between<T, U>(self, lower: T, upper: U) -> dsl::NotBetween<Self, T, U>
     where
@@ -93,15 +91,13 @@ pub trait ExpressionMethods: Expression + Sized {
         T: AsExpression<Self::SqlType>,
         U: AsExpression<Self::SqlType>,
     {
-        Grouped(
-            NotBetween::new(self, And::new(lower.as_expression(), upper.as_expression())),
-        )
+        loop {}
     }
     fn desc(self) -> dsl::Desc<Self> {
-        Desc::new(self)
+        loop {}
     }
     fn asc(self) -> dsl::Asc<Self> {
-        Asc::new(self)
+        loop {}
     }
 }
 impl<T> ExpressionMethods for T
@@ -111,10 +107,10 @@ where
 {}
 pub trait NullableExpressionMethods: Expression + Sized {
     fn nullable(self) -> dsl::Nullable<Self> {
-        nullable::Nullable::new(self)
+        loop {}
     }
     fn assume_not_null(self) -> dsl::AssumeNotNull<Self> {
-        assume_not_null::AssumeNotNull::new(self)
+        loop {}
     }
 }
 impl<T: Expression> NullableExpressionMethods for T {}

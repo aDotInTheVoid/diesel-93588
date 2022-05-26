@@ -44,7 +44,7 @@ impl ::std::error::Error for Error {}
 pub trait R2D2Connection: Connection {
     fn ping(&mut self) -> QueryResult<()>;
     fn is_broken(&mut self) -> bool {
-        false
+        loop {}
     }
 }
 impl<T> ManageConnection for ConnectionManager<T>

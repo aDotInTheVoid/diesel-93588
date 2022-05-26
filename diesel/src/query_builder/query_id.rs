@@ -4,11 +4,7 @@ pub trait QueryId {
     type QueryId: Any;
     const HAS_STATIC_QUERY_ID: bool = true;
     fn query_id() -> Option<TypeId> {
-        if Self::HAS_STATIC_QUERY_ID {
-            Some(TypeId::of::<Self::QueryId>())
-        } else {
-            None
-        }
+        loop {}
     }
 }
 #[doc(inline)]

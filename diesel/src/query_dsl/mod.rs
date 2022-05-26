@@ -59,166 +59,165 @@ pub trait QueryDsl: Sized {
     where
         Self: methods::DistinctDsl,
     {
-        methods::DistinctDsl::distinct(self)
+        loop {}
     }
     #[cfg(feature = "postgres")]
     fn distinct_on<Expr>(self, expr: Expr) -> DistinctOn<Self, Expr>
     where
         Self: methods::DistinctOnDsl<Expr>,
     {
-        methods::DistinctOnDsl::distinct_on(self, expr)
+        loop {}
     }
     fn select<Selection>(self, selection: Selection) -> Select<Self, Selection>
     where
         Selection: Expression,
         Self: methods::SelectDsl<Selection>,
     {
-        methods::SelectDsl::select(self, selection)
+        loop {}
     }
     fn count(self) -> Select<Self, CountStar>
     where
         Self: methods::SelectDsl<CountStar>,
     {
-        use crate::dsl::count_star;
-        QueryDsl::select(self, count_star())
+        loop {}
     }
     fn inner_join<Rhs>(self, rhs: Rhs) -> InnerJoin<Self, Rhs>
     where
         Self: JoinWithImplicitOnClause<Rhs, joins::Inner>,
     {
-        self.join_with_implicit_on_clause(rhs, joins::Inner)
+        loop {}
     }
     fn left_outer_join<Rhs>(self, rhs: Rhs) -> LeftJoin<Self, Rhs>
     where
         Self: JoinWithImplicitOnClause<Rhs, joins::LeftOuter>,
     {
-        self.join_with_implicit_on_clause(rhs, joins::LeftOuter)
+        loop {}
     }
     fn left_join<Rhs>(self, rhs: Rhs) -> LeftJoin<Self, Rhs>
     where
         Self: JoinWithImplicitOnClause<Rhs, joins::LeftOuter>,
     {
-        self.left_outer_join(rhs)
+        loop {}
     }
     #[doc(alias = "where")]
     fn filter<Predicate>(self, predicate: Predicate) -> Filter<Self, Predicate>
     where
         Self: methods::FilterDsl<Predicate>,
     {
-        methods::FilterDsl::filter(self, predicate)
+        loop {}
     }
     #[doc(alias = "where")]
     fn or_filter<Predicate>(self, predicate: Predicate) -> OrFilter<Self, Predicate>
     where
         Self: methods::OrFilterDsl<Predicate>,
     {
-        methods::OrFilterDsl::or_filter(self, predicate)
+        loop {}
     }
     fn find<PK>(self, id: PK) -> Find<Self, PK>
     where
         Self: methods::FindDsl<PK>,
     {
-        methods::FindDsl::find(self, id)
+        loop {}
     }
     fn order<Expr>(self, expr: Expr) -> Order<Self, Expr>
     where
         Expr: Expression,
         Self: methods::OrderDsl<Expr>,
     {
-        methods::OrderDsl::order(self, expr)
+        loop {}
     }
     fn order_by<Expr>(self, expr: Expr) -> Order<Self, Expr>
     where
         Expr: Expression,
         Self: methods::OrderDsl<Expr>,
     {
-        QueryDsl::order(self, expr)
+        loop {}
     }
     fn then_order_by<Order>(self, order: Order) -> ThenOrderBy<Self, Order>
     where
         Self: methods::ThenOrderDsl<Order>,
     {
-        methods::ThenOrderDsl::then_order_by(self, order)
+        loop {}
     }
     fn limit(self, limit: i64) -> Limit<Self>
     where
         Self: methods::LimitDsl,
     {
-        methods::LimitDsl::limit(self, limit)
+        loop {}
     }
     fn offset(self, offset: i64) -> Offset<Self>
     where
         Self: methods::OffsetDsl,
     {
-        methods::OffsetDsl::offset(self, offset)
+        loop {}
     }
     fn group_by<GB>(self, group_by: GB) -> GroupBy<Self, GB>
     where
         GB: Expression,
         Self: methods::GroupByDsl<GB>,
     {
-        methods::GroupByDsl::group_by(self, group_by)
+        loop {}
     }
     fn having<Predicate>(self, predicate: Predicate) -> Having<Self, Predicate>
     where
         Self: methods::HavingDsl<Predicate>,
     {
-        methods::HavingDsl::having(self, predicate)
+        loop {}
     }
     fn for_update(self) -> ForUpdate<Self>
     where
         Self: methods::LockingDsl<lock::ForUpdate>,
     {
-        methods::LockingDsl::with_lock(self, lock::ForUpdate)
+        loop {}
     }
     fn for_no_key_update(self) -> ForNoKeyUpdate<Self>
     where
         Self: methods::LockingDsl<lock::ForNoKeyUpdate>,
     {
-        methods::LockingDsl::with_lock(self, lock::ForNoKeyUpdate)
+        loop {}
     }
     fn for_share(self) -> ForShare<Self>
     where
         Self: methods::LockingDsl<lock::ForShare>,
     {
-        methods::LockingDsl::with_lock(self, lock::ForShare)
+        loop {}
     }
     fn for_key_share(self) -> ForKeyShare<Self>
     where
         Self: methods::LockingDsl<lock::ForKeyShare>,
     {
-        methods::LockingDsl::with_lock(self, lock::ForKeyShare)
+        loop {}
     }
     fn skip_locked(self) -> SkipLocked<Self>
     where
         Self: methods::ModifyLockDsl<lock::SkipLocked>,
     {
-        methods::ModifyLockDsl::modify_lock(self, lock::SkipLocked)
+        loop {}
     }
     fn no_wait(self) -> NoWait<Self>
     where
         Self: methods::ModifyLockDsl<lock::NoWait>,
     {
-        methods::ModifyLockDsl::modify_lock(self, lock::NoWait)
+        loop {}
     }
     fn into_boxed<'a, DB>(self) -> IntoBoxed<'a, Self, DB>
     where
         DB: Backend,
         Self: methods::BoxedDsl<'a, DB>,
     {
-        methods::BoxedDsl::internal_into_boxed(self)
+        loop {}
     }
     fn single_value(self) -> SingleValue<Self>
     where
         Self: methods::SingleValueDsl,
     {
-        methods::SingleValueDsl::single_value(self)
+        loop {}
     }
     fn nullable(self) -> NullableSelect<Self>
     where
         Self: methods::SelectNullableDsl,
     {
-        methods::SelectNullableDsl::nullable(self)
+        loop {}
     }
 }
 impl<T: Table> QueryDsl for T {}
@@ -228,13 +227,13 @@ pub trait RunQueryDsl<Conn>: Sized {
         Conn: Connection,
         Self: methods::ExecuteDsl<Conn>,
     {
-        methods::ExecuteDsl::execute(self, conn)
+        loop {}
     }
     fn load<'query, U>(self, conn: &mut Conn) -> QueryResult<Vec<U>>
     where
         Self: LoadQuery<'query, Conn, U>,
     {
-        self.internal_load(conn)?.collect()
+        loop {}
     }
     fn load_iter<'conn, 'query: 'conn, U>(
         self,
@@ -244,29 +243,26 @@ pub trait RunQueryDsl<Conn>: Sized {
         U: 'conn,
         Self: LoadQuery<'query, Conn, U> + 'conn,
     {
-        self.internal_load(conn)
+        loop {}
     }
     fn get_result<'query, U>(self, conn: &mut Conn) -> QueryResult<U>
     where
         Self: LoadQuery<'query, Conn, U>,
     {
-        match self.internal_load(conn)?.next() {
-            Some(v) => v,
-            None => Err(crate::result::Error::NotFound),
-        }
+        loop {}
     }
     fn get_results<'query, U>(self, conn: &mut Conn) -> QueryResult<Vec<U>>
     where
         Self: LoadQuery<'query, Conn, U>,
     {
-        self.load(conn)
+        loop {}
     }
     fn first<'query, U>(self, conn: &mut Conn) -> QueryResult<U>
     where
         Self: methods::LimitDsl,
         Limit<Self>: LoadQuery<'query, Conn, U>,
     {
-        methods::LimitDsl::limit(self, 1).get_result(conn)
+        loop {}
     }
 }
 impl<T, Conn> RunQueryDsl<Conn> for T

@@ -80,7 +80,7 @@ pub trait SaveChangesDsl<Conn> {
         Self: Sized,
         Conn: UpdateAndFetchResults<Self, T>,
     {
-        connection.update_and_fetch(self)
+        loop {}
     }
 }
 impl<T, Conn> SaveChangesDsl<Conn> for T

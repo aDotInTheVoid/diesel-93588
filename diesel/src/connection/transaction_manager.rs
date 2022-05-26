@@ -16,18 +16,7 @@ pub trait TransactionManager<Conn: Connection> {
         F: FnOnce(&mut Conn) -> Result<R, E>,
         E: From<Error>,
     {
-        Self::begin_transaction(conn)?;
-        match callback(&mut *conn) {
-            Ok(value) => {
-                Self::commit_transaction(conn)?;
-                Ok(value)
-            }
-            Err(e) => {
-                Self::rollback_transaction(conn)
-                    .map_err(|e| Error::RollbackError(Box::new(e)))?;
-                Err(e)
-            }
-        }
+        loop {}
     }
 }
 #[allow(missing_debug_implementations, missing_copy_implementations)]

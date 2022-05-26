@@ -8,10 +8,7 @@ pub trait PositionalOrderDsl<Expr: Order>: Sized {
         self,
         expr: Expr,
     ) -> PositionalOrderClause<Self, Expr::Fragment> {
-        PositionalOrderClause {
-            source: self,
-            expr: expr.into_fragment(),
-        }
+        loop {}
     }
 }
 #[derive(Debug, Clone, Copy, QueryId)]
@@ -52,10 +49,10 @@ impl From<u32> for OrderColumn {
 }
 pub trait IntoOrderColumn: Into<OrderColumn> {
     fn asc(self) -> Asc<OrderColumn> {
-        Asc { expr: self.into() }
+        loop {}
     }
     fn desc(self) -> Desc<OrderColumn> {
-        Desc { expr: self.into() }
+        loop {}
     }
 }
 impl<T> IntoOrderColumn for T

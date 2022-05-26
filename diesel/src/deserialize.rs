@@ -28,10 +28,7 @@ pub trait FromSql<A, DB: Backend>: Sized {
     fn from_sql(bytes: backend::RawValue<'_, DB>) -> Result<Self>;
     #[inline(always)]
     fn from_nullable_sql(bytes: Option<backend::RawValue<'_, DB>>) -> Result<Self> {
-        match bytes {
-            Some(bytes) => Self::from_sql(bytes),
-            None => Err(Box::new(crate::result::UnexpectedNullError)),
-        }
+        loop {}
     }
 }
 pub trait FromSqlRow<ST, DB: Backend>: Sized {

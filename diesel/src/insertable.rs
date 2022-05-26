@@ -16,7 +16,7 @@ pub trait Insertable<T> {
         T: Table,
         Self: Sized,
     {
-        crate::insert_into(table).values(self)
+        loop {}
     }
 }
 #[doc(inline)]

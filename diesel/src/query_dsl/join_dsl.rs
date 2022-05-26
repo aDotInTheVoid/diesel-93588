@@ -38,7 +38,7 @@ where
 }
 pub trait JoinOnDsl: Sized {
     fn on<On>(self, on: On) -> helper_types::On<Self, On> {
-        OnClauseWrapper::new(self, on)
+        loop {}
     }
 }
 impl<T: QuerySource> JoinOnDsl for T {}

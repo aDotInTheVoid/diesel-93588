@@ -32,8 +32,7 @@ pub trait Row<
         Self: RowIndex<I>,
         T: FromSql<ST, DB>,
     {
-        let field = self.get(idx).ok_or(crate::result::UnexpectedEndOfRow)?;
-        <T as FromSql<ST, DB>>::from_nullable_sql(field.value())
+        loop {}
     }
     #[cfg_attr(
         not(feature = "i-implement-a-third-party-backend-and-opt-into-breaking-changes"),
@@ -45,7 +44,7 @@ pub trait Field<'a, DB: Backend> {
     fn field_name(&self) -> Option<&str>;
     fn value(&self) -> Option<backend::RawValue<'_, DB>>;
     fn is_null(&self) -> bool {
-        self.value().is_none()
+        loop {}
     }
 }
 impl<'a, 'b, DB, R> RowGatWorkaround<'a, DB> for PartialRow<'b, R>

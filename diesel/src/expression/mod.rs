@@ -128,14 +128,14 @@ pub trait IntoSql {
         Self: AsExpression<T> + Sized,
         T: SqlType + TypedExpressionType,
     {
-        self.as_expression()
+        loop {}
     }
     fn as_sql<'a, T>(&'a self) -> AsExprOf<&'a Self, T>
     where
         &'a Self: AsExpression<T>,
         T: SqlType + TypedExpressionType,
     {
-        <&'a Self as AsExpression<T>>::as_expression(self)
+        loop {}
     }
 }
 impl<T> IntoSql for T {}
@@ -170,7 +170,7 @@ pub use diesel_derives::Selectable;
 pub trait SelectableHelper<DB: Backend>: Selectable<DB> + Sized {
     fn as_select() -> AsSelect<Self, DB>;
     fn as_returning() -> AsSelect<Self, DB> {
-        Self::as_select()
+        loop {}
     }
 }
 impl<T, DB> SelectableHelper<DB> for T
