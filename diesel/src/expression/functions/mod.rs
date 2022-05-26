@@ -12,7 +12,7 @@ macro_rules! no_arg_sql_function_body_except_to_sql {
             Clone,
             Copy,
             $crate
-                ::query_builder::QueryId,
+                                ::query_builder::QueryId,
             $crate ::expression::ValidGrouping,
         )]
         pub struct $type_name;
