@@ -21,7 +21,6 @@ pub mod result;
 pub mod serialize;
 #[macro_use]
 pub mod sql_types;
-pub mod migration;
 pub mod row;
 
 mod type_impls;
