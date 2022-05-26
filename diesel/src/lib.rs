@@ -1,33 +1,3 @@
-#![cfg_attr(feature = "unstable", feature(trait_alias))]
-#![cfg_attr(doc_cfg, feature(doc_cfg, doc_auto_cfg))]
-#![cfg_attr(feature = "128-column-tables", recursion_limit = "256")]
-#![warn(
-    unreachable_pub,
-    missing_debug_implementations,
-    missing_copy_implementations,
-    elided_lifetimes_in_paths,
-    missing_docs
-)]
-#![allow(
-    clippy::match_same_arms,
-    clippy::needless_doctest_main,
-    clippy::map_unwrap_or,
-    clippy::redundant_field_names,
-    clippy::type_complexity
-)]
-#![warn(
-    clippy::unwrap_used,
-    clippy::print_stdout,
-    clippy::mut_mut,
-    clippy::non_ascii_literal,
-    clippy::similar_names,
-    clippy::unicode_not_nfc,
-    clippy::enum_glob_use,
-    clippy::if_not_else,
-    clippy::items_after_statements,
-    clippy::used_underscore_binding
-)]
-#![cfg_attr(test, allow(clippy::map_unwrap_or, clippy::unwrap_used))]
 extern crate diesel_derives;
 #[macro_use]
 #[doc(hidden)]
