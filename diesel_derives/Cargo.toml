@@ -27,8 +27,6 @@ path = "../diesel"
 [lib]
 proc-macro = true
 
-[[test]]
-name = "tests"
 
 [features]
 default = []
