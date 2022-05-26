@@ -91,9 +91,6 @@ where
         loop {}
     }
 }
-/// Signifies that this column should be rendered without its 'correlation'
-/// (i.e. table name prefix). For update statements, fully qualified column
-/// names aren't allowed.
 #[derive(Debug)]
 pub struct UncorrelatedColumn<C>(C);
 impl<C, DB> QueryFragment<DB> for UncorrelatedColumn<C>

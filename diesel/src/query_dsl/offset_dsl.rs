@@ -1,16 +1,7 @@
 use crate::query_source::Table;
-/// The `offset` method
-///
-/// This trait should not be relied on directly by most apps. Its behavior is
-/// provided by [`QueryDsl`]. However, you may need a where clause on this trait
-/// to call `offset` from generic code.
-///
-/// [`QueryDsl`]: crate::QueryDsl
 pub trait OffsetDsl {
-    /// The type returned by `.offset`.
-    type Output;
-    /// See the trait documentation
-    fn offset(self, offset: i64) -> Self::Output;
+        type Output;
+        fn offset(self, offset: i64) -> Self::Output;
 }
 impl<T> OffsetDsl for T
 where

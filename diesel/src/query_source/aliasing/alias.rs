@@ -12,23 +12,17 @@ use crate::query_source::{
 use crate::result::QueryResult;
 use std::marker::PhantomData;
 #[derive(Debug, Clone, Copy, Default)]
-/// Represents an alias within diesel's query builder
-///
-/// See [alias!] for more details.
 pub struct Alias<S> {
     pub(crate) source: S,
 }
 impl<S: AliasSource> Alias<S> {
-    /// Maps a single field of the source table in this alias
-    pub fn field<F>(&self, field: F) -> AliasedField<S, F>
+        pub fn field<F>(&self, field: F) -> AliasedField<S, F>
     where
         F: Column<Table = S::Target>,
     {
         loop {}
     }
-    /// Maps multiple fields of the source table in this alias
-    /// (takes in tuples and some expressions)
-    pub fn fields<Fields>(&self, fields: Fields) -> AliasedFields<S, Fields>
+            pub fn fields<Fields>(&self, fields: Fields) -> AliasedFields<S, Fields>
     where
         Fields: FieldAliasMapper<S>,
     {
@@ -37,8 +31,7 @@ impl<S: AliasSource> Alias<S> {
 }
 impl<S> Alias<S> {
     #[doc(hidden)]
-    /// May be used to create an alias. Used by the [`alias!`] macro.
-    pub const fn new(source: S) -> Self {
+        pub const fn new(source: S) -> Self {
         loop {}
     }
 }
@@ -95,17 +88,8 @@ where
         loop {}
     }
 }
-/// This trait is used to allow external crates to implement
-/// `AppearsInFromClause<QS> for Alias<S>`
-///
-/// at the table level without running in conflicting impl issues
-///
-/// Implementing this at the table level (in the crate that defines the tables)
-/// does not result in conflicting impl issues because the table is the struct
-/// we're implementing on.
 pub trait AliasAppearsInFromClause<S, QS> {
-    /// Will be passed on to the `impl AppearsInFromClause<QS>`
-    type Count;
+        type Count;
 }
 impl<S, QS> AppearsInFromClause<QS> for Alias<S>
 where
@@ -114,17 +98,8 @@ where
 {
     type Count = <S::Target as AliasAppearsInFromClause<S, QS>>::Count;
 }
-/// This trait is used to allow external crates to implement
-/// `AppearsInFromClause<Alias<S2>> for Alias<S1>`
-///
-/// at the table level without running in conflicting impl issues
-///
-/// Implementing this at the table level (in the crate that defines the tables)
-/// does not result in conflicting impl issues because the tables are specified as both first
-/// argument of the trait and struct we're implementing on.
 pub trait AliasAliasAppearsInFromClause<T2, S1, S2> {
-    /// Will be passed on to the `impl AppearsInFromClause<QS>`
-    type Count;
+        type Count;
 }
 impl<T1, S1, S2> AliasAppearsInFromClause<S1, Alias<S2>> for T1
 where
@@ -133,21 +108,8 @@ where
 {
     type Count = <T1 as AliasAliasAppearsInFromClause<S2::Target, S1, S2>>::Count;
 }
-/// This trait is used to allow external crates to implement
-/// `AppearsInFromClause<Alias<S2>> for Alias<S1>`
-///
-/// at the alias level without running in conflicting impl issues
-///
-/// Implementing this at the alias level (in the crate that defines the aliases)
-/// does not result in conflicting impl issues because the aliases are specified as both first
-/// argument of the trait and struct we're implementing on.
-///
-/// The corresponding implementation of `AliasAliasAppearsInFromClause` for implementors of this
-/// trait is done at the table level, to avoid conflict with the implementation for distinct tables
-/// below.
 pub trait AliasAliasAppearsInFromClauseSameTable<S2, T> {
-    /// Will be passed on to the `impl AppearsInFromClause<QS>`
-    type Count;
+        type Count;
 }
 impl<T1, T2, S> AliasAppearsInFromClause<S, T2> for T1
 where

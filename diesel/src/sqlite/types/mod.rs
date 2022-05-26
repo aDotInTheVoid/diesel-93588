@@ -7,22 +7,12 @@ use crate::query_builder::QueryId;
 use crate::serialize::{self, IsNull, Output, ToSql};
 use crate::sql_types;
 use crate::sql_types::SqlType;
-/// The returned pointer is *only* valid for the lifetime to the argument of
-/// `from_sql`. This impl is intended for uses where you want to write a new
-/// impl in terms of `String`, but don't want to allocate. We have to return a
-/// raw pointer instead of a reference with a lifetime due to the structure of
-/// `FromSql`
 #[cfg(feature = "sqlite")]
 impl FromSql<sql_types::VarChar, Sqlite> for *const str {
     fn from_sql(value: SqliteValue<'_, '_, '_>) -> deserialize::Result<Self> {
         loop {}
     }
 }
-/// The returned pointer is *only* valid for the lifetime to the argument of
-/// `from_sql`. This impl is intended for uses where you want to write a new
-/// impl in terms of `Vec<u8>`, but don't want to allocate. We have to return a
-/// raw pointer instead of a reference with a lifetime due to the structure of
-/// `FromSql`
 #[cfg(feature = "sqlite")]
 impl FromSql<sql_types::Binary, Sqlite> for *const [u8] {
     fn from_sql(bytes: SqliteValue<'_, '_, '_>) -> deserialize::Result<Self> {
@@ -113,20 +103,6 @@ impl ToSql<sql_types::Double, Sqlite> for f64 {
         loop {}
     }
 }
-/// The SQLite timestamp with time zone type
-///
-/// ### [`ToSql`] impls
-///
-/// - [`chrono::NaiveDateTime`] with `feature = "chrono"`
-/// - [`chrono::DateTime`] with `feature = "chrono"`
-///
-/// ### [`FromSql`] impls
-///
-/// - [`chrono::NaiveDateTime`] with `feature = "chrono"`
-/// - [`chrono::DateTime`] with `feature = "chrono"`
-///
-/// [`ToSql`]: crate::serialize::ToSql
-/// [`FromSql`]: crate::deserialize::FromSql
 #[cfg_attr(
     feature = "chrono",
     doc = " [`chrono::NaiveDateTime`]: chrono::naive::NaiveDateTime"

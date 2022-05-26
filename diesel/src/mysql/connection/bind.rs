@@ -134,13 +134,7 @@ impl BindData {
     unsafe fn mysql_bind(&mut self) -> ffi::MYSQL_BIND {
         loop {}
     }
-    /// Resizes the byte buffer to fit the value of `self.length`, and returns
-    /// a tuple of a bind pointing at the truncated data, and the offset to use
-    /// in order to read the truncated data into it.
-    ///
-    /// This invalidates the bind previously returned by `mysql_bind`. Calling
-    /// this function is unsafe unless the binds are immediately rebound.
-    unsafe fn bind_for_truncated_data(&mut self) -> Option<(ffi::MYSQL_BIND, usize)> {
+                            unsafe fn bind_for_truncated_data(&mut self) -> Option<(ffi::MYSQL_BIND, usize)> {
         loop {}
     }
     fn did_numeric_overflow_occur(&self) -> QueryResult<()> {

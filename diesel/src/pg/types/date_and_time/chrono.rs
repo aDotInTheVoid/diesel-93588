@@ -1,5 +1,3 @@
-//! This module makes it possible to map `chrono::DateTime` values to postgres `Date`
-//! and `Timestamp` fields. It is enabled with the `chrono` feature.
 extern crate chrono;
 use self::chrono::naive::MAX_DATE;
 use self::chrono::{

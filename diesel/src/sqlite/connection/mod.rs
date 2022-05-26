@@ -26,12 +26,6 @@ use crate::result::*;
 use crate::serialize::ToSql;
 use crate::sql_types::HasSqlType;
 use crate::sqlite::Sqlite;
-/// Connections for the SQLite backend. Unlike other backends, SQLite supported
-/// connection URLs are:
-///
-/// - File paths (`test.db`)
-/// - [URIs](https://sqlite.org/uri.html) (`file://test.db`)
-/// - Special identifiers (`:memory:`)
 #[allow(missing_debug_implementations)]
 #[cfg(feature = "sqlite")]
 pub struct SqliteConnection {
@@ -57,13 +51,7 @@ impl CommitErrorProcessor for SqliteConnection {
 impl Connection for SqliteConnection {
     type Backend = Sqlite;
     type TransactionManager = AnsiTransactionManager;
-    /// Establish a connection to the database specified by `database_url`.
-    ///
-    /// See [SqliteConnection] for supported `database_url`.
-    ///
-    /// If the database does not exist, this method will try to
-    /// create a new database and then establish a connection to it.
-    fn establish(database_url: &str) -> ConnectionResult<Self> {
+                            fn establish(database_url: &str) -> ConnectionResult<Self> {
         loop {}
     }
     fn load<'conn, 'query, T>(
@@ -99,56 +87,14 @@ impl crate::r2d2::R2D2Connection for crate::sqlite::SqliteConnection {
     }
 }
 impl SqliteConnection {
-    /// Run a transaction with `BEGIN IMMEDIATE`
-    ///
-    /// This method will return an error if a transaction is already open.
-    ///
-    /// # Example
-    ///
-    /// ```rust
-    /// # include!("../../doctest_setup.rs");
-    /// #
-    /// # fn main() {
-    /// #     run_test().unwrap();
-    /// # }
-    /// #
-    /// # fn run_test() -> QueryResult<()> {
-    /// #     let mut conn = SqliteConnection::establish(":memory:").unwrap();
-    /// conn.immediate_transaction(|conn| {
-    ///     // Do stuff in a transaction
-    ///     Ok(())
-    /// })
-    /// # }
-    /// ```
-    pub fn immediate_transaction<T, E, F>(&mut self, f: F) -> Result<T, E>
+                                                                                        pub fn immediate_transaction<T, E, F>(&mut self, f: F) -> Result<T, E>
     where
         F: FnOnce(&mut Self) -> Result<T, E>,
         E: From<Error>,
     {
         loop {}
     }
-    /// Run a transaction with `BEGIN EXCLUSIVE`
-    ///
-    /// This method will return an error if a transaction is already open.
-    ///
-    /// # Example
-    ///
-    /// ```rust
-    /// # include!("../../doctest_setup.rs");
-    /// #
-    /// # fn main() {
-    /// #     run_test().unwrap();
-    /// # }
-    /// #
-    /// # fn run_test() -> QueryResult<()> {
-    /// #     let mut conn = SqliteConnection::establish(":memory:").unwrap();
-    /// conn.exclusive_transaction(|conn| {
-    ///     // Do stuff in a transaction
-    ///     Ok(())
-    /// })
-    /// # }
-    /// ```
-    pub fn exclusive_transaction<T, E, F>(&mut self, f: F) -> Result<T, E>
+                                                                                        pub fn exclusive_transaction<T, E, F>(&mut self, f: F) -> Result<T, E>
     where
         F: FnOnce(&mut Self) -> Result<T, E>,
         E: From<Error>,
@@ -214,42 +160,7 @@ impl SqliteConnection {
     {
         loop {}
     }
-    /// Register a collation function.
-    ///
-    /// `collation` must always return the same answer given the same inputs.
-    /// If `collation` panics and unwinds the stack, the process is aborted, since it is used
-    /// across a C FFI boundary, which cannot be unwound across and there is no way to
-    /// signal failures via the SQLite interface in this case..
-    ///
-    /// If the name is already registered it will be overwritten.
-    ///
-    /// This method will return an error if registering the function fails, either due to an
-    /// out-of-memory situation or because a collation with that name already exists and is
-    /// currently being used in parallel by a query.
-    ///
-    /// The collation needs to be specified when creating a table:
-    /// `CREATE TABLE my_table ( str TEXT COLLATE MY_COLLATION )`,
-    /// where `MY_COLLATION` corresponds to name passed as `collation_name`.
-    ///
-    /// # Example
-    ///
-    /// ```rust
-    /// # include!("../../doctest_setup.rs");
-    /// #
-    /// # fn main() {
-    /// #     run_test().unwrap();
-    /// # }
-    /// #
-    /// # fn run_test() -> QueryResult<()> {
-    /// #     let mut conn = SqliteConnection::establish(":memory:").unwrap();
-    /// // sqlite NOCASE only works for ASCII characters,
-    /// // this collation allows handling UTF-8 (barring locale differences)
-    /// conn.register_collation("RUSTNOCASE", |rhs, lhs| {
-    ///     rhs.to_lowercase().cmp(&lhs.to_lowercase())
-    /// })
-    /// # }
-    /// ```
-    pub fn register_collation<F>(
+                                                                                                                                                pub fn register_collation<F>(
         &mut self,
         collation_name: &str,
         collation: F,

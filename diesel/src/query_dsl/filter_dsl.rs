@@ -1,18 +1,9 @@
 use crate::dsl::{Filter, OrFilter};
 use crate::expression_methods::*;
 use crate::query_source::*;
-/// The `filter` method
-///
-/// This trait should not be relied on directly by most apps. Its behavior is
-/// provided by [`QueryDsl`]. However, you may need a where clause on this trait
-/// to call `filter` from generic code.
-///
-/// [`QueryDsl`]: crate::QueryDsl
 pub trait FilterDsl<Predicate> {
-    /// The type returned by `.filter`.
-    type Output;
-    /// See the trait documentation.
-    fn filter(self, predicate: Predicate) -> Self::Output;
+        type Output;
+        fn filter(self, predicate: Predicate) -> Self::Output;
 }
 impl<T, Predicate> FilterDsl<Predicate> for T
 where
@@ -24,18 +15,9 @@ where
         loop {}
     }
 }
-/// The `find` method
-///
-/// This trait should not be relied on directly by most apps. Its behavior is
-/// provided by [`QueryDsl`]. However, you may need a where clause on this trait
-/// to call `find` from generic code.
-///
-/// [`QueryDsl`]: crate::QueryDsl
 pub trait FindDsl<PK> {
-    /// The type returned by `.find`.
-    type Output;
-    /// See the trait documentation.
-    fn find(self, id: PK) -> Self::Output;
+        type Output;
+        fn find(self, id: PK) -> Self::Output;
 }
 impl<T, PK> FindDsl<PK> for T
 where
@@ -47,18 +29,9 @@ where
         loop {}
     }
 }
-/// The `or_filter` method
-///
-/// This trait should not be relied on directly by most apps. Its behavior is
-/// provided by [`QueryDsl`]. However, you may need a where clause on this trait
-/// to call `or_filter` from generic code.
-///
-/// [`QueryDsl`]: crate::QueryDsl
 pub trait OrFilterDsl<Predicate> {
-    /// The type returned by `.filter`.
-    type Output;
-    /// See the trait documentation.
-    fn or_filter(self, predicate: Predicate) -> Self::Output;
+        type Output;
+        fn or_filter(self, predicate: Predicate) -> Self::Output;
 }
 impl<T, Predicate> OrFilterDsl<Predicate> for T
 where

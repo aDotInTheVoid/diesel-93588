@@ -1,9 +1,3 @@
-/// This will implement `SelectableExpression` and `AppearsOnTable` for "simple"
-/// composite nodes where the where clause is roughly `AllTyParams:
-/// SelectableExpression<QS>, Self: Expression`.
-///
-/// This macro is exported because we want to be able to call it from other
-/// macros that are exported, but it is not part of our public API.
 #[macro_export]
 #[doc(hidden)]
 macro_rules! impl_selectable_expression {

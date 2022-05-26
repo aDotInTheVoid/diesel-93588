@@ -20,28 +20,6 @@ sql_function! {
     #[doc = " ```"] #[aggregate] fn count < T : SqlType + SingleValue > (expr : T) ->
     BigInt;
 }
-/// Creates a SQL `COUNT(*)` expression
-///
-/// For selecting the count of a query, and nothing else, you can just call
-/// [`count`](crate::query_dsl::QueryDsl::count())
-/// on the query instead.
-///
-/// As with most bare functions, this is not exported by default. You can import
-/// it specifically as `diesel::dsl::count_star`, or glob import
-/// `diesel::dsl::*`
-///
-/// # Examples
-///
-/// ```rust
-/// # include!("../doctest_setup.rs");
-/// # use diesel::dsl::*;
-/// #
-/// # fn main() {
-/// #     use schema::users::dsl::*;
-/// #     let connection = &mut establish_connection();
-/// assert_eq!(Ok(2), users.select(count_star()).first(connection));
-/// # }
-/// ```
 pub fn count_star() -> CountStar {
     loop {}
 }
@@ -58,26 +36,6 @@ impl<DB: Backend> QueryFragment<DB> for CountStar {
     }
 }
 impl_selectable_expression!(CountStar);
-/// Creates a SQL `COUNT(DISTINCT ...)` expression
-///
-/// As with most bare functions, this is not exported by default. You can import
-/// it specifically as `diesel::dsl::count_distinct`, or glob import
-/// `diesel::dsl::*`
-///
-/// # Examples
-///
-/// ```rust
-/// # #[macro_use] extern crate diesel;
-/// # include!("../doctest_setup.rs");
-/// # use diesel::dsl::*;
-/// #
-/// # fn main() {
-/// #     use schema::posts::dsl::*;
-/// #     let connection = &mut establish_connection();
-/// let unique_user_count = posts.select(count_distinct(user_id)).first(connection);
-/// assert_eq!(Ok(2), unique_user_count);
-/// # }
-/// ```
 pub fn count_distinct<T, E>(expr: E) -> CountDistinct<T, E::Expression>
 where
     T: SqlType + SingleValue,

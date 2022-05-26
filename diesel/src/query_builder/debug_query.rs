@@ -2,16 +2,6 @@ use super::{AstPass, QueryBuilder, QueryFragment};
 use crate::backend::Backend;
 use std::fmt::{self, Debug, Display};
 use std::marker::PhantomData;
-/// A struct that implements `fmt::Display` and `fmt::Debug` to show the SQL
-/// representation of a query.
-///
-/// The `Display` implementation will be the exact query sent to the server,
-/// plus a comment with the values of the bind parameters. The `Debug`
-/// implementation is more structured, and able to be pretty printed.
-///
-/// See [`debug_query`] for usage examples.
-///
-/// [`debug_query`]: crate::query_builder::debug_query()
 pub struct DebugQuery<'a, T: 'a, DB> {
     pub(crate) query: &'a T,
     _marker: PhantomData<DB>,
@@ -41,8 +31,6 @@ where
         loop {}
     }
 }
-/// A struct that implements `fmt::Debug` by walking the given AST and writing
-/// the `fmt::Debug` implementation of each bind parameter.
 pub(crate) struct DebugBinds<'a, T: 'a, DB> {
     query: &'a T,
     _marker: PhantomData<DB>,

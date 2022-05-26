@@ -9,7 +9,6 @@ use crate::query_dsl::order_dsl::ValidOrderingForDistinct;
 use crate::result::QueryResult;
 use crate::sql_types::SingleValue;
 use crate::{Expression, QuerySource};
-/// Represents `DISTINCT ON (...)`
 #[derive(Debug, Clone, Copy, QueryId)]
 #[cfg(feature = "postgres_backend")]
 pub struct DistinctOnClause<T>(pub(crate) T);

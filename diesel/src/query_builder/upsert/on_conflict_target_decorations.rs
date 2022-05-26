@@ -7,13 +7,9 @@ use crate::sql_types::BoolOrNullableBool;
 pub trait UndecoratedConflictTarget {}
 impl UndecoratedConflictTarget for NoConflictTarget {}
 impl<T> UndecoratedConflictTarget for ConflictTarget<T> {}
-/// Interface to add information to conflict targets.
-/// Designed to be open for further additions to conflict targets like constraints
 pub trait DecoratableTarget<P> {
-    /// Output type of filter_target operation
-    type FilterOutput;
-    /// equivalent to filter of FilterDsl but aimed at conflict targets
-    fn filter_target(self, predicate: P) -> Self::FilterOutput;
+        type FilterOutput;
+        fn filter_target(self, predicate: P) -> Self::FilterOutput;
 }
 #[derive(Debug)]
 pub struct DecoratedConflictTarget<T, U> {

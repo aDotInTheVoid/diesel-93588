@@ -4,10 +4,6 @@ use std::ptr::NonNull;
 use std::{slice, str};
 use crate::sqlite::SqliteType;
 use super::row::PrivateSqliteRow;
-/// Raw sqlite value as received from the database
-///
-/// Use existing `FromSql` implementations to convert this into
-/// rust values
 #[allow(missing_debug_implementations, missing_copy_implementations)]
 pub struct SqliteValue<'row, 'stmt, 'query> {
     _row: Ref<'row, PrivateSqliteRow<'stmt, 'query>>,
@@ -50,8 +46,7 @@ impl<'row, 'stmt, 'query> SqliteValue<'row, 'stmt, 'query> {
     pub(crate) fn read_double(&self) -> f64 {
         loop {}
     }
-    /// Get the type of the value as returned by sqlite
-    pub fn value_type(&self) -> Option<SqliteType> {
+        pub fn value_type(&self) -> Option<SqliteType> {
         loop {}
     }
 }

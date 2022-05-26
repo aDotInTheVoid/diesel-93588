@@ -59,15 +59,6 @@ impl Drop for RawConnection {
         loop {}
     }
 }
-/// > In a non-multi-threaded environment, `mysql_init()` invokes
-/// > `mysql_library_init()` automatically as necessary. However,
-/// > `mysql_library_init()` is not thread-safe in a multi-threaded environment,
-/// > and thus neither is `mysql_init()`. Before calling `mysql_init()`, either
-/// > call `mysql_library_init()` prior to spawning any threads, or use a mutex
-/// > to protect the `mysql_library_init()` call. This should be done prior to
-/// > any other client library call.
-///
-/// <https://dev.mysql.com/doc/refman/5.7/en/mysql-init.html>
 static MYSQL_THREAD_UNSAFE_INIT: Once = Once::new();
 fn perform_thread_unsafe_library_initialization() {
     loop {}

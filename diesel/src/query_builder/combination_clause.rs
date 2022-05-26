@@ -1,5 +1,3 @@
-//! Combine queries using a combinator like `UNION`, `INTERSECT` or `EXPECT`
-//! with or without `ALL` rule for duplicates
 use crate::backend::{Backend, DieselReserveSpecialization};
 use crate::expression::NonAggregate;
 use crate::query_builder::insert_statement::InsertFromSelect;
@@ -17,8 +15,6 @@ where
 }
 #[derive(Debug, Copy, Clone, QueryId)]
 #[must_use = "Queries are only executed when calling `load`, `get_result` or similar."]
-/// Combine queries using a combinator like `UNION`, `INTERSECT` or `EXPECT`
-/// with or without `ALL` rule for duplicates
 pub struct CombinationClause<Combinator, Rule, Source, Rhs> {
     combinator: Combinator,
     duplicate_rule: Rule,
@@ -26,8 +22,7 @@ pub struct CombinationClause<Combinator, Rule, Source, Rhs> {
     rhs: ParenthesisWrapper<Rhs>,
 }
 impl<Combinator, Rule, Source, Rhs> CombinationClause<Combinator, Rule, Source, Rhs> {
-    /// Create a new combination
-    pub(crate) fn new(
+        pub(crate) fn new(
         combinator: Combinator,
         duplicate_rule: Rule,
         source: Source,
@@ -116,7 +111,6 @@ where
     }
 }
 #[derive(Debug, Copy, Clone, QueryId)]
-/// Computes the set union of the rows returned by the involved `SELECT` statements using SQL `UNION`
 pub struct Union;
 impl<DB> QueryFragment<DB> for Union
 where
@@ -127,7 +121,6 @@ where
     }
 }
 #[derive(Debug, Copy, Clone, QueryId)]
-/// Computes the set intersection of the rows returned by the involved `SELECT` statements using SQL `INTERSECT`
 pub struct Intersect;
 impl<DB> QueryFragment<DB> for Intersect
 where
@@ -138,7 +131,6 @@ where
     }
 }
 #[derive(Debug, Copy, Clone, QueryId)]
-/// Computes the set difference of the rows returned by the involved `SELECT` statements using SQL `EXCEPT`
 pub struct Except;
 impl<DB> QueryFragment<DB> for Except
 where
@@ -149,7 +141,6 @@ where
     }
 }
 #[derive(Debug, Copy, Clone, QueryId)]
-/// Remove duplicate rows in the result, this is the default behavior of `UNION`, `INTERSECT` and `EXCEPT`
 pub struct Distinct;
 impl<DB> QueryFragment<DB> for Distinct
 where
@@ -160,7 +151,6 @@ where
     }
 }
 #[derive(Debug, Copy, Clone, QueryId)]
-/// Keep duplicate rows in the result
 pub struct All;
 impl<DB> QueryFragment<DB> for All
 where
@@ -170,10 +160,8 @@ where
         loop {}
     }
 }
-/// Marker trait used to indicate whenever a backend supports given combination
 pub trait SupportsCombinationClause<Combinator, Rule> {}
 #[derive(Debug, Copy, Clone, QueryId)]
-/// Wrapper used to wrap rhs sql in parenthesis when supported by backend
 pub struct ParenthesisWrapper<T>(T);
 #[cfg(feature = "postgres")]
 mod postgres {

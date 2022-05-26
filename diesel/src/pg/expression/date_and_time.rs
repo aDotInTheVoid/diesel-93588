@@ -5,7 +5,6 @@ use crate::result::QueryResult;
 use crate::sql_types::{
     is_nullable, Date, Nullable, SqlType, Timestamp, Timestamptz, VarChar,
 };
-/// Marker trait for types which are valid in `AT TIME ZONE` expressions
 pub trait DateTimeLike {}
 impl DateTimeLike for Date {}
 impl DateTimeLike for Timestamp {}

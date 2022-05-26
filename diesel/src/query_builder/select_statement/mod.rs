@@ -1,15 +1,3 @@
-//! Within this module, types commonly use the following abbreviations:
-//!
-//! F: From Clause
-//! S: Select Clause
-//! D: Distinct Clause
-//! W: Where Clause
-//! O: Order By Clause
-//! L: Limit Clause
-//! Of: Offset Clause
-//! G: Group By Clause
-//! H: Having clause
-//! LC: For Update Clause
 pub(crate) mod boxed;
 mod dsl_impls;
 pub(crate) use self::boxed::BoxedSelectStatement;
@@ -147,8 +135,6 @@ where
     QS: QuerySource,
     W: ValidWhereClause<NoFromClause>,
 {}
-/// Allow `SelectStatement<From>` to act as if it were `From` as long as
-/// no other query methods have been called on it
 impl<From, T> AppearsInFromClause<T> for SelectStatement<From>
 where
     From: AsQuerySource,

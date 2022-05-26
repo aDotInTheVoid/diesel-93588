@@ -12,8 +12,6 @@ use crate::result::Error::DatabaseError;
 use crate::result::*;
 use crate::serialize::ToSql;
 use crate::sql_types::HasSqlType;
-/// For use in FFI function, which cannot unwind.
-/// Print the message, ask to open an issue at Github and [`abort`](std::process::abort).
 macro_rules! assert_fail {
     ($fmt:expr $(,$args:tt)*) => {
         eprint!(concat!($fmt,

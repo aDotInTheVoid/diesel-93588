@@ -53,19 +53,13 @@ impl RawConnection {
         loop {}
     }
 }
-/// Represents the current in-transaction status of the connection
 #[derive(Debug, PartialEq, Eq, Clone, Copy)]
 pub(super) enum PgTransactionStatus {
-    /// Currently idle
-    Idle,
-    /// A command is in progress (sent to the server but not yet completed)
-    Active,
-    /// Idle, in a valid transaction block
-    InTransaction,
-    /// Idle, in a failed transaction block
-    InError,
-    /// Bad connection
-    Unknown,
+        Idle,
+        Active,
+        InTransaction,
+        InError,
+        Unknown,
 }
 impl From<PGTransactionStatusType> for PgTransactionStatus {
     fn from(trans_status_type: PGTransactionStatusType) -> Self {
@@ -84,11 +78,6 @@ impl Drop for RawConnection {
 fn last_error_message(conn: *const PGconn) -> String {
     loop {}
 }
-/// Internal wrapper around a `*mut PGresult` which is known to be not-null, and
-/// have no aliases.  This wrapper is to ensure that it's always properly
-/// dropped.
-///
-/// If `Unique` is ever stabilized, we should use it here.
 #[allow(missing_debug_implementations)]
 pub(super) struct RawResult(NonNull<PGresult>);
 unsafe impl Send for RawResult {}

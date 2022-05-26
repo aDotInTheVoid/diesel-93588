@@ -6,23 +6,14 @@ use crate::expression::operators::{And, Or};
 use crate::expression::*;
 use crate::result::QueryResult;
 use crate::sql_types::BoolOrNullableBool;
-/// Add `Predicate` to the current `WHERE` clause, joining with `AND` if
-/// applicable.
 pub trait WhereAnd<Predicate> {
-    /// What is the type of the resulting `WHERE` clause?
-    type Output;
-    /// See the trait-level docs.
-    fn and(self, predicate: Predicate) -> Self::Output;
+        type Output;
+        fn and(self, predicate: Predicate) -> Self::Output;
 }
-/// Add `Predicate` to the current `WHERE` clause, joining with `OR` if
-/// applicable.
 pub trait WhereOr<Predicate> {
-    /// What is the type of the resulting `WHERE` clause?
-    type Output;
-    /// See the trait-level docs.
-    fn or(self, predicate: Predicate) -> Self::Output;
+        type Output;
+        fn or(self, predicate: Predicate) -> Self::Output;
 }
-/// Represents that a query has no `WHERE` clause.
 #[derive(Debug, Clone, Copy, QueryId)]
 pub struct NoWhereClause;
 impl<DB> QueryFragment<DB> for NoWhereClause
@@ -58,7 +49,6 @@ impl<'a, DB> From<NoWhereClause> for BoxedWhereClause<'a, DB> {
         loop {}
     }
 }
-/// The `WHERE` clause of a query.
 #[derive(Debug, Clone, Copy, QueryId)]
 pub struct WhereClause<Expr>(Expr);
 impl<DB, Expr> QueryFragment<DB> for WhereClause<Expr>
@@ -103,8 +93,6 @@ where
         loop {}
     }
 }
-/// Marker trait indicating that a `WHERE` clause is valid for a given query
-/// source.
 pub trait ValidWhereClause<QS> {}
 impl<QS> ValidWhereClause<QS> for NoWhereClause {}
 impl<QS, Expr> ValidWhereClause<QS> for WhereClause<Expr>

@@ -6,7 +6,6 @@ use crate::query_builder::{
 use crate::query_source::QuerySource;
 use crate::result::QueryResult;
 use crate::{JoinTo, SelectableExpression, Table};
-/// Represents a query with an `ONLY` clause.
 #[derive(Debug, Clone, Copy, Default)]
 pub struct Only<S> {
     pub(crate) source: S,

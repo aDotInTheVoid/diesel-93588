@@ -22,9 +22,6 @@ use crate::query_builder::*;
 use crate::result::ConnectionError::CouldntSetupConfiguration;
 use crate::result::*;
 use crate::RunQueryDsl;
-/// The connection string expected by `PgConnection::establish`
-/// should be a PostgreSQL connection string, as documented at
-/// <https://www.postgresql.org/docs/9.4/static/libpq-connect.html#LIBPQ-CONNSTRING>
 #[allow(missing_debug_implementations)]
 #[cfg(feature = "postgres")]
 pub struct PgConnection {
@@ -92,30 +89,7 @@ impl crate::r2d2::R2D2Connection for PgConnection {
     }
 }
 impl PgConnection {
-    /// Build a transaction, specifying additional details such as isolation level
-    ///
-    /// See [`TransactionBuilder`] for more examples.
-    ///
-    /// [`TransactionBuilder`]: crate::pg::TransactionBuilder
-    ///
-    /// ```rust
-    /// # include!("../../doctest_setup.rs");
-    /// #
-    /// # fn main() {
-    /// #     run_test().unwrap();
-    /// # }
-    /// #
-    /// # fn run_test() -> QueryResult<()> {
-    /// #     use schema::users::dsl::*;
-    /// #     let conn = &mut connection_no_transaction();
-    /// conn.build_transaction()
-    ///     .read_only()
-    ///     .serializable()
-    ///     .deferrable()
-    ///     .run(|conn| Ok(()))
-    /// # }
-    /// ```
-    pub fn build_transaction(&mut self) -> TransactionBuilder<'_, Self> {
+                                                                                                pub fn build_transaction(&mut self) -> TransactionBuilder<'_, Self> {
         loop {}
     }
     fn with_prepared_query<'conn, T: QueryFragment<Pg> + QueryId, R>(

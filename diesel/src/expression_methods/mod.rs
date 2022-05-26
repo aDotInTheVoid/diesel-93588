@@ -1,9 +1,3 @@
-//! Adds various methods to construct new expressions. These traits are exported
-//! by default, and implemented automatically.
-//!
-//! You can rely on the methods provided by this trait existing on any
-//! `Expression` of the appropriate type. You should not rely on the specific
-//! traits existing, their names, or their organization.
 mod bool_expression_methods;
 mod eq_all;
 mod escape_expression_methods;

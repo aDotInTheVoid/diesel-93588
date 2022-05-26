@@ -3,15 +3,13 @@ use crate::query_builder::QueryBuilder;
 use crate::result::QueryResult;
 mod limit_offset;
 mod query_fragment_impls;
-/// The MySQL query builder
 #[allow(missing_debug_implementations)]
 #[derive(Default)]
 pub struct MysqlQueryBuilder {
     sql: String,
 }
 impl MysqlQueryBuilder {
-    /// Constructs a new query builder with an empty query
-    pub fn new() -> Self {
+        pub fn new() -> Self {
         loop {}
     }
 }

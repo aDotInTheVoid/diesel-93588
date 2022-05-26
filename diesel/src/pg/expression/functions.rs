@@ -1,4 +1,3 @@
-//! PostgreSQL specific functions
 use super::expression_methods::InetOrCidr;
 use crate::expression::functions::sql_function;
 use crate::sql_types::*;

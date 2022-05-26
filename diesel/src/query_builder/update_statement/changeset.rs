@@ -6,17 +6,10 @@ use crate::query_builder::*;
 use crate::query_source::{Column, QuerySource};
 use crate::result::QueryResult;
 use crate::Table;
-/// Types which can be passed to
-/// [`update.set`](UpdateStatement::set()).
-///
-/// This trait can be [derived](derive@AsChangeset)
 pub trait AsChangeset {
-    /// The table which `Self::Changeset` will be updating
-    type Target: QuerySource;
-    /// The update statement this type represents
-    type Changeset;
-    /// Convert `self` into the actual update statement being executed
-    #[allow(clippy::wrong_self_convention)]
+        type Target: QuerySource;
+        type Changeset;
+        #[allow(clippy::wrong_self_convention)]
     fn as_changeset(self) -> Self::Changeset;
 }
 #[allow(unreachable_pub)]
@@ -65,22 +58,11 @@ where
         loop {}
     }
 }
-/// Represents the left hand side of an assignment expression for an
-/// assignment in [AsChangeset]. The vast majority of the time, this will
-/// be a [Column]. However, in certain database backends, it's possible to
-/// assign to an expression. For example, in Postgres, it's possible to
-/// "UPDATE TABLE SET array_column\[1\] = 'foo'".
 pub trait AssignmentTarget {
-    /// Table the assignment is to
-    type Table: Table;
-    /// A wrapper around a type to assign to (this wrapper should implement
-    /// [QueryFragment]).
-    type QueryAstNode;
-    /// Move this in to the AST node which should implement [QueryFragment].
-    fn into_target(self) -> Self::QueryAstNode;
+        type Table: Table;
+            type QueryAstNode;
+        fn into_target(self) -> Self::QueryAstNode;
 }
-/// Represents a `Column` as an `AssignmentTarget`. The vast majority of
-/// targets in an update statement will be `Column`s.
 #[derive(Debug, Clone, Copy)]
 pub struct ColumnWrapperForUpdate<C>(pub C);
 impl<DB, C> QueryFragment<DB> for ColumnWrapperForUpdate<C>

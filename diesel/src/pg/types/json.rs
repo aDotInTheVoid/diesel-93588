@@ -1,4 +1,3 @@
-//! Support for JSON and `jsonb` values under PostgreSQL.
 extern crate serde_json;
 use std::io::prelude::*;
 use crate::deserialize::{self, FromSql};

@@ -1,4 +1,3 @@
-//! MySQL specific types
 pub(super) mod date_and_time;
 #[cfg(feature = "serde_json")]
 mod json;
@@ -23,7 +22,6 @@ impl FromSql<TinyInt, Mysql> for i8 {
         loop {}
     }
 }
-/// Represents the MySQL unsigned type.
 #[derive(Debug, Clone, Copy, Default, SqlType, QueryId)]
 #[cfg(feature = "mysql_backend")]
 pub struct Unsigned<ST: 'static>(ST);
@@ -169,18 +167,6 @@ impl HasSqlType<Unsigned<BigInt>> for Mysql {
         loop {}
     }
 }
-/// Represents the MySQL datetime type.
-///
-/// ### [`ToSql`] impls
-///
-/// - [`chrono::NaiveDateTime`] with `feature = "chrono"`
-///
-/// ### [`FromSql`] impls
-///
-/// - [`chrono::NaiveDateTime`] with `feature = "chrono"`
-///
-/// [`ToSql`]: crate::serialize::ToSql
-/// [`FromSql`]: crate::deserialize::FromSql
 #[cfg_attr(
     feature = "chrono",
     doc = " [`chrono::NaiveDateTime`]: chrono::naive::NaiveDateTime"

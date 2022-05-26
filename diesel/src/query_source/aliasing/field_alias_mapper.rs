@@ -1,28 +1,11 @@
 use super::{Alias, AliasSource, AliasedField};
 use crate::expression;
 use crate::query_source::{Column, Table, TableNotEqual};
-/// Serves to map `Self` to `Alias<S>`
-///
-/// Any column `Self` that belongs to `S::Table` will be transformed into `AliasedField<S, Self>`
-///
-/// Any column `Self` that does not belong to `S::Table` will be left untouched.
-///
-/// This also works with tuples and some expressions.
-///
 pub trait FieldAliasMapper<S> {
-    /// Output type when mapping `C` to `Alias<S>`
-    ///
-    /// If `C: Column<Table = S::Table>`, `Out = AliasedField<S, C>`  
-    /// Otherwise, `Out = C`
-    type Out;
-    /// Does the mapping
-    fn map(self, alias: &Alias<S>) -> Self::Out;
+                    type Out;
+        fn map(self, alias: &Alias<S>) -> Self::Out;
 }
 #[doc(hidden)]
-/// Allows implementing `FieldAliasMapper` in external crates without running into conflicting impl
-/// errors due to https://github.com/rust-lang/rust/issues/20400
-///
-/// We will always have `Self = S::Table` and `CT = C::Table`
 pub trait FieldAliasMapperAssociatedTypesDisjointnessTrick<CT, S, C> {
     type Out;
     fn map(column: C, alias: &Alias<S>) -> Self::Out;

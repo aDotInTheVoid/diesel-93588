@@ -19,8 +19,6 @@ use crate::result::*;
 use crate::RunQueryDsl;
 #[cfg(feature = "mysql")]
 #[allow(missing_debug_implementations, missing_copy_implementations)]
-/// A connection to a MySQL database. Connection URLs should be in the form
-/// `mysql://[user[:password]@]host/database_name`
 pub struct MysqlConnection {
     raw_connection: RawConnection,
     transaction_state: AnsiTransactionManager,
@@ -44,15 +42,7 @@ impl CommitErrorProcessor for MysqlConnection {
 impl Connection for MysqlConnection {
     type Backend = Mysql;
     type TransactionManager = AnsiTransactionManager;
-    /// Establishes a new connection to the MySQL database
-    /// `database_url` may be enhanced by GET parameters
-    /// `mysql://[user[:password]@]host/database_name[?unix_socket=socket-path&ssl_mode=SSL_MODE*&ssl_ca=/etc/ssl/certs/ca-certificates.crt]`
-    ///
-    /// * `unix_socket` expects the path to the unix socket
-    /// * `ssl_ca` accepts a path to the system's certificate roots
-    /// * `ssl_mode` expects a value defined for MySQL client command option `--ssl-mode`
-    /// See <https://dev.mysql.com/doc/refman/5.7/en/connection-options.html#option_general_ssl-mode>
-    fn establish(database_url: &str) -> ConnectionResult<Self> {
+                                    fn establish(database_url: &str) -> ConnectionResult<Self> {
         loop {}
     }
     fn load<'conn, 'query, T>(

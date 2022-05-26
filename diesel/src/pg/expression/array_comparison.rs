@@ -4,27 +4,6 @@ use crate::pg::Pg;
 use crate::query_builder::*;
 use crate::result::QueryResult;
 use crate::sql_types::{Array, SqlType};
-/// Creates a PostgreSQL `ANY` expression.
-///
-/// As with most bare functions, this is not exported by default. You can import
-/// it specifically from `diesel::pg::expression::dsl::any`, or `diesel::dsl::any`.
-///
-/// # Example
-///
-/// ```rust
-/// # include!("../../doctest_setup.rs");
-/// # use diesel::dsl::*;
-/// #
-/// # fn main() {
-/// #     use schema::users::dsl::*;
-/// #     let connection = &mut establish_connection();
-/// #     diesel::sql_query("INSERT INTO users (name) VALUES ('Jim')").execute(connection).unwrap();
-/// let sean = (1, "Sean".to_string());
-/// let jim = (3, "Jim".to_string());
-/// let data = users.filter(name.eq(any(vec!["Sean", "Jim"])));
-/// assert_eq!(Ok(vec![sean, jim]), data.load(connection));
-/// # }
-/// ```
 #[deprecated(since = "2.0.0", note = "Use `ExpressionMethods::eq_any` instead")]
 pub fn any<ST, T>(vals: T) -> Any<T::Expression>
 where
@@ -32,26 +11,6 @@ where
 {
     loop {}
 }
-/// Creates a PostgreSQL `ALL` expression.
-///
-/// As with most bare functions, this is not exported by default. You can import
-/// it specifically as `diesel::pg::expression::dsl::all`, or `diesel::dsl::all`.
-///
-/// # Example
-///
-/// ```rust
-/// # include!("../../doctest_setup.rs");
-/// # use diesel::dsl::*;
-/// #
-/// # fn main() {
-/// #     use schema::users::dsl::*;
-/// #     let connection = &mut establish_connection();
-/// #     diesel::sql_query("INSERT INTO users (name) VALUES ('Jim')").execute(connection).unwrap();
-/// let tess = (2, "Tess".to_string());
-/// let data = users.filter(name.ne(all(vec!["Sean", "Jim"])));
-/// assert_eq!(Ok(vec![tess]), data.load(connection));
-/// # }
-/// ```
 #[deprecated(since = "2.0.0", note = "Use `ExpressionMethods::ne_all` instead")]
 pub fn all<ST, T>(vals: T) -> All<T::Expression>
 where

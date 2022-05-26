@@ -46,9 +46,7 @@ impl Statement {
     fn last_error_type(&self) -> DatabaseErrorKind {
         loop {}
     }
-    /// If the pointers referenced by the `MYSQL_BIND` structures are invalidated,
-    /// you must call this function again before calling `mysql_stmt_fetch`.
-    pub unsafe fn bind_result(&self, binds: *mut ffi::MYSQL_BIND) -> QueryResult<()> {
+            pub unsafe fn bind_result(&self, binds: *mut ffi::MYSQL_BIND) -> QueryResult<()> {
         loop {}
     }
 }
@@ -59,10 +57,7 @@ impl<'a> MaybeCached<'a, Statement> {
     ) -> QueryResult<StatementUse<'a>> {
         loop {}
     }
-    /// This function should be called instead of `results` on queries which
-    /// have no return value. It should never be called on a statement on
-    /// which `results` has previously been called?
-    pub(super) unsafe fn execute(self) -> QueryResult<StatementUse<'a>> {
+                pub(super) unsafe fn execute(self) -> QueryResult<StatementUse<'a>> {
         loop {}
     }
 }
@@ -79,9 +74,7 @@ impl<'a> StatementUse<'a> {
     pub(in crate::mysql::connection) fn affected_rows(&self) -> usize {
         loop {}
     }
-    /// This function should be called after `execute` only
-    /// otherwise it's not guranteed to return a valid result
-    pub(in crate::mysql::connection) unsafe fn result_size(
+            pub(in crate::mysql::connection) unsafe fn result_size(
         &mut self,
     ) -> QueryResult<usize> {
         loop {}
@@ -100,9 +93,7 @@ impl<'a> StatementUse<'a> {
     ) -> QueryResult<()> {
         loop {}
     }
-    /// If the pointers referenced by the `MYSQL_BIND` structures are invalidated,
-    /// you must call this function again before calling `mysql_stmt_fetch`.
-    pub(in crate::mysql::connection) unsafe fn bind_result(
+            pub(in crate::mysql::connection) unsafe fn bind_result(
         &self,
         binds: *mut ffi::MYSQL_BIND,
     ) -> QueryResult<()> {

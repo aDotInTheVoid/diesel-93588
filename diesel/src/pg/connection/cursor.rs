@@ -3,8 +3,6 @@ use std::rc::Rc;
 use super::result::PgResult;
 use super::row::PgRow;
 use super::PgConnection;
-/// The type returned by various [`Connection`] methods.
-/// Acts as an iterator over `T`.
 #[allow(missing_debug_implementations)]
 pub struct Cursor<'a> {
     current_row: usize,

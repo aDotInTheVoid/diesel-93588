@@ -5,45 +5,11 @@ use crate::pg::Pg;
 use crate::query_builder::{AstPass, QueryFragment, QueryId};
 use crate::sql_types;
 use std::marker::PhantomData;
-/// An ARRAY[...] literal.
 #[derive(Debug, Clone, Copy, QueryId)]
 pub struct ArrayLiteral<T, ST> {
     elements: T,
     _marker: PhantomData<ST>,
 }
-/// Creates an `ARRAY[...]` expression.
-///
-/// The argument should be a tuple of expressions which can be represented by the
-/// same SQL type.
-///
-/// # Examples
-///
-/// ```rust
-/// # include!("../../doctest_setup.rs");
-/// #
-/// # fn main() {
-/// #     run_test().unwrap();
-/// # }
-/// #
-/// # fn run_test() -> QueryResult<()> {
-/// #     use schema::users::dsl::*;
-/// #     use diesel::dsl::array;
-/// #     use diesel::sql_types::Integer;
-/// #     let connection = &mut establish_connection();
-/// let ints = diesel::select(array::<Integer, _>((1, 2)))
-///     .get_result::<Vec<i32>>(connection)?;
-/// assert_eq!(vec![1, 2], ints);
-///
-/// let ids = users.select(array((id, id * 2)))
-///     .get_results::<Vec<i32>>(connection)?;
-/// let expected = vec![
-///     vec![1, 2],
-///     vec![2, 4],
-/// ];
-/// assert_eq!(expected, ids);
-/// #     Ok(())
-/// # }
-/// ```
 #[cfg(feature = "postgres_backend")]
 pub fn array<ST, T>(elements: T) -> ArrayLiteral<T::Expression, ST>
 where

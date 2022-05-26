@@ -73,80 +73,6 @@ macro_rules! __diesel_operator_to_sql {
         $op; $expr;
     };
 }
-/// Useful for libraries adding support for new SQL types. Apps should never
-/// need to call this.
-///
-/// This will create a new type with the given name. It will implement all
-/// methods needed to be used as an expression in Diesel, placing the given
-/// SQL between the two elements. The third argument specifies the SQL type
-/// that the operator returns. If it is not given, the type will be assumed
-/// to be `Bool`.
-///
-/// If the operator is specific to a single backend, you can specify this by
-/// adding `backend: Pg` or similar as the last argument.
-///
-/// It should be noted that the generated impls will not constrain the SQL
-/// types of the arguments. You should ensure that they are of the right
-/// type in your function which constructs the operator.
-///
-/// Typically you would not expose the type that this generates directly. You'd
-/// expose a function (or trait) used to construct the expression, and a helper
-/// type which represents the return type of that function. See the source of
-/// `diesel::expression::expression_methods` and
-/// `diesel::expression::helper_types` for real world examples of this.
-///
-/// # Examples
-///
-/// # Possible invocations
-///
-/// ```ignore
-/// // The SQL type will be boolean. The backend will not be constrained
-/// infix_operator!(Matches, " @@ ");
-///
-/// // Queries which try to execute `Contains` on a backend other than Pg
-/// // will fail to compile
-/// infix_operator!(Contains, " @> ", backend: Pg);
-///
-/// // The type of `Concat` will be `TsVector` rather than Bool
-/// infix_operator!(Concat, " || ", TsVector);
-///
-/// // It is perfectly fine to have multiple operators with the same SQL.
-/// // Diesel will ensure that the queries are always unambiguous in which
-/// // operator applies
-/// infix_operator!(Or, " || ", TsQuery);
-///
-/// // Specifying both the return types and the backend
-/// infix_operator!(And, " && ", TsQuery, backend: Pg);
-/// ```
-///
-/// ## Example usage
-///
-/// ```rust
-/// # include!("../doctest_setup.rs");
-/// # use diesel::sql_types::SqlType;
-/// # use diesel::expression::TypedExpressionType;
-/// #
-/// # fn main() {
-/// #     use schema::users::dsl::*;
-/// #     let connection = &mut establish_connection();
-/// diesel::infix_operator!(MyEq, " = ");
-///
-/// use diesel::expression::AsExpression;
-///
-/// // Normally you would put this on a trait instead
-/// fn my_eq<T, U, ST>(left: T, right: U) -> MyEq<T, U::Expression> where
-///     T: Expression<SqlType = ST>,
-///     U: AsExpression<ST>,
-///     ST: SqlType + TypedExpressionType,
-/// {
-///     MyEq::new(left, right.as_expression())
-/// }
-///
-/// let users_with_name = users.select(id).filter(my_eq(name, "Sean"));
-///
-/// assert_eq!(Ok(1), users_with_name.first(connection));
-/// # }
-/// ```
 #[macro_export]
 macro_rules! infix_operator {
     ($name:ident, $operator:expr) => {
@@ -239,13 +165,6 @@ macro_rules! diesel_infix_operator {
         $crate ::infix_operator!($($args)*);
     };
 }
-/// Useful for libraries adding support for new SQL types. Apps should never
-/// need to call this.
-///
-/// Similar to [`infix_operator!`], but the generated type will only take
-/// a single argument rather than two. The operator SQL will be placed after
-/// the single argument. See [`infix_operator!`] for example usage.
-///
 #[macro_export]
 macro_rules! postfix_operator {
     ($name:ident, $operator:expr) => {
@@ -275,13 +194,6 @@ macro_rules! diesel_postfix_operator {
         $crate ::postfix_operator!($($args)*);
     };
 }
-/// Useful for libraries adding support for new SQL types. Apps should never
-/// need to call this.
-///
-/// Similar to [`infix_operator!`], but the generated type will only take
-/// a single argument rather than two. The operator SQL will be placed before
-/// the single argument. See [`infix_operator!`] for example usage.
-///
 #[macro_export]
 macro_rules! prefix_operator {
     ($name:ident, $operator:expr) => {

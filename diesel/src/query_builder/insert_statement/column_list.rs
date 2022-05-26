@@ -2,16 +2,9 @@ use crate::backend::Backend;
 use crate::query_builder::*;
 use crate::query_source::Column;
 use crate::result::QueryResult;
-/// Represents the column list for use in an insert statement.
-///
-/// This trait is implemented by columns and tuples of columns.
 pub trait ColumnList {
-    /// The table these columns belong to
-    type Table;
-    /// Generate the SQL for this column list.
-    ///
-    /// Column names must *not* be qualified.
-    fn walk_ast<DB: Backend>(&self, out: AstPass<'_, '_, DB>) -> QueryResult<()>;
+        type Table;
+                fn walk_ast<DB: Backend>(&self, out: AstPass<'_, '_, DB>) -> QueryResult<()>;
 }
 impl<C> ColumnList for C
 where

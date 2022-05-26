@@ -1,4 +1,3 @@
-//! Helper macros to define custom sql functions
 #[doc(inline)]
 pub use diesel_derives::sql_function_proc as sql_function;
 #[macro_export]
@@ -35,19 +34,6 @@ macro_rules! no_arg_sql_function_body {
     };
 }
 #[macro_export]
-/// Declare a 0 argument SQL function for use in your code. This will generate a
-/// unit struct, which is an expression representing calling this function. See
-/// [`now`](crate::expression::dsl::now) for example output. `now` was
-/// generated using:
-///
-/// ```no_run
-/// # pub use diesel::*;
-/// no_arg_sql_function!(now, sql_types::Timestamp, "Represents the SQL NOW() function");
-/// # fn main() {}
-/// ```
-///
-/// You can optionally pass the name of a trait, as a constraint for backends which support the
-/// function.
 #[deprecated(
     since = "2.0.0",
     note = "Use `sql_function!` instead. See `CHANGELOG.md` for migration instructions"

@@ -8,61 +8,10 @@ use crate::query_builder::{
 };
 use crate::query_source::{Column, Table};
 use crate::result::QueryResult;
-/// Represents that a structure can be used to insert a new row into the
-/// database. This is automatically implemented for `&[T]` and `&Vec<T>` for
-/// inserting more than one record.
-///
-/// This trait can be [derived](derive@Insertable)
 pub trait Insertable<T> {
-    /// The `VALUES` clause to insert these records
-    ///
-    /// The types used here are generally internal to Diesel.
-    /// Implementations of this trait should use the `Values`
-    /// type of other `Insertable` types.
-    /// For example `<diesel::dsl::Eq<column, &str> as Insertable<table>>::Values`.
-    type Values;
-    /// Construct `Self::Values`
-    ///
-    /// Implementations of this trait typically call `.values`
-    /// on other `Insertable` types.
-    fn values(self) -> Self::Values;
-    /// Insert `self` into a given table.
-    ///
-    /// `foo.insert_into(table)` is identical to `insert_into(table).values(foo)`.
-    /// However, when inserting from a select statement,
-    /// this form is generally preferred.
-    ///
-    /// # Example
-    ///
-    /// ```rust
-    /// # include!("doctest_setup.rs");
-    /// #
-    /// # fn main() {
-    /// #     run_test().unwrap();
-    /// # }
-    /// #
-    /// # fn run_test() -> QueryResult<()> {
-    /// #     use schema::{posts, users};
-    /// #     let conn = &mut establish_connection();
-    /// #     diesel::delete(posts::table).execute(conn)?;
-    /// users::table
-    ///     .select((
-    ///         users::name.concat("'s First Post"),
-    ///         users::id,
-    ///     ))
-    ///     .insert_into(posts::table)
-    ///     .into_columns((posts::title, posts::user_id))
-    ///     .execute(conn)?;
-    ///
-    /// let inserted_posts = posts::table
-    ///     .select(posts::title)
-    ///     .load::<String>(conn)?;
-    /// let expected = vec!["Sean's First Post", "Tess's First Post"];
-    /// assert_eq!(expected, inserted_posts);
-    /// #     Ok(())
-    /// # }
-    /// ```
-    fn insert_into(self, table: T) -> InsertStatement<T, Self::Values>
+                            type Values;
+                    fn values(self) -> Self::Values;
+                                                                                                                                                    fn insert_into(self, table: T) -> InsertStatement<T, Self::Values>
     where
         T: Table,
         Self: Sized,
@@ -73,11 +22,7 @@ pub trait Insertable<T> {
 #[doc(inline)]
 pub use diesel_derives::Insertable;
 pub trait CanInsertInSingleQuery<DB: Backend> {
-    /// How many rows will this query insert?
-    ///
-    /// This function should only return `None` when the query is valid on all
-    /// backends, regardless of how many rows get inserted.
-    fn rows_to_insert(&self) -> Option<usize>;
+                    fn rows_to_insert(&self) -> Option<usize>;
 }
 impl<'a, T, DB> CanInsertInSingleQuery<DB> for &'a T
 where

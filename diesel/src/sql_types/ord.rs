@@ -1,5 +1,4 @@
 use crate::sql_types::{self, is_nullable, SqlType};
-/// Marker trait for types which can be used with `MAX` and `MIN`
 pub trait SqlOrd: SqlType {}
 impl SqlOrd for sql_types::SmallInt {}
 impl SqlOrd for sql_types::Integer {}

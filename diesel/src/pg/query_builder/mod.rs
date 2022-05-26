@@ -7,7 +7,6 @@ pub(crate) mod on_constraint;
 pub(crate) mod only;
 mod query_fragment_impls;
 pub use self::distinct_on::DistinctOnClause;
-/// The PostgreSQL query builder
 #[allow(missing_debug_implementations)]
 #[derive(Default)]
 #[cfg(feature = "postgres_backend")]
@@ -16,8 +15,7 @@ pub struct PgQueryBuilder {
     bind_idx: u32,
 }
 impl PgQueryBuilder {
-    /// Constructs a new query builder with an empty query
-    pub fn new() -> Self {
+        pub fn new() -> Self {
         loop {}
     }
 }

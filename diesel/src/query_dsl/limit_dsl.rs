@@ -1,16 +1,7 @@
 use crate::query_source::Table;
-/// The `limit` method
-///
-/// This trait should not be relied on directly by most apps. Its behavior is
-/// provided by [`QueryDsl`]. However, you may need a where clause on this trait
-/// to call `limit` from generic code.
-///
-/// [`QueryDsl`]: crate::QueryDsl
 pub trait LimitDsl {
-    /// The type returned by `.limit`
-    type Output;
-    /// See the trait documentation
-    fn limit(self, limit: i64) -> Self::Output;
+        type Output;
+        fn limit(self, limit: i64) -> Self::Output;
 }
 impl<T> LimitDsl for T
 where

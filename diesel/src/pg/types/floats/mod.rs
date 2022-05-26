@@ -9,29 +9,18 @@ use std::error::Error;
 mod quickcheck_impls;
 #[derive(Debug, Clone, PartialEq, Eq, AsExpression, FromSqlRow)]
 #[diesel(sql_type = sql_types::Numeric)]
-/// Represents a NUMERIC value, closely mirroring the PG wire protocol
-/// representation
 pub enum PgNumeric {
-    /// A positive number
-    Positive {
-        /// How many digits come before the decimal point?
-        weight: i16,
-        /// How many significant digits are there?
-        scale: u16,
-        /// The digits in this number, stored in base 10000
-        digits: Vec<i16>,
+        Positive {
+                weight: i16,
+                scale: u16,
+                digits: Vec<i16>,
     },
-    /// A negative number
-    Negative {
-        /// How many digits come before the decimal point?
-        weight: i16,
-        /// How many significant digits are there?
-        scale: u16,
-        /// The digits in this number, stored in base 10000
-        digits: Vec<i16>,
+        Negative {
+                weight: i16,
+                scale: u16,
+                digits: Vec<i16>,
     },
-    /// Not a number
-    NaN,
+        NaN,
 }
 #[derive(Debug, Clone, Copy)]
 struct InvalidNumericSign(u16);

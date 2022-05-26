@@ -3,24 +3,20 @@ use crate::expression::{Expression, NonAggregate, SelectableExpression};
 use crate::insertable::*;
 use crate::query_builder::*;
 use crate::query_source::Table;
-/// Represents `(Columns) SELECT FROM ...` for use in an `INSERT` statement
 #[derive(Debug, Clone, Copy, QueryId)]
 pub struct InsertFromSelect<Select, Columns> {
     pub(in crate::query_builder) query: Select,
     pub(in crate::query_builder) columns: Columns,
 }
 impl<Select, Columns> InsertFromSelect<Select, Columns> {
-    /// Construct a new `InsertFromSelect` where the target column list is
-    /// `T::AllColumns`.
-    pub fn new<T>(query: Select) -> Self
+            pub fn new<T>(query: Select) -> Self
     where
         T: Table<AllColumns = Columns>,
         Columns: SelectableExpression<T> + NonAggregate,
     {
         loop {}
     }
-    /// Replace the target column list
-    pub fn with_columns<C>(self, columns: C) -> InsertFromSelect<Select, C> {
+        pub fn with_columns<C>(self, columns: C) -> InsertFromSelect<Select, C> {
         loop {}
     }
 }

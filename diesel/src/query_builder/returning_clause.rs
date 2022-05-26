@@ -12,11 +12,6 @@ where
         loop {}
     }
 }
-/// This type represents a SQL `Returning` clause
-///
-/// Custom backends can specialize the [`QueryFragment`]
-/// implementation via
-/// [`SqlDialect::ReturningClause`](crate::backend::SqlDialect::ReturningClause)
 #[cfg_attr(
     feature = "i-implement-a-third-party-backend-and-opt-into-breaking-changes",
     cfg(feature = "i-implement-a-third-party-backend-and-opt-into-breaking-changes")

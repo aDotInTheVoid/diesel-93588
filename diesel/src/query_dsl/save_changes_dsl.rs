@@ -16,19 +16,8 @@ use crate::query_dsl::{LoadQuery, RunQueryDsl};
 use crate::result::QueryResult;
 #[cfg(any(feature = "sqlite", feature = "postgres", feature = "mysql"))]
 use crate::Table;
-/// A trait defining how to update a record and fetch the updated entry
-/// on a certain backend.
-///
-/// The only case where it is required to work with this trait is while
-/// implementing a new connection type.
-/// Otherwise use [`SaveChangesDsl`]
-///
-/// For implementing this trait for a custom backend:
-/// * The `Changes` generic parameter represents the changeset that should be stored
-/// * The `Output` generic parameter represents the type of the response.
 pub trait UpdateAndFetchResults<Changes, Output>: Connection {
-    /// See the traits documentation.
-    fn update_and_fetch(&mut self, changeset: Changes) -> QueryResult<Output>;
+        fn update_and_fetch(&mut self, changeset: Changes) -> QueryResult<Output>;
 }
 #[cfg(feature = "postgres")]
 use crate::pg::PgConnection;
@@ -85,56 +74,8 @@ where
         loop {}
     }
 }
-/// Sugar for types which implement both `AsChangeset` and `Identifiable`
-///
-/// On backends which support the `RETURNING` keyword,
-/// `foo.save_changes(&conn)` is equivalent to
-/// `update(&foo).set(&foo).get_result(&conn)`.
-/// On other backends, two queries will be executed.
-///
-/// # Example
-///
-/// ```rust
-/// # include!("../doctest_setup.rs");
-/// # use schema::animals;
-/// #
-/// #[derive(Queryable, Debug, PartialEq)]
-/// struct Animal {
-///    id: i32,
-///    species: String,
-///    legs: i32,
-///    name: Option<String>,
-/// }
-///
-/// #[derive(AsChangeset, Identifiable)]
-/// #[diesel(table_name = animals)]
-/// struct AnimalForm<'a> {
-///     id: i32,
-///     name: &'a str,
-/// }
-///
-/// # fn main() {
-/// #     run_test();
-/// # }
-/// #
-/// # fn run_test() -> QueryResult<()> {
-/// #     use self::animals::dsl::*;
-/// #     let connection = &mut establish_connection();
-/// let form = AnimalForm { id: 2, name: "Super scary" };
-/// let changed_animal = form.save_changes(connection)?;
-/// let expected_animal = Animal {
-///     id: 2,
-///     species: String::from("spider"),
-///     legs: 8,
-///     name: Some(String::from("Super scary")),
-/// };
-/// assert_eq!(expected_animal, changed_animal);
-/// #     Ok(())
-/// # }
-/// ```
 pub trait SaveChangesDsl<Conn> {
-    /// See the trait documentation.
-    fn save_changes<T>(self, connection: &mut Conn) -> QueryResult<T>
+        fn save_changes<T>(self, connection: &mut Conn) -> QueryResult<T>
     where
         Self: Sized,
         Conn: UpdateAndFetchResults<Self, T>,

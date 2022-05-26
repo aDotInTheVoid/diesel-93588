@@ -2,11 +2,6 @@ use super::{AstPass, QueryFragment, QueryId};
 use crate::backend::Backend;
 use crate::query_source::AppearsInFromClause;
 use crate::{QueryResult, QuerySource};
-/// This type represents a not existing from clause
-///
-/// Custom backends can provide a custom [`QueryFragment`]
-/// impl by specializing the implementtion via
-/// [`SqlDialect::EmptyFromClauseSyntax`](crate::backend::SqlDialect::EmptyFromClauseSyntax)
 #[cfg_attr(
     feature = "i-implement-a-third-party-backend-and-opt-into-breaking-changes",
     cfg(feature = "i-implement-a-third-party-backend-and-opt-into-breaking-changes")

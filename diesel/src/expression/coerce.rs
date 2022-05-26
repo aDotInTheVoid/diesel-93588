@@ -6,17 +6,6 @@ use crate::result::QueryResult;
 use crate::sql_types::{DieselNumericOps, SqlType};
 #[derive(Debug, Copy, Clone, QueryId, DieselNumericOps)]
 #[doc(hidden)]
-/// Coerces an expression to be another type. No checks are performed to ensure
-/// that the new type is valid in all positions that the previous type was.
-/// This does not perform an actual cast, it just lies to our type system.
-///
-/// This is used for a few expressions where we know that the types are actually
-/// always interchangeable. (Examples of this include `Timestamp` vs
-/// `Timestamptz`, `VarChar` vs `Text`, and `Json` vs `Jsonb`).
-///
-/// This struct should not be considered a general solution to equivalent types.
-/// It is a short term workaround for expressions which are known to be commonly
-/// used.
 pub struct Coerce<T, ST> {
     expr: T,
     _marker: PhantomData<ST>,

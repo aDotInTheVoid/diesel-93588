@@ -1,77 +1,3 @@
-/// Declare a new alias for a table
-///
-/// This macro creates a value of the type [`Alias`](super::Alias)
-///
-/// Example usage
-/// -------------
-/// ```rust
-/// # include!("../../doctest_setup.rs");
-/// fn main() {
-///     use schema::users;
-///     let connection = &mut establish_connection();
-///     let (users1, users2) = diesel::alias!(schema::users as user1, schema::users as user2);
-///     let res = users1
-///         .inner_join(users2.on(users1.field(users::id).eq(users2.field(users::id))))
-///         .select((users1.fields((users::id, users::name)), users2.field(users::name)))
-///         .order_by(users2.field(users::id))
-///         .load::<((i32, String), String)>(connection);
-///     assert_eq!(
-///         res,
-///         Ok(vec![
-///             ((1, "Sean".to_owned()), "Sean".to_owned()),
-///             ((2, "Tess".to_owned()), "Tess".to_owned()),
-///         ]),
-///     );
-/// }
-/// ```
-///
-///
-/// Make type expressable
-/// ---------------------
-/// It may sometimes be useful to declare an alias at the module level, in such a way that the type
-/// of a query using it can be expressed (to not declare it anonymously).
-///
-/// This can be achieved in the following way
-/// ```rust
-/// # include!("../../doctest_setup.rs");
-/// use diesel::{query_source::Alias, dsl};
-///
-/// diesel::alias!(schema::users as users_alias: UsersAlias);
-/// // or
-/// diesel::alias!{
-///     pub const USERS_ALIAS_2: Alias<UsersAlias2> = schema::users as users_alias_2;
-/// }
-///
-/// fn some_function_that_returns_a_query_fragment(
-/// ) -> dsl::InnerJoin<schema::posts::table, Alias<UsersAlias>>
-/// {
-///     schema::posts::table.inner_join(users_alias)
-/// }
-/// # fn main() {
-/// #     some_function_that_returns_a_query_fragment();
-/// #     schema::posts::table.inner_join(USERS_ALIAS_2);
-/// # }
-/// ```
-///
-/// Note that you may also use this form within a function, in the following way:
-/// ```rust
-/// # include!("../../doctest_setup.rs");
-/// fn main() {
-///     diesel::alias!(schema::users as users_alias: UsersAlias);
-///     users_alias.inner_join(schema::posts::table);
-/// }
-/// ```
-///
-/// Troubleshooting and limitations
-/// -------------------------------
-/// If you encounter a **compilation error** where "the trait
-/// `AppearsInFromClause<Alias<your_alias>>` is not implemented", when trying to use two aliases to
-/// the same table within a single query note the following two limitations:
-///  - You will need to declare these in a single `alias!` call.
-///  - The path to the table module will have to be expressed in the exact same
-///    manner. (That is, you can do `alias!(schema::users as user1, schema::users as user2)`
-///    or `alias!(users as user1, users as user2)`, but not
-///    `alias!(schema::users as user1, users as user2)`)
 #[macro_export]
 macro_rules! alias {
     ($($($table:ident)::+ as $alias:ident),* $(,)?) => {
@@ -110,7 +36,6 @@ macro_rules! alias {
 }
 #[macro_export]
 #[doc(hidden)]
-/// This only exists to hide internals from the doc
 macro_rules! __internal_alias_helper {
     (
         table_ty = $left_table_ty:ty, table_tt = $left_table_tt:tt, alias_ty =

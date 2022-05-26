@@ -3,13 +3,6 @@ use crate::expression::helper_types::{Asc, Desc};
 use crate::query_builder::combination_clause::CombinationClause;
 use crate::query_builder::{AstPass, Query, QueryFragment, QueryId};
 use crate::{QueryResult, RunQueryDsl};
-/// This trait is not yet part of Diesel's public API. It may change in the
-/// future without a major version bump.
-///
-/// This trait exists as a stop-gap for users who need to order by column position
-/// in their queries, so that they are not forced to drop entirely to raw SQL. The
-/// arguments to `positional_order_by` are not checked, nor is the select statement
-/// forced to be valid.
 pub trait PositionalOrderDsl<Expr: Order>: Sized {
     fn positional_order_by(
         self,

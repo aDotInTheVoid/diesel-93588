@@ -72,10 +72,6 @@ impl DatabaseErrorInformation for PgErrorInformation {
         loop {}
     }
 }
-/// Represents valid options to
-/// [`PQresultErrorField`](https://www.postgresql.org/docs/current/static/libpq-exec.html#LIBPQ-PQRESULTERRORFIELD)
-/// Their values are defined as C preprocessor macros, and therefore are not exported by libpq-sys.
-/// Their values can be found in `postgres_ext.h`
 #[repr(i32)]
 enum ResultField {
     SqlState = 'C' as i32,
@@ -91,11 +87,7 @@ fn get_result_field<'a>(res: *mut PGresult, field: ResultField) -> Option<&'a st
     loop {}
 }
 mod error_codes {
-    //! These error codes are documented at
-    //! <https://www.postgresql.org/docs/current/errcodes-appendix.html>
-    //!
-    //! They are not exposed programmatically through libpq.
-    pub(in crate::pg::connection) const CONNECTION_EXCEPTION: &str = "08000";
+                    pub(in crate::pg::connection) const CONNECTION_EXCEPTION: &str = "08000";
     pub(in crate::pg::connection) const CONNECTION_FAILURE: &str = "08006";
     pub(in crate::pg::connection) const SQLCLIENT_UNABLE_TO_ESTABLISH_SQLCONNECTION: &str = "08001";
     pub(in crate::pg::connection) const SQLSERVER_REJECTED_ESTABLISHMENT_OF_SQLCONNECTION: &str = "08004";

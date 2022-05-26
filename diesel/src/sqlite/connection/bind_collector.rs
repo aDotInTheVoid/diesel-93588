@@ -12,10 +12,6 @@ impl SqliteBindCollector<'_> {
         loop {}
     }
 }
-/// This type represents a value bound to
-/// an sqlite prepared statement
-///
-/// It can be constructed via the various `From<T>` implementations
 #[derive(Debug)]
 pub struct SqliteBindValue<'a> {
     pub(in crate::sqlite) inner: InternalSqliteBindValue<'a>,

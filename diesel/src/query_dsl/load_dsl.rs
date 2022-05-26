@@ -10,26 +10,15 @@ use crate::result::QueryResult;
 pub use self::private::{CompatibleType, LoadQueryGatWorkaround};
 #[cfg(not(feature = "i-implement-a-third-party-backend-and-opt-into-breaking-changes"))]
 pub(crate) use self::private::{CompatibleType, LoadQueryGatWorkaround};
-/// The `load` method
-///
-/// This trait should not be relied on directly by most apps. Its behavior is
-/// provided by [`RunQueryDsl`]. However, you may need a where clause on this trait
-/// to call `load` from generic code.
-///
-/// [`RunQueryDsl`]: crate::RunQueryDsl
 pub trait LoadQuery<'query, Conn, U>: RunQueryDsl<Conn>
 where
     for<'a> Self: LoadQueryGatWorkaround<'a, 'query, Conn, U>,
 {
-    /// Load this query
-    fn internal_load<'conn>(
+        fn internal_load<'conn>(
         self,
         conn: &'conn mut Conn,
     ) -> QueryResult<<Self as LoadQueryGatWorkaround<'conn, 'query, Conn, U>>::Ret>;
 }
-/// The return type of [`LoadQuery<C, U>::internal_load()`]
-///
-/// Users should thread this type as `impl Iterator<Item = QueryResult<U>>`
 pub type LoadRet<'conn, 'query, Q, C, U> = <Q as LoadQueryGatWorkaround<
     'conn,
     'query,
@@ -71,19 +60,11 @@ where
         loop {}
     }
 }
-/// The `execute` method
-///
-/// This trait should not be relied on directly by most apps. Its behavior is
-/// provided by [`RunQueryDsl`]. However, you may need a where clause on this trait
-/// to call `execute` from generic code.
-///
-/// [`RunQueryDsl`]: crate::RunQueryDsl
 pub trait ExecuteDsl<
     Conn: Connection<Backend = DB>,
     DB: Backend = <Conn as Connection>::Backend,
 >: Sized {
-    /// Execute this command
-    fn execute(query: Self, conn: &mut Conn) -> QueryResult<usize>;
+        fn execute(query: Self, conn: &mut Conn) -> QueryResult<usize>;
 }
 impl<Conn, DB, T> ExecuteDsl<Conn, DB> for T
 where

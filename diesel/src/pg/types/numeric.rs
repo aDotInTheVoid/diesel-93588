@@ -15,9 +15,7 @@ mod bigdecimal {
     use crate::sql_types::Numeric;
     use std::convert::{TryFrom, TryInto};
     use std::error::Error;
-    /// Iterator over the digits of a big uint in base 10k.
-    /// The digits will be returned in little endian order.
-    struct ToBase10000(Option<BigUint>);
+            struct ToBase10000(Option<BigUint>);
     impl Iterator for ToBase10000 {
         type Item = i16;
         fn next(&mut self) -> Option<Self::Item> {
