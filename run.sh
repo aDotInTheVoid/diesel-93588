@@ -1,0 +1,1 @@
+cargo +nightly rustdoc -p diesel -- -w json -Z unstable-options
