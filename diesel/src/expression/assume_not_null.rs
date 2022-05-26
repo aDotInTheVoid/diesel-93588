@@ -33,8 +33,7 @@ impl<T, QS> AppearsOnTable<QS> for AssumeNotNull<T>
 where
     T: AppearsOnTable<QS>,
     AssumeNotNull<T>: Expression,
-{
-}
+{}
 impl<T: QueryId> QueryId for AssumeNotNull<T> {
     type QueryId = T::QueryId;
     const HAS_STATIC_QUERY_ID: bool = T::HAS_STATIC_QUERY_ID;
@@ -44,9 +43,8 @@ where
     Self: AppearsOnTable<QS>,
     QS: ToInnerJoin,
     T: SelectableExpression<QS::InnerJoin>,
-{
-}
-impl<T> SelectableExpression<NoFromClause> for AssumeNotNull<T> where
-    Self: AppearsOnTable<NoFromClause>
-{
-}
+{}
+impl<T> SelectableExpression<NoFromClause> for AssumeNotNull<T>
+where
+    Self: AppearsOnTable<NoFromClause>,
+{}

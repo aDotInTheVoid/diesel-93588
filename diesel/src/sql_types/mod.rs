@@ -106,10 +106,7 @@ pub struct Interval;
 #[diesel(sqlite_type(name = "Text"))]
 #[diesel(mysql_type(name = "Time"))]
 pub struct Time;
-#[cfg_attr(
-    feature = "chrono",
-    doc = " [NaiveDateTime]: chrono::naive::NaiveDateTime"
-)]
+#[cfg_attr(feature = "chrono", doc = " [NaiveDateTime]: chrono::naive::NaiveDateTime")]
 #[cfg_attr(
     not(feature = "chrono"),
     doc = " [NaiveDateTime]: https://docs.rs/chrono/*/chrono/naive/struct.NaiveDateTime.html"
@@ -184,13 +181,16 @@ pub use diesel_derives::DieselNumericOps;
 #[doc(inline)]
 pub use diesel_derives::SqlType;
 pub trait SqlType: 'static {
-    type IsNull: OneIsNullable<is_nullable::IsNullable> + OneIsNullable<is_nullable::NotNull>;
+    type IsNull: OneIsNullable<is_nullable::IsNullable>
+        + OneIsNullable<is_nullable::NotNull>;
 }
 pub trait OneIsNullable<Other> {
-    type Out: OneIsNullable<is_nullable::IsNullable> + OneIsNullable<is_nullable::NotNull>;
+    type Out: OneIsNullable<is_nullable::IsNullable>
+        + OneIsNullable<is_nullable::NotNull>;
 }
 pub trait AllAreNullable<Other> {
-    type Out: AllAreNullable<is_nullable::NotNull> + AllAreNullable<is_nullable::IsNullable>;
+    type Out: AllAreNullable<is_nullable::NotNull>
+        + AllAreNullable<is_nullable::IsNullable>;
 }
 pub trait MaybeNullableType<O> {
     type Out: SqlType + TypedExpressionType;
@@ -239,10 +239,12 @@ pub mod is_nullable {
         type Out = Nullable<O>;
     }
     pub type MaybeNullable<N, T> = <N as MaybeNullableType<T>>::Out;
-    pub type IsOneNullable<S1, S2> =
-        <IsSqlTypeNullable<S1> as OneIsNullable<IsSqlTypeNullable<S2>>>::Out;
-    pub type AreAllNullable<S1, S2> =
-        <IsSqlTypeNullable<S1> as AllAreNullable<IsSqlTypeNullable<S2>>>::Out;
+    pub type IsOneNullable<S1, S2> = <IsSqlTypeNullable<
+        S1,
+    > as OneIsNullable<IsSqlTypeNullable<S2>>>::Out;
+    pub type AreAllNullable<S1, S2> = <IsSqlTypeNullable<
+        S1,
+    > as AllAreNullable<IsSqlTypeNullable<S2>>>::Out;
     pub type IsSqlTypeNullable<T> = <T as SqlType>::IsNull;
 }
 pub trait BoolOrNullableBool {}

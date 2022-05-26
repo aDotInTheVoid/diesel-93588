@@ -66,14 +66,12 @@ impl<T, E, QS> SelectableExpression<QS> for CountDistinct<T, E>
 where
     Self: AppearsOnTable<QS>,
     E: SelectableExpression<QS>,
-{
-}
+{}
 impl<T, E, QS> AppearsOnTable<QS> for CountDistinct<T, E>
 where
     Self: Expression,
     E: AppearsOnTable<QS>,
-{
-}
+{}
 impl<T, E, DB> QueryFragment<DB> for CountDistinct<T, E>
 where
     T: SqlType + SingleValue,

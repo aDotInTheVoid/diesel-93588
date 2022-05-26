@@ -23,28 +23,28 @@ where
     pub(crate) fn new(connection: &'a mut C) -> Self {
         loop {}
     }
-                                                                                                                                                                                    pub fn read_only(mut self) -> Self {
+    pub fn read_only(mut self) -> Self {
         loop {}
     }
-                                                                                                                                                                        pub fn read_write(mut self) -> Self {
+    pub fn read_write(mut self) -> Self {
         loop {}
     }
-                                                                                pub fn deferrable(mut self) -> Self {
+    pub fn deferrable(mut self) -> Self {
         loop {}
     }
-                                                                                            pub fn not_deferrable(mut self) -> Self {
+    pub fn not_deferrable(mut self) -> Self {
         loop {}
     }
-                                                                                            pub fn read_committed(mut self) -> Self {
+    pub fn read_committed(mut self) -> Self {
         loop {}
     }
-                                                                                pub fn repeatable_read(mut self) -> Self {
+    pub fn repeatable_read(mut self) -> Self {
         loop {}
     }
-                                                                                pub fn serializable(mut self) -> Self {
+    pub fn serializable(mut self) -> Self {
         loop {}
     }
-                                                                                                    pub fn run<T, E, F>(&mut self, f: F) -> Result<T, E>
+    pub fn run<T, E, F>(&mut self, f: F) -> Result<T, E>
     where
         F: FnOnce(&mut C) -> Result<T, E>,
         E: From<Error>,

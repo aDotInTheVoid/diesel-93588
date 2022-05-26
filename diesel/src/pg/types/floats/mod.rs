@@ -10,17 +10,9 @@ mod quickcheck_impls;
 #[derive(Debug, Clone, PartialEq, Eq, AsExpression, FromSqlRow)]
 #[diesel(sql_type = sql_types::Numeric)]
 pub enum PgNumeric {
-        Positive {
-                weight: i16,
-                scale: u16,
-                digits: Vec<i16>,
-    },
-        Negative {
-                weight: i16,
-                scale: u16,
-                digits: Vec<i16>,
-    },
-        NaN,
+    Positive { weight: i16, scale: u16, digits: Vec<i16> },
+    Negative { weight: i16, scale: u16, digits: Vec<i16> },
+    NaN,
 }
 #[derive(Debug, Clone, Copy)]
 struct InvalidNumericSign(u16);

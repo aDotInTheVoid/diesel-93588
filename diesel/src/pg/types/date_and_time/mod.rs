@@ -26,21 +26,21 @@ pub struct PgTime(pub i64);
 #[derive(Debug, Clone, Copy, PartialEq, Eq, AsExpression, FromSqlRow)]
 #[diesel(sql_type = Interval)]
 pub struct PgInterval {
-        pub microseconds: i64,
-        pub days: i32,
-        pub months: i32,
+    pub microseconds: i64,
+    pub days: i32,
+    pub months: i32,
 }
 impl PgInterval {
-                            pub fn new(microseconds: i64, days: i32, months: i32) -> Self {
+    pub fn new(microseconds: i64, days: i32, months: i32) -> Self {
         loop {}
     }
-        pub fn from_microseconds(microseconds: i64) -> Self {
+    pub fn from_microseconds(microseconds: i64) -> Self {
         loop {}
     }
-        pub fn from_days(days: i32) -> Self {
+    pub fn from_days(days: i32) -> Self {
         loop {}
     }
-        pub fn from_months(months: i32) -> Self {
+    pub fn from_months(months: i32) -> Self {
         loop {}
     }
 }

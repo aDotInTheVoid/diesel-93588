@@ -39,7 +39,9 @@ impl<'a, 'b, DB: Backend> Output<'a, 'b, DB> {
     }
     pub fn set_value<V>(&mut self, value: V)
     where
-        V: Into<<crate::backend::BindCollector<'a, DB> as BindCollector<'a, DB>>::Buffer>,
+        V: Into<
+            <crate::backend::BindCollector<'a, DB> as BindCollector<'a, DB>>::Buffer,
+        >,
     {
         loop {}
     }
@@ -52,7 +54,8 @@ impl<'a, DB: Backend> Output<'a, 'static, DB> {
         loop {}
     }
 }
-impl<'a, 'b, DB: Backend<BindCollector = RawBytesBindCollector<DB>>> Write for Output<'a, 'b, DB> {
+impl<'a, 'b, DB: Backend<BindCollector = RawBytesBindCollector<DB>>> Write
+for Output<'a, 'b, DB> {
     fn write(&mut self, buf: &[u8]) -> io::Result<usize> {
         loop {}
     }
@@ -76,7 +79,9 @@ impl<'a, 'b, DB: Backend<BindCollector = RawBytesBindCollector<DB>>> Output<'a, 
 }
 impl<'a, 'b, DB> fmt::Debug for Output<'a, 'b, DB>
 where
-    <<DB as HasBindCollector<'a>>::BindCollector as BindCollector<'a, DB>>::Buffer: fmt::Debug,
+    <<DB as HasBindCollector<
+        'a,
+    >>::BindCollector as BindCollector<'a, DB>>::Buffer: fmt::Debug,
     DB: Backend,
 {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {

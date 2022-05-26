@@ -8,7 +8,7 @@ pub struct SqliteQueryBuilder {
     sql: String,
 }
 impl SqliteQueryBuilder {
-        pub fn new() -> Self {
+    pub fn new() -> Self {
         loop {}
     }
 }

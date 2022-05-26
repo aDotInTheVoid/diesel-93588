@@ -7,10 +7,7 @@ use std::fmt::{self, Display};
 #[non_exhaustive]
 pub enum Error {
     InvalidCString(NulError),
-    DatabaseError(
-        DatabaseErrorKind,
-        Box<dyn DatabaseErrorInformation + Send + Sync>,
-    ),
+    DatabaseError(DatabaseErrorKind, Box<dyn DatabaseErrorInformation + Send + Sync>),
     NotFound,
     QueryBuilderError(Box<dyn StdError + Send + Sync>),
     DeserializationError(Box<dyn StdError + Send + Sync>),

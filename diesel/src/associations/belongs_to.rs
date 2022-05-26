@@ -46,12 +46,19 @@ impl<'a, Parent, Child> BelongingToDsl<&'a [Parent]> for Child
 where
     &'a Parent: Identifiable,
     Child: HasTable + BelongsTo<Parent>,
-    Vec<Id<&'a Parent>>: AsInExpression<<Child::ForeignKeyColumn as Expression>::SqlType>,
-    <Child as HasTable>::Table: FilterDsl<EqAny<Child::ForeignKeyColumn, Vec<Id<&'a Parent>>>>,
+    Vec<
+        Id<&'a Parent>,
+    >: AsInExpression<<Child::ForeignKeyColumn as Expression>::SqlType>,
+    <Child as HasTable>::Table: FilterDsl<
+        EqAny<Child::ForeignKeyColumn, Vec<Id<&'a Parent>>>,
+    >,
     Child::ForeignKeyColumn: ExpressionMethods,
     <Child::ForeignKeyColumn as Expression>::SqlType: SqlType,
 {
-    type Output = Filter<Child::Table, EqAny<Child::ForeignKeyColumn, Vec<Id<&'a Parent>>>>;
+    type Output = Filter<
+        Child::Table,
+        EqAny<Child::ForeignKeyColumn, Vec<Id<&'a Parent>>>,
+    >;
     fn belonging_to(parents: &'a [Parent]) -> Self::Output {
         loop {}
     }

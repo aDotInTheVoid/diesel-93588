@@ -7,13 +7,13 @@ pub struct Sqlite;
 #[allow(missing_debug_implementations)]
 #[derive(Debug, Hash, PartialEq, Eq, Clone, Copy)]
 pub enum SqliteType {
-        Binary,
-        Text,
-        Float,
-        Double,
-        SmallInt,
-        Integer,
-        Long,
+    Binary,
+    Text,
+    Float,
+    Double,
+    SmallInt,
+    Integer,
+    Long,
 }
 impl Backend for Sqlite {
     type QueryBuilder = SqliteQueryBuilder;

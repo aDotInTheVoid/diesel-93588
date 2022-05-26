@@ -29,8 +29,7 @@ impl<QS> Copy for DefaultSelectClause<QS>
 where
     QS: AsQuerySource,
     <QS::QuerySource as QuerySource>::DefaultSelection: Copy,
-{
-}
+{}
 impl<QS: AsQuerySource> DefaultSelectClause<QS> {
     pub(crate) fn new(qs: &QS) -> Self {
         loop {}
@@ -42,8 +41,7 @@ where
     <QS::QuerySource as QuerySource>::DefaultSelection: QueryId,
 {
     type QueryId = <<QS::QuerySource as QuerySource>::DefaultSelection as QueryId>::QueryId;
-    const HAS_STATIC_QUERY_ID: bool =
-        <<QS::QuerySource as QuerySource>::DefaultSelection as QueryId>::HAS_STATIC_QUERY_ID;
+    const HAS_STATIC_QUERY_ID: bool = <<QS::QuerySource as QuerySource>::DefaultSelection as QueryId>::HAS_STATIC_QUERY_ID;
 }
 #[derive(Debug, Clone, Copy, QueryId)]
 pub struct SelectClause<T>(pub T);

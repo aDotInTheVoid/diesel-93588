@@ -24,11 +24,15 @@ pub trait BindCollector<'a, DB: TypeMetadata>: Sized {
 pub struct RawBytesBindCollector<DB: Backend + TypeMetadata> {
     #[cfg(feature = "i-implement-a-third-party-backend-and-opt-into-breaking-changes")]
     pub metadata: Vec<DB::TypeMetadata>,
-    #[cfg(not(feature = "i-implement-a-third-party-backend-and-opt-into-breaking-changes"))]
+    #[cfg(
+        not(feature = "i-implement-a-third-party-backend-and-opt-into-breaking-changes")
+    )]
     pub(crate) metadata: Vec<DB::TypeMetadata>,
     #[cfg(feature = "i-implement-a-third-party-backend-and-opt-into-breaking-changes")]
     pub binds: Vec<Option<Vec<u8>>>,
-    #[cfg(not(feature = "i-implement-a-third-party-backend-and-opt-into-breaking-changes"))]
+    #[cfg(
+        not(feature = "i-implement-a-third-party-backend-and-opt-into-breaking-changes")
+    )]
     pub(crate) binds: Vec<Option<Vec<u8>>>,
 }
 #[allow(clippy::new_without_default)]
@@ -36,7 +40,9 @@ impl<DB: Backend + TypeMetadata> RawBytesBindCollector<DB> {
     pub fn new() -> Self {
         loop {}
     }
-    pub(crate) fn reborrow_buffer<'a: 'b, 'b>(b: &'b mut ByteWrapper<'a>) -> ByteWrapper<'b> {
+    pub(crate) fn reborrow_buffer<'a: 'b, 'b>(
+        b: &'b mut ByteWrapper<'a>,
+    ) -> ByteWrapper<'b> {
         loop {}
     }
 }

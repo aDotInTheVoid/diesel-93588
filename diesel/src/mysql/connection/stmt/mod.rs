@@ -46,7 +46,7 @@ impl Statement {
     fn last_error_type(&self) -> DatabaseErrorKind {
         loop {}
     }
-            pub unsafe fn bind_result(&self, binds: *mut ffi::MYSQL_BIND) -> QueryResult<()> {
+    pub unsafe fn bind_result(&self, binds: *mut ffi::MYSQL_BIND) -> QueryResult<()> {
         loop {}
     }
 }
@@ -57,7 +57,7 @@ impl<'a> MaybeCached<'a, Statement> {
     ) -> QueryResult<StatementUse<'a>> {
         loop {}
     }
-                pub(super) unsafe fn execute(self) -> QueryResult<StatementUse<'a>> {
+    pub(super) unsafe fn execute(self) -> QueryResult<StatementUse<'a>> {
         loop {}
     }
 }
@@ -74,7 +74,7 @@ impl<'a> StatementUse<'a> {
     pub(in crate::mysql::connection) fn affected_rows(&self) -> usize {
         loop {}
     }
-            pub(in crate::mysql::connection) unsafe fn result_size(
+    pub(in crate::mysql::connection) unsafe fn result_size(
         &mut self,
     ) -> QueryResult<usize> {
         loop {}
@@ -93,7 +93,7 @@ impl<'a> StatementUse<'a> {
     ) -> QueryResult<()> {
         loop {}
     }
-            pub(in crate::mysql::connection) unsafe fn bind_result(
+    pub(in crate::mysql::connection) unsafe fn bind_result(
         &self,
         binds: *mut ffi::MYSQL_BIND,
     ) -> QueryResult<()> {

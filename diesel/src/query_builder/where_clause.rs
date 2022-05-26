@@ -99,12 +99,11 @@ impl<QS, Expr> ValidWhereClause<QS> for WhereClause<Expr>
 where
     Expr: AppearsOnTable<QS::QuerySource>,
     QS: AsQuerySource,
-{
-}
-impl<Expr> ValidWhereClause<NoFromClause> for WhereClause<Expr> where
-    Expr: AppearsOnTable<NoFromClause>
-{
-}
+{}
+impl<Expr> ValidWhereClause<NoFromClause> for WhereClause<Expr>
+where
+    Expr: AppearsOnTable<NoFromClause>,
+{}
 #[allow(missing_debug_implementations)]
 pub enum BoxedWhereClause<'a, DB> {
     Where(Box<dyn QueryFragment<DB> + Send + 'a>),

@@ -9,7 +9,7 @@ pub struct MysqlQueryBuilder {
     sql: String,
 }
 impl MysqlQueryBuilder {
-        pub fn new() -> Self {
+    pub fn new() -> Self {
         loop {}
     }
 }

@@ -26,14 +26,12 @@ impl<T, ST, QS> SelectableExpression<QS> for Coerce<T, ST>
 where
     T: SelectableExpression<QS>,
     Self: Expression,
-{
-}
+{}
 impl<T, ST, QS> AppearsOnTable<QS> for Coerce<T, ST>
 where
     T: AppearsOnTable<QS>,
     Self: Expression,
-{
-}
+{}
 impl<T, ST, DB> QueryFragment<DB> for Coerce<T, ST>
 where
     T: QueryFragment<DB>,

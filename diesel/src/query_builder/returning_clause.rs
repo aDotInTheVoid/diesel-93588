@@ -27,9 +27,11 @@ where
         loop {}
     }
 }
-impl<Expr, DB>
-    QueryFragment<DB, crate::backend::sql_dialect::returning_clause::PgLikeReturningClause>
-    for ReturningClause<Expr>
+impl<
+    Expr,
+    DB,
+> QueryFragment<DB, crate::backend::sql_dialect::returning_clause::PgLikeReturningClause>
+for ReturningClause<Expr>
 where
     DB: Backend<
         ReturningClause = crate::backend::sql_dialect::returning_clause::PgLikeReturningClause,

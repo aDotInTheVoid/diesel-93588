@@ -1,10 +1,12 @@
 #[cfg_attr(
-    not(any(
-        feature = "postgres_backend",
-        feature = "mysql_backend",
-        feature = "sqlite",
-        feature = "i-implement-a-third-party-backend-and-opt-into-breaking-changes"
-    )),
+    not(
+        any(
+            feature = "postgres_backend",
+            feature = "mysql_backend",
+            feature = "sqlite",
+            feature = "i-implement-a-third-party-backend-and-opt-into-breaking-changes"
+        )
+    ),
     allow(unused_imports)
 )]
 #[doc(inline)]
@@ -173,26 +175,43 @@ mod private {
     use super::TypeMetadata;
     #[cfg_attr(
         doc_cfg,
-        doc(cfg(feature = "i-implement-a-third-party-backend-and-opt-into-breaking-changes"))
+        doc(
+            cfg(
+                feature = "i-implement-a-third-party-backend-and-opt-into-breaking-changes"
+            )
+        )
     )]
     pub trait HasRawValue<'a> {
         type RawValue;
     }
     #[cfg_attr(
         doc_cfg,
-        doc(cfg(feature = "i-implement-a-third-party-backend-and-opt-into-breaking-changes"))
+        doc(
+            cfg(
+                feature = "i-implement-a-third-party-backend-and-opt-into-breaking-changes"
+            )
+        )
     )]
     pub trait DieselReserveSpecialization {}
     #[cfg_attr(
         doc_cfg,
-        doc(cfg(feature = "i-implement-a-third-party-backend-and-opt-into-breaking-changes"))
+        doc(
+            cfg(
+                feature = "i-implement-a-third-party-backend-and-opt-into-breaking-changes"
+            )
+        )
     )]
     pub trait HasBindCollector<'a>: TypeMetadata + Sized {
-        type BindCollector: crate::query_builder::bind_collector::BindCollector<'a, Self> + 'a;
+        type BindCollector: crate::query_builder::bind_collector::BindCollector<'a, Self>
+            + 'a;
     }
     #[cfg_attr(
         doc_cfg,
-        doc(cfg(feature = "i-implement-a-third-party-backend-and-opt-into-breaking-changes"))
+        doc(
+            cfg(
+                feature = "i-implement-a-third-party-backend-and-opt-into-breaking-changes"
+            )
+        )
     )]
     pub trait TrustedBackend {}
 }

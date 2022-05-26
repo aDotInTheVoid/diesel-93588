@@ -10,7 +10,10 @@ impl SqlOrd for sql_types::Date {}
 impl SqlOrd for sql_types::Interval {}
 impl SqlOrd for sql_types::Time {}
 impl SqlOrd for sql_types::Timestamp {}
-impl<T> SqlOrd for sql_types::Nullable<T> where T: SqlOrd + SqlType<IsNull = is_nullable::NotNull> {}
+impl<T> SqlOrd for sql_types::Nullable<T>
+where
+    T: SqlOrd + SqlType<IsNull = is_nullable::NotNull>,
+{}
 #[cfg(feature = "postgres")]
 impl SqlOrd for sql_types::Timestamptz {}
 #[cfg(feature = "postgres")]

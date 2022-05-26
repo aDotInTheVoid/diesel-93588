@@ -3,8 +3,12 @@ use super::{AliasSource, AliasedField};
 use crate::backend::Backend;
 use crate::expression::{Expression, SelectableExpression, ValidGrouping};
 use crate::helper_types::AliasedFields;
-use crate::query_builder::{AsQuery, AstPass, FromClause, QueryFragment, QueryId, SelectStatement};
-use crate::query_source::{AppearsInFromClause, Column, Never, QuerySource, Table, TableNotEqual};
+use crate::query_builder::{
+    AsQuery, AstPass, FromClause, QueryFragment, QueryId, SelectStatement,
+};
+use crate::query_source::{
+    AppearsInFromClause, Column, Never, QuerySource, Table, TableNotEqual,
+};
 use crate::result::QueryResult;
 use std::marker::PhantomData;
 #[derive(Debug, Clone, Copy, Default)]
@@ -46,12 +50,14 @@ where
     S: AliasSource,
     S::Target: QuerySource,
     <S::Target as QuerySource>::DefaultSelection: FieldAliasMapper<S>,
-    <<S::Target as QuerySource>::DefaultSelection as FieldAliasMapper<S>>::Out:
-        SelectableExpression<Self>,
+    <<S::Target as QuerySource>::DefaultSelection as FieldAliasMapper<
+        S,
+    >>::Out: SelectableExpression<Self>,
 {
     type FromClause = Self;
-    type DefaultSelection =
-        <<S::Target as QuerySource>::DefaultSelection as FieldAliasMapper<S>>::Out;
+    type DefaultSelection = <<S::Target as QuerySource>::DefaultSelection as FieldAliasMapper<
+        S,
+    >>::Out;
     fn from_clause(&self) -> Self::FromClause {
         loop {}
     }

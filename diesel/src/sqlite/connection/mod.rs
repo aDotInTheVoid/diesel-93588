@@ -51,7 +51,7 @@ impl CommitErrorProcessor for SqliteConnection {
 impl Connection for SqliteConnection {
     type Backend = Sqlite;
     type TransactionManager = AnsiTransactionManager;
-                            fn establish(database_url: &str) -> ConnectionResult<Self> {
+    fn establish(database_url: &str) -> ConnectionResult<Self> {
         loop {}
     }
     fn load<'conn, 'query, T>(
@@ -87,14 +87,14 @@ impl crate::r2d2::R2D2Connection for crate::sqlite::SqliteConnection {
     }
 }
 impl SqliteConnection {
-                                                                                        pub fn immediate_transaction<T, E, F>(&mut self, f: F) -> Result<T, E>
+    pub fn immediate_transaction<T, E, F>(&mut self, f: F) -> Result<T, E>
     where
         F: FnOnce(&mut Self) -> Result<T, E>,
         E: From<Error>,
     {
         loop {}
     }
-                                                                                        pub fn exclusive_transaction<T, E, F>(&mut self, f: F) -> Result<T, E>
+    pub fn exclusive_transaction<T, E, F>(&mut self, f: F) -> Result<T, E>
     where
         F: FnOnce(&mut Self) -> Result<T, E>,
         E: From<Error>,
@@ -160,7 +160,7 @@ impl SqliteConnection {
     {
         loop {}
     }
-                                                                                                                                                pub fn register_collation<F>(
+    pub fn register_collation<F>(
         &mut self,
         collation_name: &str,
         collation: F,

@@ -20,11 +20,11 @@ mod uuid;
 pub mod sql_types {
     use crate::query_builder::QueryId;
     use crate::sql_types::SqlType;
-                                                            #[cfg(feature = "postgres_backend")]
+    #[cfg(feature = "postgres_backend")]
     #[derive(Debug, Clone, Copy, Default, QueryId, SqlType)]
     #[diesel(postgres_type(oid = 26, array_oid = 1018))]
     pub struct Oid;
-                                                                                #[cfg_attr(
+    #[cfg_attr(
         feature = "chrono",
         doc = " [`chrono::NaiveDateTime`]: chrono::naive::NaiveDateTime"
     )]
@@ -41,10 +41,10 @@ pub mod sql_types {
     #[derive(Debug, Clone, Copy, Default, QueryId, SqlType)]
     #[diesel(postgres_type(oid = 1184, array_oid = 1185))]
     pub struct Timestamptz;
-                                                                                #[derive(Debug, Clone, Copy, Default, QueryId, SqlType)]
+    #[derive(Debug, Clone, Copy, Default, QueryId, SqlType)]
     #[cfg(feature = "postgres_backend")]
     pub struct Array<ST: 'static>(ST);
-                                                                    #[derive(Debug, Clone, Copy, Default, QueryId, SqlType)]
+    #[derive(Debug, Clone, Copy, Default, QueryId, SqlType)]
     #[cfg(feature = "postgres_backend")]
     pub struct Range<ST: 'static>(ST);
     #[doc(hidden)]
@@ -59,25 +59,25 @@ pub mod sql_types {
     pub type Tsrange = Range<crate::sql_types::Timestamp>;
     #[doc(hidden)]
     pub type Tstzrange = Range<crate::sql_types::Timestamptz>;
-                                                                                                                                                            #[cfg(feature = "postgres_backend")]
+    #[cfg(feature = "postgres_backend")]
     #[derive(Debug, Clone, Copy, Default, QueryId, SqlType)]
     #[diesel(postgres_type(oid = 2249, array_oid = 2287))]
     pub struct Record<ST: 'static>(ST);
-        #[cfg(feature = "postgres_backend")]
+    #[cfg(feature = "postgres_backend")]
     pub type SmallSerial = crate::sql_types::SmallInt;
-        #[cfg(feature = "postgres_backend")]
+    #[cfg(feature = "postgres_backend")]
     pub type Serial = crate::sql_types::Integer;
-        #[cfg(feature = "postgres_backend")]
+    #[cfg(feature = "postgres_backend")]
     pub type BigSerial = crate::sql_types::BigInt;
-                                                            #[cfg(feature = "postgres_backend")]
+    #[cfg(feature = "postgres_backend")]
     #[derive(Debug, Clone, Copy, Default, QueryId, SqlType)]
     #[diesel(postgres_type(oid = 2950, array_oid = 2951))]
     pub struct Uuid;
-        #[doc(hidden)]
+    #[doc(hidden)]
     pub type Bytea = crate::sql_types::Binary;
     #[doc(hidden)]
     pub type Bpchar = crate::sql_types::VarChar;
-                                                                                                                                    #[cfg_attr(
+    #[cfg_attr(
         feature = "serde_json",
         doc = "[`serde_json::Value`]: serde_json::value::Value"
     )]
@@ -85,35 +85,35 @@ pub mod sql_types {
         not(feature = "serde_json"),
         doc = "[`serde_json::Value`]: https://docs.rs/serde_json/1.0.64/serde_json/value/enum.Value.html"
     )]
-                                                                                                                                                                        #[cfg(feature = "postgres_backend")]
+    #[cfg(feature = "postgres_backend")]
     #[derive(Debug, Clone, Copy, Default, QueryId, SqlType)]
     #[diesel(postgres_type(oid = 3802, array_oid = 3807))]
     pub struct Jsonb;
-                                                                                                                                                                                    #[cfg(feature = "postgres_backend")]
+    #[cfg(feature = "postgres_backend")]
     #[derive(Debug, Clone, Copy, Default, QueryId, SqlType)]
     #[diesel(postgres_type(oid = 790, array_oid = 791))]
     pub struct Money;
-                                                                                                                                                                    #[cfg(feature = "postgres_backend")]
+    #[cfg(feature = "postgres_backend")]
     #[derive(Debug, Clone, Copy, Default, QueryId, SqlType)]
     #[diesel(postgres_type(oid = 829, array_oid = 1040))]
     pub struct MacAddr;
     #[doc(hidden)]
-        pub type Macaddr = MacAddr;
-                                                    #[cfg_attr(feature = "ipnetwork", doc = " [IpNetwork]: ipnetwork::IpNetwork")]
+    pub type Macaddr = MacAddr;
+    #[cfg_attr(feature = "ipnetwork", doc = " [IpNetwork]: ipnetwork::IpNetwork")]
     #[cfg_attr(
         not(feature = "ipnetwork"),
         doc = " [IpNetwork]: https://docs.rs/ipnetwork/*/ipnetwork/enum.IpNetwork.html"
     )]
-                                                                                                                                                    #[cfg(feature = "postgres_backend")]
+    #[cfg(feature = "postgres_backend")]
     #[derive(Debug, Clone, Copy, Default, QueryId, SqlType)]
     #[diesel(postgres_type(oid = 869, array_oid = 1041))]
     pub struct Inet;
-                                                    #[cfg_attr(feature = "ipnetwork", doc = " [IpNetwork]: ipnetwork::IpNetwork")]
+    #[cfg_attr(feature = "ipnetwork", doc = " [IpNetwork]: ipnetwork::IpNetwork")]
     #[cfg_attr(
         not(feature = "ipnetwork"),
         doc = " [IpNetwork]: https://docs.rs/ipnetwork/*/ipnetwork/enum.IpNetwork.html"
     )]
-                                                                                                                                                #[cfg(feature = "postgres_backend")]
+    #[cfg(feature = "postgres_backend")]
     #[derive(Debug, Clone, Copy, Default, QueryId, SqlType)]
     #[diesel(postgres_type(oid = 650, array_oid = 651))]
     pub struct Cidr;

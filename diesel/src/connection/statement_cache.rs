@@ -24,11 +24,7 @@ pub enum PrepareForCache {
     Yes,
     No,
 }
-#[allow(
-    clippy::len_without_is_empty,
-    clippy::new_without_default,
-    unreachable_pub
-)]
+#[allow(clippy::len_without_is_empty, clippy::new_without_default, unreachable_pub)]
 impl<DB, Statement> StatementCache<DB, Statement>
 where
     DB: Backend,
@@ -41,14 +37,20 @@ where
         loop {}
     }
     #[allow(unreachable_pub)]
-    #[cfg(any(
-        feature = "i-implement-a-third-party-backend-and-opt-into-breaking-changes",
-        feature = "postgres",
-        all(feature = "sqlite", test)
-    ))]
+    #[cfg(
+        any(
+            feature = "i-implement-a-third-party-backend-and-opt-into-breaking-changes",
+            feature = "postgres",
+            all(feature = "sqlite", test)
+        )
+    )]
     #[cfg_attr(
         doc_cfg,
-        doc(cfg(feature = "i-implement-a-third-party-backend-and-opt-into-breaking-changes"))
+        doc(
+            cfg(
+                feature = "i-implement-a-third-party-backend-and-opt-into-breaking-changes"
+            )
+        )
     )]
     pub fn len(&self) -> usize {
         loop {}
@@ -97,10 +99,7 @@ impl<'a, T> DerefMut for MaybeCached<'a, T> {
 )]
 pub enum StatementCacheKey<DB: Backend> {
     Type(TypeId),
-    Sql {
-        sql: String,
-        bind_types: Vec<DB::TypeMetadata>,
-    },
+    Sql { sql: String, bind_types: Vec<DB::TypeMetadata> },
 }
 impl<DB> StatementCacheKey<DB>
 where
@@ -120,10 +119,17 @@ where
         loop {}
     }
     #[allow(unreachable_pub)]
-    pub fn sql<T: QueryFragment<DB>>(&self, source: &T, backend: &DB) -> QueryResult<Cow<'_, str>> {
+    pub fn sql<T: QueryFragment<DB>>(
+        &self,
+        source: &T,
+        backend: &DB,
+    ) -> QueryResult<Cow<'_, str>> {
         loop {}
     }
-    fn construct_sql<T: QueryFragment<DB>>(source: &T, backend: &DB) -> QueryResult<String> {
+    fn construct_sql<T: QueryFragment<DB>>(
+        source: &T,
+        backend: &DB,
+    ) -> QueryResult<String> {
         loop {}
     }
 }

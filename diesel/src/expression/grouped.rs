@@ -17,4 +17,4 @@ where
         loop {}
     }
 }
-impl_selectable_expression!(Grouped<T>);
+impl_selectable_expression!(Grouped < T >);

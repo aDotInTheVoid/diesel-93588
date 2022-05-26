@@ -2,52 +2,52 @@ use std::ops::Mul;
 use crate::data_types::PgInterval;
 #[cfg(feature = "postgres_backend")]
 pub trait IntervalDsl: Sized + From<i32> + Mul<Self, Output = Self> {
-        fn microseconds(self) -> PgInterval;
-        fn days(self) -> PgInterval;
-        fn months(self) -> PgInterval;
-        fn milliseconds(self) -> PgInterval {
+    fn microseconds(self) -> PgInterval;
+    fn days(self) -> PgInterval;
+    fn months(self) -> PgInterval;
+    fn milliseconds(self) -> PgInterval {
         (self * 1000.into()).microseconds()
     }
-        fn seconds(self) -> PgInterval {
+    fn seconds(self) -> PgInterval {
         (self * 1000.into()).milliseconds()
     }
-        fn minutes(self) -> PgInterval {
+    fn minutes(self) -> PgInterval {
         (self * 60.into()).seconds()
     }
-        fn hours(self) -> PgInterval {
+    fn hours(self) -> PgInterval {
         (self * 60.into()).minutes()
     }
-                        fn weeks(self) -> PgInterval {
+    fn weeks(self) -> PgInterval {
         (self * 7.into()).days()
     }
-                                                fn years(self) -> PgInterval {
+    fn years(self) -> PgInterval {
         (self * 12.into()).months()
     }
-        fn microsecond(self) -> PgInterval {
+    fn microsecond(self) -> PgInterval {
         self.microseconds()
     }
-        fn millisecond(self) -> PgInterval {
+    fn millisecond(self) -> PgInterval {
         self.milliseconds()
     }
-        fn second(self) -> PgInterval {
+    fn second(self) -> PgInterval {
         self.seconds()
     }
-        fn minute(self) -> PgInterval {
+    fn minute(self) -> PgInterval {
         self.minutes()
     }
-        fn hour(self) -> PgInterval {
+    fn hour(self) -> PgInterval {
         self.hours()
     }
-        fn day(self) -> PgInterval {
+    fn day(self) -> PgInterval {
         self.days()
     }
-        fn week(self) -> PgInterval {
+    fn week(self) -> PgInterval {
         self.weeks()
     }
-        fn month(self) -> PgInterval {
+    fn month(self) -> PgInterval {
         self.months()
     }
-        fn year(self) -> PgInterval {
+    fn year(self) -> PgInterval {
         self.years()
     }
 }

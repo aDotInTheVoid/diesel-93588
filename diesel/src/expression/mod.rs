@@ -65,9 +65,15 @@ pub mod expression_types {
     pub struct NotSelectable;
     impl TypedExpressionType for Untyped {}
     impl TypedExpressionType for NotSelectable {}
-    impl<ST> TypedExpressionType for ST where ST: SingleValue {}
+    impl<ST> TypedExpressionType for ST
+    where
+        ST: SingleValue,
+    {}
     impl<DB: Backend> QueryMetadata<Untyped> for DB {
-        fn row_metadata(_: &mut DB::MetadataLookup, row: &mut Vec<Option<DB::TypeMetadata>>) {
+        fn row_metadata(
+            _: &mut DB::MetadataLookup,
+            row: &mut Vec<Option<DB::TypeMetadata>>,
+        ) {
             loop {}
         }
     }
@@ -79,14 +85,20 @@ impl<'a, T: Expression + ?Sized> Expression for &'a T {
     type SqlType = T::SqlType;
 }
 pub trait QueryMetadata<T>: Backend {
-    fn row_metadata(lookup: &mut Self::MetadataLookup, out: &mut Vec<Option<Self::TypeMetadata>>);
+    fn row_metadata(
+        lookup: &mut Self::MetadataLookup,
+        out: &mut Vec<Option<Self::TypeMetadata>>,
+    );
 }
 impl<T, DB> QueryMetadata<T> for DB
 where
     DB: Backend + HasSqlType<T>,
     T: SingleValue,
 {
-    fn row_metadata(lookup: &mut Self::MetadataLookup, out: &mut Vec<Option<Self::TypeMetadata>>) {
+    fn row_metadata(
+        lookup: &mut Self::MetadataLookup,
+        out: &mut Vec<Option<Self::TypeMetadata>>,
+    ) {
         loop {}
     }
 }
@@ -132,27 +144,23 @@ impl<T: ?Sized, QS> AppearsOnTable<QS> for Box<T>
 where
     T: AppearsOnTable<QS>,
     Box<T>: Expression,
-{
-}
+{}
 impl<'a, T: ?Sized, QS> AppearsOnTable<QS> for &'a T
 where
     T: AppearsOnTable<QS>,
     &'a T: Expression,
-{
-}
+{}
 pub trait SelectableExpression<QS: ?Sized>: AppearsOnTable<QS> {}
 impl<T: ?Sized, QS> SelectableExpression<QS> for Box<T>
 where
     T: SelectableExpression<QS>,
     Box<T>: AppearsOnTable<QS>,
-{
-}
+{}
 impl<'a, T: ?Sized, QS> SelectableExpression<QS> for &'a T
 where
     T: SelectableExpression<QS>,
     &'a T: AppearsOnTable<QS>,
-{
-}
+{}
 pub trait Selectable<DB: Backend> {
     type SelectExpression: Expression;
     fn construct_selection() -> Self::SelectExpression;
@@ -235,8 +243,9 @@ pub mod is_aggregate {
 #[cfg(feature = "unstable")]
 pub trait NonAggregate = ValidGrouping<()>
 where
-    <Self as ValidGrouping<()>>::IsAggregate:
-        MixedAggregates<is_aggregate::No, Output = is_aggregate::No>;
+    <Self as ValidGrouping<
+        (),
+    >>::IsAggregate: MixedAggregates<is_aggregate::No, Output = is_aggregate::No>;
 #[cfg(not(feature = "unstable"))]
 pub trait NonAggregate: ValidGrouping<()> {}
 #[cfg(not(feature = "unstable"))]
@@ -244,8 +253,7 @@ impl<T> NonAggregate for T
 where
     T: ValidGrouping<()>,
     T::IsAggregate: MixedAggregates<is_aggregate::No, Output = is_aggregate::No>,
-{
-}
+{}
 use crate::query_builder::{QueryFragment, QueryId};
 pub trait BoxableExpression<QS, DB, GB = (), IsAggregate = is_aggregate::No>
 where
@@ -254,8 +262,7 @@ where
     Self: SelectableExpression<QS>,
     Self: QueryFragment<DB>,
     Self: Send,
-{
-}
+{}
 impl<QS, T, DB, GB, IsAggregate> BoxableExpression<QS, DB, GB, IsAggregate> for T
 where
     DB: Backend,
@@ -265,17 +272,14 @@ where
     T: QueryFragment<DB>,
     T: Send,
     T::IsAggregate: MixedAggregates<IsAggregate, Output = IsAggregate>,
-{
-}
+{}
 impl<'a, QS, ST, DB, GB, IsAggregate> QueryId
-    for dyn BoxableExpression<QS, DB, GB, IsAggregate, SqlType = ST> + 'a
-{
+for dyn BoxableExpression<QS, DB, GB, IsAggregate, SqlType = ST> + 'a {
     type QueryId = ();
     const HAS_STATIC_QUERY_ID: bool = false;
 }
 impl<'a, QS, ST, DB, GB, IsAggregate> ValidGrouping<GB>
-    for dyn BoxableExpression<QS, DB, GB, IsAggregate, SqlType = ST> + 'a
-{
+for dyn BoxableExpression<QS, DB, GB, IsAggregate, SqlType = ST> + 'a {
     type IsAggregate = IsAggregate;
 }
 pub trait AsExpressionList<ST> {

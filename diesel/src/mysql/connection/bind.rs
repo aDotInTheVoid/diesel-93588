@@ -134,7 +134,7 @@ impl BindData {
     unsafe fn mysql_bind(&mut self) -> ffi::MYSQL_BIND {
         loop {}
     }
-                            unsafe fn bind_for_truncated_data(&mut self) -> Option<(ffi::MYSQL_BIND, usize)> {
+    unsafe fn bind_for_truncated_data(&mut self) -> Option<(ffi::MYSQL_BIND, usize)> {
         loop {}
     }
     fn did_numeric_overflow_occur(&self) -> QueryResult<()> {

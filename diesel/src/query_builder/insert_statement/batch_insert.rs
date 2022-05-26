@@ -13,14 +13,18 @@ pub struct BatchInsert<V, Tab, QId, const STABLE_QUERY_ID: bool> {
     pub values: V,
     _marker: PhantomData<(QId, Tab)>,
 }
-impl<V, Tab, QId, const STABLE_QUERY_ID: bool> BatchInsert<V, Tab, QId, STABLE_QUERY_ID> {
+impl<
+    V,
+    Tab,
+    QId,
+    const STABLE_QUERY_ID: bool,
+> BatchInsert<V, Tab, QId, STABLE_QUERY_ID> {
     pub(crate) fn new(values: V) -> Self {
         loop {}
     }
 }
 impl<V, QId: 'static, Tab: 'static, const STABLE_QUERY_ID: bool> QueryId
-    for BatchInsert<V, Tab, QId, STABLE_QUERY_ID>
-{
+for BatchInsert<V, Tab, QId, STABLE_QUERY_ID> {
     type QueryId = QId;
     const HAS_STATIC_QUERY_ID: bool = STABLE_QUERY_ID;
 }
@@ -82,7 +86,7 @@ where
     }
 }
 impl<Tab, DB, V, QId, const HAS_STATIC_QUERY_ID: bool> QueryFragment<DB>
-    for BatchInsert<V, Tab, QId, HAS_STATIC_QUERY_ID>
+for BatchInsert<V, Tab, QId, HAS_STATIC_QUERY_ID>
 where
     DB: Backend,
     Self: QueryFragment<DB, DB::BatchInsertSupport>,
@@ -91,9 +95,14 @@ where
         loop {}
     }
 }
-impl<Tab, DB, V, QId, const HAS_STATIC_QUERY_ID: bool>
-    QueryFragment<DB, sql_dialect::batch_insert_support::PostgresLikeBatchInsertSupport>
-    for BatchInsert<Vec<ValuesClause<V, Tab>>, Tab, QId, HAS_STATIC_QUERY_ID>
+impl<
+    Tab,
+    DB,
+    V,
+    QId,
+    const HAS_STATIC_QUERY_ID: bool,
+> QueryFragment<DB, sql_dialect::batch_insert_support::PostgresLikeBatchInsertSupport>
+for BatchInsert<Vec<ValuesClause<V, Tab>>, Tab, QId, HAS_STATIC_QUERY_ID>
 where
     DB: Backend
         + SqlDialect<

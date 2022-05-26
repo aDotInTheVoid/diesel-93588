@@ -11,9 +11,12 @@ pub trait RowIndex<I> {
     fn idx(&self, idx: I) -> Option<usize>;
 }
 pub type FieldRet<'a, R, DB> = <R as RowGatWorkaround<'a, DB>>::Field;
-pub trait Row<'a, DB: Backend>:
-    RowIndex<usize> + for<'b> RowIndex<&'b str> + for<'b> RowGatWorkaround<'b, DB> + Sized
-{
+pub trait Row<
+    'a,
+    DB: Backend,
+>: RowIndex<
+        usize,
+    > + for<'b> RowIndex<&'b str> + for<'b> RowGatWorkaround<'b, DB> + Sized {
     #[cfg_attr(
         not(feature = "i-implement-a-third-party-backend-and-opt-into-breaking-changes"),
         doc(hidden)
@@ -105,7 +108,10 @@ mod private {
         fn field_count(&self) -> usize {
             loop {}
         }
-        fn get<'c, I>(&'c self, idx: I) -> Option<<Self as RowGatWorkaround<'c, DB>>::Field>
+        fn get<'c, I>(
+            &'c self,
+            idx: I,
+        ) -> Option<<Self as RowGatWorkaround<'c, DB>>::Field>
         where
             'a: 'c,
             Self: RowIndex<I>,

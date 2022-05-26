@@ -55,11 +55,11 @@ impl RawConnection {
 }
 #[derive(Debug, PartialEq, Eq, Clone, Copy)]
 pub(super) enum PgTransactionStatus {
-        Idle,
-        Active,
-        InTransaction,
-        InError,
-        Unknown,
+    Idle,
+    Active,
+    InTransaction,
+    InError,
+    Unknown,
 }
 impl From<PGTransactionStatusType> for PgTransactionStatus {
     fn from(trans_status_type: PGTransactionStatusType) -> Self {

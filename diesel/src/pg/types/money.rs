@@ -21,23 +21,23 @@ impl ToSql<Money, Pg> for PgMoney {
 }
 impl Add for PgMoney {
     type Output = Self;
-                fn add(self, rhs: PgMoney) -> Self::Output {
+    fn add(self, rhs: PgMoney) -> Self::Output {
         loop {}
     }
 }
 impl AddAssign for PgMoney {
-                fn add_assign(&mut self, rhs: PgMoney) {
+    fn add_assign(&mut self, rhs: PgMoney) {
         loop {}
     }
 }
 impl Sub for PgMoney {
     type Output = Self;
-                fn sub(self, rhs: PgMoney) -> Self::Output {
+    fn sub(self, rhs: PgMoney) -> Self::Output {
         loop {}
     }
 }
 impl SubAssign for PgMoney {
-                fn sub_assign(&mut self, rhs: PgMoney) {
+    fn sub_assign(&mut self, rhs: PgMoney) {
         loop {}
     }
 }

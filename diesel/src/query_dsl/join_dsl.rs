@@ -25,7 +25,11 @@ pub trait JoinWithImplicitOnClause<Rhs, Kind> {
 impl<Lhs, Rhs, Kind> JoinWithImplicitOnClause<Rhs, Kind> for Lhs
 where
     Lhs: JoinTo<Rhs>,
-    Lhs: InternalJoinDsl<<Lhs as JoinTo<Rhs>>::FromClause, Kind, <Lhs as JoinTo<Rhs>>::OnClause>,
+    Lhs: InternalJoinDsl<
+        <Lhs as JoinTo<Rhs>>::FromClause,
+        Kind,
+        <Lhs as JoinTo<Rhs>>::OnClause,
+    >,
 {
     type Output = <Lhs as InternalJoinDsl<Lhs::FromClause, Kind, Lhs::OnClause>>::Output;
     fn join_with_implicit_on_clause(self, rhs: Rhs, kind: Kind) -> Self::Output {

@@ -2,10 +2,12 @@
 pub mod commit_error_processor;
 #[cfg(not(feature = "i-implement-a-third-party-backend-and-opt-into-breaking-changes"))]
 pub(crate) mod commit_error_processor;
-#[cfg(all(
-    not(feature = "i-implement-a-third-party-backend-and-opt-into-breaking-changes"),
-    any(feature = "sqlite", feature = "postgres", feature = "mysql")
-))]
+#[cfg(
+    all(
+        not(feature = "i-implement-a-third-party-backend-and-opt-into-breaking-changes"),
+        any(feature = "sqlite", feature = "postgres", feature = "mysql")
+    )
+)]
 pub(crate) mod statement_cache;
 #[cfg(feature = "i-implement-a-third-party-backend-and-opt-into-breaking-changes")]
 pub mod statement_cache;
@@ -15,8 +17,8 @@ mod transaction_manager;
 )]
 pub(crate) use self::private::ConnectionGatWorkaround;
 pub use self::transaction_manager::{
-    AnsiTransactionManager, TransactionDepthChange, TransactionManager, TransactionManagerStatus,
-    ValidTransactionManagerStatus,
+    AnsiTransactionManager, TransactionDepthChange, TransactionManager,
+    TransactionManagerStatus, ValidTransactionManagerStatus,
 };
 use crate::backend::Backend;
 use crate::expression::QueryMetadata;
@@ -26,8 +28,11 @@ use std::fmt::Debug;
 pub trait SimpleConnection {
     fn batch_execute(&mut self, query: &str) -> QueryResult<()>;
 }
-pub type LoadRowIter<'conn, 'query, C, DB> =
-    <C as ConnectionGatWorkaround<'conn, 'query, DB>>::Cursor;
+pub type LoadRowIter<'conn, 'query, C, DB> = <C as ConnectionGatWorkaround<
+    'conn,
+    'query,
+    DB,
+>>::Cursor;
 #[cfg_attr(
     feature = "r2d2",
     doc = "it may be useful to also implement [`R2D2Connection`](crate::r2d2::R2D2Connection)"
@@ -100,10 +105,15 @@ where
         E: Debug,
     {
         let mut user_result = None;
-        let _ = self.transaction::<(), _, _>(|conn| {
-            user_result = f(conn).ok();
-            Err(Error::RollbackTransaction)
-        });
+        let _ = self
+            .transaction::<
+            (),
+            _,
+            _,
+        >(|conn| {
+                user_result = f(conn).ok();
+                Err(Error::RollbackTransaction)
+            });
         user_result.expect("Transaction did not succeed")
     }
     #[diesel_derives::__diesel_public_if(
@@ -127,7 +137,9 @@ where
     )]
     fn transaction_state(
         &mut self,
-    ) -> &mut <Self::TransactionManager as TransactionManager<Self>>::TransactionStateData;
+    ) -> &mut <Self::TransactionManager as TransactionManager<
+        Self,
+    >>::TransactionStateData;
 }
 pub trait BoxableConnection<DB: Backend>: SimpleConnection + std::any::Any {
     #[diesel_derives::__diesel_public_if(
@@ -173,7 +185,11 @@ mod private {
     use crate::QueryResult;
     #[cfg_attr(
         doc_cfg,
-        doc(cfg(feature = "i-implement-a-third-party-backend-and-opt-into-breaking-changes"))
+        doc(
+            cfg(
+                feature = "i-implement-a-third-party-backend-and-opt-into-breaking-changes"
+            )
+        )
     )]
     pub trait ConnectionGatWorkaround<'conn, 'query, DB: Backend> {
         type Cursor: Iterator<Item = QueryResult<Self::Row>>;

@@ -1,7 +1,9 @@
 use super::{BatchInsert, InsertStatement};
 use crate::connection::Connection;
 use crate::insertable::InsertValues;
-use crate::insertable::{CanInsertInSingleQuery, ColumnInsertValue, DefaultableColumnInsertValue};
+use crate::insertable::{
+    CanInsertInSingleQuery, ColumnInsertValue, DefaultableColumnInsertValue,
+};
 use crate::prelude::*;
 use crate::query_builder::{AstPass, QueryId, ValuesClause};
 use crate::query_builder::{DebugQuery, QueryFragment};
@@ -14,11 +16,16 @@ pub trait DebugQueryHelper<ContainsDefaultableValue> {
     fn fmt_display(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result;
 }
 impl<'a, T, V, QId, Op, Ret, const STATIC_QUERY_ID: bool> DebugQueryHelper<Yes>
-    for DebugQuery<
-        'a,
-        InsertStatement<T, BatchInsert<Vec<ValuesClause<V, T>>, T, QId, STATIC_QUERY_ID>, Op, Ret>,
-        Sqlite,
-    >
+for DebugQuery<
+    'a,
+    InsertStatement<
+        T,
+        BatchInsert<Vec<ValuesClause<V, T>>, T, QId, STATIC_QUERY_ID>,
+        Op,
+        Ret,
+    >,
+    Sqlite,
+>
 where
     V: QueryFragment<Sqlite>,
     T: Copy + QuerySource,
@@ -34,7 +41,11 @@ where
     }
 }
 impl<'a, T, V, QId, Op, const STATIC_QUERY_ID: bool> DebugQueryHelper<No>
-    for DebugQuery<'a, InsertStatement<T, BatchInsert<V, T, QId, STATIC_QUERY_ID>, Op>, Sqlite>
+for DebugQuery<
+    'a,
+    InsertStatement<T, BatchInsert<V, T, QId, STATIC_QUERY_ID>, Op>,
+    Sqlite,
+>
 where
     T: Copy + QuerySource,
     Op: Copy,
@@ -52,11 +63,15 @@ where
     }
 }
 impl<'a, T, V, QId, Op, O, const STATIC_QUERY_ID: bool> Display
-    for DebugQuery<
-        'a,
-        InsertStatement<T, BatchInsert<Vec<ValuesClause<V, T>>, T, QId, STATIC_QUERY_ID>, Op>,
-        Sqlite,
-    >
+for DebugQuery<
+    'a,
+    InsertStatement<
+        T,
+        BatchInsert<Vec<ValuesClause<V, T>>, T, QId, STATIC_QUERY_ID>,
+        Op,
+    >,
+    Sqlite,
+>
 where
     T: QuerySource,
     V: ContainsDefaultableValue<Out = O>,
@@ -67,11 +82,15 @@ where
     }
 }
 impl<'a, T, V, QId, Op, O, const STATIC_QUERY_ID: bool> Debug
-    for DebugQuery<
-        'a,
-        InsertStatement<T, BatchInsert<Vec<ValuesClause<V, T>>, T, QId, STATIC_QUERY_ID>, Op>,
-        Sqlite,
-    >
+for DebugQuery<
+    'a,
+    InsertStatement<
+        T,
+        BatchInsert<Vec<ValuesClause<V, T>>, T, QId, STATIC_QUERY_ID>,
+        Op,
+    >,
+    Sqlite,
+>
 where
     T: QuerySource,
     V: ContainsDefaultableValue<Out = O>,
@@ -138,7 +157,7 @@ where
     type Out = T::Out;
 }
 impl<V, T, QId, C, Op, O, const STATIC_QUERY_ID: bool> ExecuteDsl<C, Sqlite>
-    for InsertStatement<T, BatchInsert<Vec<ValuesClause<V, T>>, T, QId, STATIC_QUERY_ID>, Op>
+for InsertStatement<T, BatchInsert<Vec<ValuesClause<V, T>>, T, QId, STATIC_QUERY_ID>, Op>
 where
     T: QuerySource,
     C: Connection<Backend = Sqlite>,
@@ -151,10 +170,10 @@ where
     }
 }
 impl<V, T, QId, C, Op, const STATIC_QUERY_ID: bool> ExecuteDsl<C, Sqlite>
-    for (
-        Yes,
-        InsertStatement<T, BatchInsert<Vec<ValuesClause<V, T>>, T, QId, STATIC_QUERY_ID>, Op>,
-    )
+for (
+    Yes,
+    InsertStatement<T, BatchInsert<Vec<ValuesClause<V, T>>, T, QId, STATIC_QUERY_ID>, Op>,
+)
 where
     C: Connection<Backend = Sqlite>,
     T: Table + Copy + QueryId + 'static,
@@ -172,7 +191,7 @@ pub struct SqliteBatchInsertWrapper<V, T, QId, const STATIC_QUERY_ID: bool>(
     BatchInsert<V, T, QId, STATIC_QUERY_ID>,
 );
 impl<V, Tab, QId, const STATIC_QUERY_ID: bool> QueryFragment<Sqlite>
-    for SqliteBatchInsertWrapper<Vec<ValuesClause<V, Tab>>, Tab, QId, STATIC_QUERY_ID>
+for SqliteBatchInsertWrapper<Vec<ValuesClause<V, Tab>>, Tab, QId, STATIC_QUERY_ID>
 where
     ValuesClause<V, Tab>: QueryFragment<Sqlite>,
     V: QueryFragment<Sqlite>,
@@ -185,7 +204,7 @@ where
 #[repr(transparent)]
 pub struct SqliteCanInsertInSingleQueryHelper<T: ?Sized>(T);
 impl<V, T, QId, const STATIC_QUERY_ID: bool> CanInsertInSingleQuery<Sqlite>
-    for SqliteBatchInsertWrapper<Vec<ValuesClause<V, T>>, T, QId, STATIC_QUERY_ID>
+for SqliteBatchInsertWrapper<Vec<ValuesClause<V, T>>, T, QId, STATIC_QUERY_ID>
 where
     SqliteCanInsertInSingleQueryHelper<V>: CanInsertInSingleQuery<Sqlite>,
 {
@@ -202,26 +221,31 @@ where
     }
 }
 impl<V, T, QId, const STATIC_QUERY_ID: bool> QueryId
-    for SqliteBatchInsertWrapper<V, T, QId, STATIC_QUERY_ID>
+for SqliteBatchInsertWrapper<V, T, QId, STATIC_QUERY_ID>
 where
     BatchInsert<V, T, QId, STATIC_QUERY_ID>: QueryId,
 {
     type QueryId = <BatchInsert<V, T, QId, STATIC_QUERY_ID> as QueryId>::QueryId;
-    const HAS_STATIC_QUERY_ID: bool =
-        <BatchInsert<V, T, QId, STATIC_QUERY_ID> as QueryId>::HAS_STATIC_QUERY_ID;
+    const HAS_STATIC_QUERY_ID: bool = <BatchInsert<
+        V,
+        T,
+        QId,
+        STATIC_QUERY_ID,
+    > as QueryId>::HAS_STATIC_QUERY_ID;
 }
 impl<V, T, QId, C, Op, const STATIC_QUERY_ID: bool> ExecuteDsl<C, Sqlite>
-    for (
-        No,
-        InsertStatement<T, BatchInsert<V, T, QId, STATIC_QUERY_ID>, Op>,
-    )
+for (No, InsertStatement<T, BatchInsert<V, T, QId, STATIC_QUERY_ID>, Op>)
 where
     C: Connection<Backend = Sqlite>,
     T: Table + QueryId + 'static,
     T::FromClause: QueryFragment<Sqlite>,
     Op: QueryFragment<Sqlite> + QueryId,
-    SqliteBatchInsertWrapper<V, T, QId, STATIC_QUERY_ID>:
-        QueryFragment<Sqlite> + QueryId + CanInsertInSingleQuery<Sqlite>,
+    SqliteBatchInsertWrapper<
+        V,
+        T,
+        QId,
+        STATIC_QUERY_ID,
+    >: QueryFragment<Sqlite> + QueryId + CanInsertInSingleQuery<Sqlite>,
 {
     fn execute((No, query): Self, conn: &mut C) -> QueryResult<usize> {
         loop {}

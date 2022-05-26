@@ -89,7 +89,7 @@ impl crate::r2d2::R2D2Connection for PgConnection {
     }
 }
 impl PgConnection {
-                                                                                                pub fn build_transaction(&mut self) -> TransactionBuilder<'_, Self> {
+    pub fn build_transaction(&mut self) -> TransactionBuilder<'_, Self> {
         loop {}
     }
     fn with_prepared_query<'conn, T: QueryFragment<Pg> + QueryId, R>(

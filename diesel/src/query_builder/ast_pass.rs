@@ -21,7 +21,10 @@ where
     DB: Backend,
     'b: 'a,
 {
-    pub(crate) fn to_sql(query_builder: &'a mut DB::QueryBuilder, backend: &'b DB) -> Self {
+    pub(crate) fn to_sql(
+        query_builder: &'a mut DB::QueryBuilder,
+        backend: &'b DB,
+    ) -> Self {
         loop {}
     }
     pub(crate) fn collect_binds(
@@ -31,10 +34,16 @@ where
     ) -> Self {
         loop {}
     }
-    pub(crate) fn is_safe_to_cache_prepared(result: &'a mut bool, backend: &'b DB) -> Self {
+    pub(crate) fn is_safe_to_cache_prepared(
+        result: &'a mut bool,
+        backend: &'b DB,
+    ) -> Self {
         loop {}
     }
-    pub(crate) fn debug_binds(formatter: &'a mut Vec<&'b dyn fmt::Debug>, backend: &'b DB) -> Self {
+    pub(crate) fn debug_binds(
+        formatter: &'a mut Vec<&'b dyn fmt::Debug>,
+        backend: &'b DB,
+    ) -> Self {
         loop {}
     }
     pub(crate) fn is_noop(result: &'a mut bool, backend: &'b DB) -> Self {
@@ -59,7 +68,10 @@ where
     {
         loop {}
     }
-    pub(crate) fn push_bind_param_value_only<T, U>(&mut self, bind: &'b U) -> QueryResult<()>
+    pub(crate) fn push_bind_param_value_only<T, U>(
+        &mut self,
+        bind: &'b U,
+    ) -> QueryResult<()>
     where
         DB: HasSqlType<T>,
         U: ToSql<T, DB>,
@@ -72,7 +84,11 @@ where
     )]
     #[cfg_attr(
         doc_cfg,
-        doc(cfg(feature = "i-implement-a-third-party-backend-and-opt-into-breaking-changes"))
+        doc(
+            cfg(
+                feature = "i-implement-a-third-party-backend-and-opt-into-breaking-changes"
+            )
+        )
     )]
     pub fn backend(&self) -> &DB {
         loop {}

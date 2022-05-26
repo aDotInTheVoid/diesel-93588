@@ -56,13 +56,15 @@ pub trait FromStaticSqlRow<ST, DB: Backend>: Sized {
 }
 #[doc(hidden)]
 pub trait SqlTypeOrSelectable {}
-impl<ST> SqlTypeOrSelectable for ST where ST: SqlType + SingleValue {}
+impl<ST> SqlTypeOrSelectable for ST
+where
+    ST: SqlType + SingleValue,
+{}
 impl<U, DB> SqlTypeOrSelectable for SelectBy<U, DB>
 where
     U: Selectable<DB>,
     DB: Backend,
-{
-}
+{}
 impl<T, ST, DB> FromSqlRow<ST, DB> for T
 where
     T: Queryable<ST, DB>,

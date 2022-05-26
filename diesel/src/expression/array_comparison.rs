@@ -60,10 +60,12 @@ where
     }
 }
 impl<T, U, DB> QueryFragment<DB, sql_dialect::array_comparision::AnsiSqlArrayComparison>
-    for In<T, U>
+for In<T, U>
 where
     DB: Backend
-        + SqlDialect<ArrayComparision = sql_dialect::array_comparision::AnsiSqlArrayComparison>,
+        + SqlDialect<
+            ArrayComparision = sql_dialect::array_comparision::AnsiSqlArrayComparison,
+        >,
     T: QueryFragment<DB>,
     U: QueryFragment<DB> + MaybeEmpty,
 {
@@ -81,10 +83,12 @@ where
     }
 }
 impl<T, U, DB> QueryFragment<DB, sql_dialect::array_comparision::AnsiSqlArrayComparison>
-    for NotIn<T, U>
+for NotIn<T, U>
 where
     DB: Backend
-        + SqlDialect<ArrayComparision = sql_dialect::array_comparision::AnsiSqlArrayComparison>,
+        + SqlDialect<
+            ArrayComparision = sql_dialect::array_comparision::AnsiSqlArrayComparison,
+        >,
     T: QueryFragment<DB>,
     U: QueryFragment<DB> + MaybeEmpty,
 {
@@ -114,7 +118,7 @@ pub trait MaybeEmpty {
     fn is_empty(&self) -> bool;
 }
 impl<ST, F, S, D, W, O, LOf, G, H, LC> AsInExpression<ST>
-    for SelectStatement<F, S, D, W, O, LOf, G, H, LC>
+for SelectStatement<F, S, D, W, O, LOf, G, H, LC>
 where
     ST: SqlType + TypedExpressionType,
     Subselect<Self, ST>: Expression<SqlType = ST>,
@@ -165,16 +169,14 @@ where
     ST: SingleValue,
     I: AsExpression<ST>,
     <I as AsExpression<ST>>::Expression: SelectableExpression<QS>,
-{
-}
+{}
 impl<ST, I, QS> AppearsOnTable<QS> for Many<ST, I>
 where
     Many<ST, I>: Expression,
     I: AsExpression<ST>,
     ST: SingleValue,
     <I as AsExpression<ST>>::Expression: SelectableExpression<QS>,
-{
-}
+{}
 impl<ST, I, DB> QueryFragment<DB> for Many<ST, I>
 where
     Self: QueryFragment<DB, DB::ArrayComparision>,
@@ -185,11 +187,12 @@ where
     }
 }
 impl<ST, I, DB> QueryFragment<DB, sql_dialect::array_comparision::AnsiSqlArrayComparison>
-    for Many<ST, I>
+for Many<ST, I>
 where
-    DB: Backend
-        + HasSqlType<ST>
-        + SqlDialect<ArrayComparision = sql_dialect::array_comparision::AnsiSqlArrayComparison>,
+    DB: Backend + HasSqlType<ST>
+        + SqlDialect<
+            ArrayComparision = sql_dialect::array_comparision::AnsiSqlArrayComparison,
+        >,
     ST: SingleValue,
     I: ToSql<ST, DB>,
 {

@@ -2,7 +2,8 @@ use super::{Alias, AliasSource};
 use crate::backend::Backend;
 use crate::dsl;
 use crate::expression::{
-    is_aggregate, AppearsOnTable, AsExpression, Expression, SelectableExpression, ValidGrouping,
+    is_aggregate, AppearsOnTable, AsExpression, Expression, SelectableExpression,
+    ValidGrouping,
 };
 use crate::expression_methods::{EqAll, ExpressionMethods};
 use crate::query_builder::{AstPass, FromClause, QueryFragment, QueryId, SelectStatement};
@@ -29,8 +30,7 @@ where
     S: AliasSource,
     QS: AppearsInFromClause<Alias<S>, Count = Once>,
     C: Column<Table = S::Target>,
-{
-}
+{}
 impl<S, C, DB> QueryFragment<DB> for AliasedField<S, C>
 where
     S: AliasSource,
@@ -53,8 +53,7 @@ where
     S: AliasSource,
     C: Column<Table = S::Target>,
     Self: AppearsOnTable<Alias<S>>,
-{
-}
+{}
 impl<S, C> ValidGrouping<()> for AliasedField<S, C>
 where
     S: AliasSource,
@@ -69,12 +68,12 @@ where
 {
     type IsAggregate = is_aggregate::Yes;
 }
-impl<From, S, C> SelectableExpression<SelectStatement<FromClause<From>>> for AliasedField<S, C>
+impl<From, S, C> SelectableExpression<SelectStatement<FromClause<From>>>
+for AliasedField<S, C>
 where
     Self: SelectableExpression<From> + AppearsOnTable<SelectStatement<FromClause<From>>>,
     From: QuerySource,
-{
-}
+{}
 impl<S, C, T> EqAll<T> for AliasedField<S, C>
 where
     S: AliasSource,

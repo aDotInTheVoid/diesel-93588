@@ -1,4 +1,6 @@
-use crate::connection::commit_error_processor::{CommitErrorOutcome, CommitErrorProcessor};
+use crate::connection::commit_error_processor::{
+    CommitErrorOutcome, CommitErrorProcessor,
+};
 use crate::connection::Connection;
 use crate::result::{DatabaseErrorKind, Error, QueryResult};
 use std::borrow::Cow;
@@ -21,7 +23,8 @@ pub trait TransactionManager<Conn: Connection> {
                 Ok(value)
             }
             Err(e) => {
-                Self::rollback_transaction(conn).map_err(|e| Error::RollbackError(Box::new(e)))?;
+                Self::rollback_transaction(conn)
+                    .map_err(|e| Error::RollbackError(Box::new(e)))?;
                 Err(e)
             }
         }
@@ -127,7 +130,9 @@ where
 #[cfg(test)]
 mod test {
     mod mock {
-        use crate::connection::commit_error_processor::{CommitErrorOutcome, CommitErrorProcessor};
+        use crate::connection::commit_error_processor::{
+            CommitErrorOutcome, CommitErrorProcessor,
+        };
         use crate::connection::transaction_manager::AnsiTransactionManager;
         use crate::connection::{
             Connection, ConnectionGatWorkaround, SimpleConnection, TransactionManager,
@@ -147,10 +152,11 @@ mod test {
                 loop {}
             }
         }
-        impl<'conn, 'query>
-            ConnectionGatWorkaround<'conn, 'query, <TestConnection as Connection>::Backend>
-            for MockConnection
-        {
+        impl<
+            'conn,
+            'query,
+        > ConnectionGatWorkaround<'conn, 'query, <TestConnection as Connection>::Backend>
+        for MockConnection {
             type Cursor = <TestConnection as ConnectionGatWorkaround<
                 'conn,
                 'query,
@@ -176,7 +182,9 @@ mod test {
             fn load<'conn, 'query, T>(
                 &'conn mut self,
                 _source: T,
-            ) -> QueryResult<<Self as ConnectionGatWorkaround<'conn, 'query, Self::Backend>>::Cursor>
+            ) -> QueryResult<
+                <Self as ConnectionGatWorkaround<'conn, 'query, Self::Backend>>::Cursor,
+            >
             where
                 T: AsQuery,
                 T::Query: QueryFragment<Self::Backend> + QueryId + 'query,
@@ -193,8 +201,9 @@ mod test {
             }
             fn transaction_state(
                 &mut self,
-            ) -> &mut <Self::TransactionManager as TransactionManager<Self>>::TransactionStateData
-            {
+            ) -> &mut <Self::TransactionManager as TransactionManager<
+                Self,
+            >>::TransactionStateData {
                 loop {}
             }
         }

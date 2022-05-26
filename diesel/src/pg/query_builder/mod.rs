@@ -15,7 +15,7 @@ pub struct PgQueryBuilder {
     bind_idx: u32,
 }
 impl PgQueryBuilder {
-        pub fn new() -> Self {
+    pub fn new() -> Self {
         loop {}
     }
 }

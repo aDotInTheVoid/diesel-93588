@@ -27,5 +27,4 @@ impl<T> BoolExpressionMethods for T
 where
     T: Expression,
     T::SqlType: BoolOrNullableBool,
-{
-}
+{}

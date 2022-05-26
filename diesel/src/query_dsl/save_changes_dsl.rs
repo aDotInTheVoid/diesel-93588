@@ -24,11 +24,13 @@ use crate::pg::PgConnection;
 #[cfg(feature = "postgres")]
 impl<'b, Changes, Output> UpdateAndFetchResults<Changes, Output> for PgConnection
 where
-    Changes: Copy + AsChangeset<Target = <Changes as HasTable>::Table> + IntoUpdateTarget,
+    Changes: Copy + AsChangeset<Target = <Changes as HasTable>::Table>
+        + IntoUpdateTarget,
     Update<Changes, Changes>: LoadQuery<'b, PgConnection, Output>,
     <Changes::Table as Table>::AllColumns: ValidGrouping<()>,
-    <<Changes::Table as Table>::AllColumns as ValidGrouping<()>>::IsAggregate:
-        MixedAggregates<is_aggregate::No, Output = is_aggregate::No>,
+    <<Changes::Table as Table>::AllColumns as ValidGrouping<
+        (),
+    >>::IsAggregate: MixedAggregates<is_aggregate::No, Output = is_aggregate::No>,
 {
     fn update_and_fetch(&mut self, changeset: Changes) -> QueryResult<Output> {
         loop {}
@@ -45,8 +47,9 @@ where
     Update<Changes, Changes>: ExecuteDsl<SqliteConnection>,
     Find<Changes::Table, Changes::Id>: LoadQuery<'b, SqliteConnection, Output>,
     <Changes::Table as Table>::AllColumns: ValidGrouping<()>,
-    <<Changes::Table as Table>::AllColumns as ValidGrouping<()>>::IsAggregate:
-        MixedAggregates<is_aggregate::No, Output = is_aggregate::No>,
+    <<Changes::Table as Table>::AllColumns as ValidGrouping<
+        (),
+    >>::IsAggregate: MixedAggregates<is_aggregate::No, Output = is_aggregate::No>,
 {
     fn update_and_fetch(&mut self, changeset: Changes) -> QueryResult<Output> {
         loop {}
@@ -63,8 +66,9 @@ where
     Update<Changes, Changes>: ExecuteDsl<MysqlConnection>,
     Find<Changes::Table, Changes::Id>: LoadQuery<'b, MysqlConnection, Output>,
     <Changes::Table as Table>::AllColumns: ValidGrouping<()>,
-    <<Changes::Table as Table>::AllColumns as ValidGrouping<()>>::IsAggregate:
-        MixedAggregates<is_aggregate::No, Output = is_aggregate::No>,
+    <<Changes::Table as Table>::AllColumns as ValidGrouping<
+        (),
+    >>::IsAggregate: MixedAggregates<is_aggregate::No, Output = is_aggregate::No>,
 {
     fn update_and_fetch(&mut self, changeset: Changes) -> QueryResult<Output> {
         loop {}
@@ -79,7 +83,7 @@ pub trait SaveChangesDsl<Conn> {
         connection.update_and_fetch(self)
     }
 }
-impl<T, Conn> SaveChangesDsl<Conn> for T where
-    T: Copy + AsChangeset<Target = <T as HasTable>::Table> + IntoUpdateTarget
-{
-}
+impl<T, Conn> SaveChangesDsl<Conn> for T
+where
+    T: Copy + AsChangeset<Target = <T as HasTable>::Table> + IntoUpdateTarget,
+{}

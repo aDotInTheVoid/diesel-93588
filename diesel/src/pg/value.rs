@@ -13,7 +13,7 @@ pub struct PgValue<'a> {
 )]
 #[allow(unreachable_pub)]
 pub trait TypeOidLookup {
-        fn lookup(&self) -> NonZeroU32;
+    fn lookup(&self) -> NonZeroU32;
 }
 impl<F> TypeOidLookup for F
 where
@@ -38,7 +38,7 @@ impl<'a> PgValue<'a> {
     pub(crate) fn for_test(raw_value: &'a [u8]) -> Self {
         loop {}
     }
-                #[cfg(feature = "i-implement-a-third-party-backend-and-opt-into-breaking-changes")]
+    #[cfg(feature = "i-implement-a-third-party-backend-and-opt-into-breaking-changes")]
     pub fn new(raw_value: &'a [u8], type_oid_lookup: &'a dyn TypeOidLookup) -> Self {
         loop {}
     }
@@ -48,10 +48,10 @@ impl<'a> PgValue<'a> {
     ) -> Self {
         loop {}
     }
-        pub fn as_bytes(&self) -> &[u8] {
+    pub fn as_bytes(&self) -> &[u8] {
         loop {}
     }
-        pub fn get_oid(&self) -> NonZeroU32 {
+    pub fn get_oid(&self) -> NonZeroU32 {
         loop {}
     }
     pub(crate) fn subslice(&self, range: Range<usize>) -> Self {

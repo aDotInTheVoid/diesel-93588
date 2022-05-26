@@ -29,7 +29,9 @@ where
     <S::Target as JoinTo<Alias<S2>>>::OnClause: FieldAliasMapper<S>,
 {
     type FromClause = <S::Target as JoinTo<Alias<S2>>>::FromClause;
-    type OnClause = <<S::Target as JoinTo<Alias<S2>>>::OnClause as FieldAliasMapper<S>>::Out;
+    type OnClause = <<S::Target as JoinTo<
+        Alias<S2>,
+    >>::OnClause as FieldAliasMapper<S>>::Out;
     fn join_target(rhs: Alias<S2>) -> (Self::FromClause, Self::OnClause) {
         loop {}
     }
@@ -54,27 +56,29 @@ where
         loop {}
     }
 }
-impl<Left, Right, S, C> SelectableExpression<Join<Left, Right, LeftOuter>> for AliasedField<S, C>
+impl<Left, Right, S, C> SelectableExpression<Join<Left, Right, LeftOuter>>
+for AliasedField<S, C>
 where
     Self: AppearsOnTable<Join<Left, Right, LeftOuter>>,
     Self: SelectableExpression<Left>,
     Left: QuerySource,
     Right: AppearsInFromClause<Alias<S>, Count = Never> + QuerySource,
-{
-}
-impl<Left, Right, S, C> SelectableExpression<Join<Left, Right, Inner>> for AliasedField<S, C>
+{}
+impl<Left, Right, S, C> SelectableExpression<Join<Left, Right, Inner>>
+for AliasedField<S, C>
 where
     Self: AppearsOnTable<Join<Left, Right, Inner>>,
     Left: AppearsInFromClause<Alias<S>> + QuerySource,
     Right: AppearsInFromClause<Alias<S>> + QuerySource,
     (Left::Count, Right::Count): Pick<Left, Right>,
-    Self: SelectableExpression<<(Left::Count, Right::Count) as Pick<Left, Right>>::Selection>,
-{
-}
-impl<Join, On, S, C> SelectableExpression<JoinOn<Join, On>> for AliasedField<S, C> where
-    Self: SelectableExpression<Join> + AppearsOnTable<JoinOn<Join, On>>
-{
-}
+    Self: SelectableExpression<
+        <(Left::Count, Right::Count) as Pick<Left, Right>>::Selection,
+    >,
+{}
+impl<Join, On, S, C> SelectableExpression<JoinOn<Join, On>> for AliasedField<S, C>
+where
+    Self: SelectableExpression<Join> + AppearsOnTable<JoinOn<Join, On>>,
+{}
 impl<S, Selection> AppendSelection<Selection> for Alias<S>
 where
     Self: QuerySource,

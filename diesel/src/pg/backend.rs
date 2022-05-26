@@ -25,7 +25,7 @@ impl From<(u32, u32)> for InnerPgTypeMetadata {
 #[allow(unreachable_pub)]
 pub struct FailedToLookupTypeError(Box<PgMetadataCacheKey<'static>>);
 impl FailedToLookupTypeError {
-            #[cfg(feature = "i-implement-a-third-party-backend-and-opt-into-breaking-changes")]
+    #[cfg(feature = "i-implement-a-third-party-backend-and-opt-into-breaking-changes")]
     pub fn new(cache_key: PgMetadataCacheKey<'static>) -> Self {
         loop {}
     }
@@ -45,17 +45,17 @@ pub struct PgTypeMetadata(
     pub(in crate::pg) Result<InnerPgTypeMetadata, FailedToLookupTypeError>,
 );
 impl PgTypeMetadata {
-                                pub fn new(type_oid: u32, array_oid: u32) -> Self {
+    pub fn new(type_oid: u32, array_oid: u32) -> Self {
         loop {}
     }
-                                #[cfg(feature = "i-implement-a-third-party-backend-and-opt-into-breaking-changes")]
+    #[cfg(feature = "i-implement-a-third-party-backend-and-opt-into-breaking-changes")]
     pub fn from_result(r: Result<(u32, u32), FailedToLookupTypeError>) -> Self {
         loop {}
     }
-                pub fn oid(&self) -> Result<u32, impl std::error::Error + Send + Sync> {
+    pub fn oid(&self) -> Result<u32, impl std::error::Error + Send + Sync> {
         loop {}
     }
-                pub fn array_oid(&self) -> Result<u32, impl std::error::Error + Send + Sync> {
+    pub fn array_oid(&self) -> Result<u32, impl std::error::Error + Send + Sync> {
         loop {}
     }
 }

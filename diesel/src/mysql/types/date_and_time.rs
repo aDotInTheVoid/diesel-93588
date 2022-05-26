@@ -16,19 +16,19 @@ use crate::sql_types::{Date, Datetime, Time, Timestamp};
 #[diesel(sql_type = Date)]
 #[diesel(sql_type = Datetime)]
 pub struct MysqlTime {
-        pub year: libc::c_uint,
-        pub month: libc::c_uint,
-        pub day: libc::c_uint,
-        pub hour: libc::c_uint,
-        pub minute: libc::c_uint,
-        pub second: libc::c_uint,
-        pub second_part: libc::c_ulong,
-        pub neg: bool,
-        pub time_type: MysqlTimestampType,
-        pub time_zone_displacement: libc::c_int,
+    pub year: libc::c_uint,
+    pub month: libc::c_uint,
+    pub day: libc::c_uint,
+    pub hour: libc::c_uint,
+    pub minute: libc::c_uint,
+    pub second: libc::c_uint,
+    pub second_part: libc::c_ulong,
+    pub neg: bool,
+    pub time_type: MysqlTimestampType,
+    pub time_zone_displacement: libc::c_int,
 }
 impl MysqlTime {
-        #[allow(clippy::too_many_arguments)]
+    #[allow(clippy::too_many_arguments)]
     pub fn new(
         year: libc::c_uint,
         month: libc::c_uint,
@@ -48,12 +48,12 @@ impl MysqlTime {
 #[repr(transparent)]
 pub struct MysqlTimestampType(libc::c_int);
 impl MysqlTimestampType {
-            pub const MYSQL_TIMESTAMP_NONE: MysqlTimestampType = MysqlTimestampType(-2);
-            pub const MYSQL_TIMESTAMP_ERROR: MysqlTimestampType = MysqlTimestampType(-1);
-            pub const MYSQL_TIMESTAMP_DATE: MysqlTimestampType = MysqlTimestampType(0);
-            pub const MYSQL_TIMESTAMP_DATETIME: MysqlTimestampType = MysqlTimestampType(1);
-            pub const MYSQL_TIMESTAMP_TIME: MysqlTimestampType = MysqlTimestampType(2);
-            pub const MYSQL_TIMESTAMP_DATETIME_TZ: MysqlTimestampType = MysqlTimestampType(3);
+    pub const MYSQL_TIMESTAMP_NONE: MysqlTimestampType = MysqlTimestampType(-2);
+    pub const MYSQL_TIMESTAMP_ERROR: MysqlTimestampType = MysqlTimestampType(-1);
+    pub const MYSQL_TIMESTAMP_DATE: MysqlTimestampType = MysqlTimestampType(0);
+    pub const MYSQL_TIMESTAMP_DATETIME: MysqlTimestampType = MysqlTimestampType(1);
+    pub const MYSQL_TIMESTAMP_TIME: MysqlTimestampType = MysqlTimestampType(2);
+    pub const MYSQL_TIMESTAMP_DATETIME_TZ: MysqlTimestampType = MysqlTimestampType(3);
 }
 macro_rules! mysql_time_impls {
     ($ty:ty) => {

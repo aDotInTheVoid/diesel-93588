@@ -27,7 +27,7 @@ impl<Values, Target, Action> OnConflictValues<Values, Target, Action> {
     }
 }
 impl<DB, Values, Target, Action> CanInsertInSingleQuery<DB>
-    for OnConflictValues<Values, Target, Action>
+for OnConflictValues<Values, Target, Action>
 where
     DB: Backend,
     DB::OnConflictClause: sql_dialect::on_conflict_clause::SupportsOnConflictClause,
@@ -37,7 +37,8 @@ where
         loop {}
     }
 }
-impl<DB, Values, Target, Action> QueryFragment<DB> for OnConflictValues<Values, Target, Action>
+impl<DB, Values, Target, Action> QueryFragment<DB>
+for OnConflictValues<Values, Target, Action>
 where
     DB: Backend,
     DB::OnConflictClause: sql_dialect::on_conflict_clause::SupportsOnConflictClause,

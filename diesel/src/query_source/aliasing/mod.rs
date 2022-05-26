@@ -9,13 +9,16 @@ pub use alias::Alias;
 #[allow(unreachable_pub)]
 #[doc(hidden)]
 pub use alias::{
-    AliasAliasAppearsInFromClause, AliasAliasAppearsInFromClauseSameTable, AliasAppearsInFromClause,
+    AliasAliasAppearsInFromClause, AliasAliasAppearsInFromClauseSameTable,
+    AliasAppearsInFromClause,
 };
 #[allow(unreachable_pub)]
 pub use aliased_field::AliasedField;
 #[allow(unreachable_pub)]
 #[doc(hidden)]
-pub use field_alias_mapper::{FieldAliasMapper, FieldAliasMapperAssociatedTypesDisjointnessTrick};
+pub use field_alias_mapper::{
+    FieldAliasMapper, FieldAliasMapperAssociatedTypesDisjointnessTrick,
+};
 pub trait AliasSource {
     const NAME: &'static str;
     type Target;

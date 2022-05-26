@@ -26,14 +26,14 @@ impl<T> fmt::Debug for ConnectionManager<T> {
 }
 unsafe impl<T: Send + 'static> Sync for ConnectionManager<T> {}
 impl<T> ConnectionManager<T> {
-            pub fn new<S: Into<String>>(database_url: S) -> Self {
+    pub fn new<S: Into<String>>(database_url: S) -> Self {
         loop {}
     }
 }
 #[derive(Debug)]
 pub enum Error {
-        ConnectionError(ConnectionError),
-        QueryError(crate::result::Error),
+    ConnectionError(ConnectionError),
+    QueryError(crate::result::Error),
 }
 impl fmt::Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
@@ -42,8 +42,8 @@ impl fmt::Display for Error {
 }
 impl ::std::error::Error for Error {}
 pub trait R2D2Connection: Connection {
-        fn ping(&mut self) -> QueryResult<()>;
-                                fn is_broken(&mut self) -> bool {
+    fn ping(&mut self) -> QueryResult<()>;
+    fn is_broken(&mut self) -> bool {
         false
     }
 }
@@ -107,8 +107,8 @@ where
         &'conn mut self,
         source: T,
     ) -> QueryResult<
-            <Self as ConnectionGatWorkaround<'conn, 'query, Self::Backend>>::Cursor,
-        >
+        <Self as ConnectionGatWorkaround<'conn, 'query, Self::Backend>>::Cursor,
+    >
     where
         T: Query + QueryFragment<Self::Backend> + QueryId + 'query,
         Self::Backend: QueryMetadata<T::SqlType>,
@@ -124,8 +124,8 @@ where
     fn transaction_state(
         &mut self,
     ) -> &mut <Self::TransactionManager as TransactionManager<
-            Self,
-        >>::TransactionStateData {
+        Self,
+    >>::TransactionStateData {
         loop {}
     }
     fn begin_test_transaction(&mut self) -> QueryResult<()> {

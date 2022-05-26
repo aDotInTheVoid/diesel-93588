@@ -7,7 +7,7 @@ use std::borrow::Cow;
 use std::collections::HashMap;
 #[cfg(feature = "postgres_backend")]
 pub trait PgMetadataLookup {
-                        fn lookup_type(&mut self, type_name: &str, schema: Option<&str>) -> PgTypeMetadata;
+    fn lookup_type(&mut self, type_name: &str, schema: Option<&str>) -> PgTypeMetadata;
 }
 impl<T> PgMetadataLookup for T
 where
@@ -22,7 +22,7 @@ where
     cfg(feature = "i-implement-a-third-party-backend-and-opt-into-breaking-changes")
 )]
 pub trait GetPgMetadataCache {
-        fn get_metadata_cache(&mut self) -> &mut PgMetadataCache;
+    fn get_metadata_cache(&mut self) -> &mut PgMetadataCache;
 }
 fn lookup_type<T: Connection<Backend = Pg>>(
     cache_key: &PgMetadataCacheKey<'_>,
@@ -40,10 +40,10 @@ pub struct PgMetadataCacheKey<'a> {
     pub(in crate::pg) type_name: Cow<'a, str>,
 }
 impl<'a> PgMetadataCacheKey<'a> {
-            pub fn new(schema: Option<Cow<'a, str>>, type_name: Cow<'a, str>) -> Self {
+    pub fn new(schema: Option<Cow<'a, str>>, type_name: Cow<'a, str>) -> Self {
         loop {}
     }
-            pub fn into_owned(self) -> PgMetadataCacheKey<'static> {
+    pub fn into_owned(self) -> PgMetadataCacheKey<'static> {
         loop {}
     }
 }
@@ -57,16 +57,16 @@ pub struct PgMetadataCache {
     cache: HashMap<PgMetadataCacheKey<'static>, InnerPgTypeMetadata>,
 }
 impl PgMetadataCache {
-        pub fn new() -> Self {
+    pub fn new() -> Self {
         loop {}
     }
-        pub fn lookup_type(
+    pub fn lookup_type(
         &self,
         type_name: &PgMetadataCacheKey<'_>,
     ) -> Option<PgTypeMetadata> {
         loop {}
     }
-        pub fn store_type(
+    pub fn store_type(
         &mut self,
         type_name: PgMetadataCacheKey<'_>,
         type_metadata: impl Into<InnerPgTypeMetadata>,

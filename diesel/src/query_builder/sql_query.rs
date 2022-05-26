@@ -76,7 +76,8 @@ where
     ST: QueryId,
 {
     type QueryId = UncheckedBind<Query::QueryId, (), ST::QueryId>;
-    const HAS_STATIC_QUERY_ID: bool = Query::HAS_STATIC_QUERY_ID && ST::HAS_STATIC_QUERY_ID;
+    const HAS_STATIC_QUERY_ID: bool = Query::HAS_STATIC_QUERY_ID
+        && ST::HAS_STATIC_QUERY_ID;
 }
 impl<Query, Value, ST, DB> QueryFragment<DB> for UncheckedBind<Query, Value, ST>
 where
@@ -147,7 +148,8 @@ where
 {
     type SqlType = Untyped;
 }
-impl<Conn: Connection, Query> RunQueryDsl<Conn> for BoxedSqlQuery<'_, Conn::Backend, Query> {}
+impl<Conn: Connection, Query> RunQueryDsl<Conn>
+for BoxedSqlQuery<'_, Conn::Backend, Query> {}
 mod private {
     use crate::backend::{Backend, DieselReserveSpecialization};
     use crate::query_builder::{QueryFragment, QueryId};

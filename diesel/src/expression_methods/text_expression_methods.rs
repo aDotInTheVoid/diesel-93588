@@ -31,8 +31,7 @@ impl<T> TextExpressionMethods for T
 where
     T: Expression,
     T::SqlType: TextOrNullableText,
-{
-}
+{}
 mod private {
     use crate::sql_types::{Nullable, Text};
     pub trait TextOrNullableText {}

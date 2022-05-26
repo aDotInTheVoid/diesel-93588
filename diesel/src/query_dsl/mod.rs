@@ -269,4 +269,7 @@ pub trait RunQueryDsl<Conn>: Sized {
         methods::LimitDsl::limit(self, 1).get_result(conn)
     }
 }
-impl<T, Conn> RunQueryDsl<Conn> for T where T: Table {}
+impl<T, Conn> RunQueryDsl<Conn> for T
+where
+    T: Table,
+{}

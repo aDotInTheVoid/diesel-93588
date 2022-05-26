@@ -14,7 +14,7 @@ use crate::sql_types::{Array, Binary, Inet, Integer, Jsonb, SqlType, Text, VarCh
 use crate::EscapeExpressionMethods;
 #[cfg(feature = "postgres_backend")]
 pub trait PgExpressionMethods: Expression + Sized {
-                                                                                #[allow(clippy::wrong_self_convention)]
+    #[allow(clippy::wrong_self_convention)]
     fn is_not_distinct_from<T>(self, other: T) -> dsl::IsNotDistinctFrom<Self, T>
     where
         Self::SqlType: SqlType,
@@ -22,7 +22,7 @@ pub trait PgExpressionMethods: Expression + Sized {
     {
         Grouped(IsNotDistinctFrom::new(self, other.as_expression()))
     }
-                                                                                #[allow(clippy::wrong_self_convention)]
+    #[allow(clippy::wrong_self_convention)]
     fn is_distinct_from<T>(self, other: T) -> dsl::IsDistinctFrom<Self, T>
     where
         Self::SqlType: SqlType,
@@ -34,7 +34,7 @@ pub trait PgExpressionMethods: Expression + Sized {
 impl<T: Expression> PgExpressionMethods for T {}
 #[cfg(feature = "postgres_backend")]
 pub trait PgTimestampExpressionMethods: Expression + Sized {
-                                                                                                                                                                                                                                    fn at_time_zone<T>(self, timezone: T) -> dsl::AtTimeZone<Self, T>
+    fn at_time_zone<T>(self, timezone: T) -> dsl::AtTimeZone<Self, T>
     where
         T: AsExpression<VarChar>,
     {
@@ -47,21 +47,21 @@ where
 {}
 #[cfg(feature = "postgres_backend")]
 pub trait PgArrayExpressionMethods: Expression + Sized {
-                                                                                                                                                                                                                        fn overlaps_with<T>(self, other: T) -> dsl::OverlapsWith<Self, T>
+    fn overlaps_with<T>(self, other: T) -> dsl::OverlapsWith<Self, T>
     where
         Self::SqlType: SqlType,
         T: AsExpression<Self::SqlType>,
     {
         Grouped(OverlapsWith::new(self, other.as_expression()))
     }
-                                                                                                                                                                                    fn contains<T>(self, other: T) -> dsl::ArrayContains<Self, T>
+    fn contains<T>(self, other: T) -> dsl::ArrayContains<Self, T>
     where
         Self::SqlType: SqlType,
         T: AsExpression<Self::SqlType>,
     {
         Grouped(Contains::new(self, other.as_expression()))
     }
-                                                                                                                                                                                        #[allow(clippy::wrong_self_convention)]
+    #[allow(clippy::wrong_self_convention)]
     fn is_contained_by<T>(self, other: T) -> dsl::IsContainedBy<Self, T>
     where
         Self::SqlType: SqlType,
@@ -69,7 +69,7 @@ pub trait PgArrayExpressionMethods: Expression + Sized {
     {
         Grouped(IsContainedBy::new(self, other.as_expression()))
     }
-                                                                                                                                                                                                        fn index<T>(self, other: T) -> dsl::ArrayIndex<Self, T>
+    fn index<T>(self, other: T) -> dsl::ArrayIndex<Self, T>
     where
         Self::SqlType: SqlType,
         T: AsExpression<Integer>,
@@ -84,10 +84,10 @@ where
 {}
 #[cfg(feature = "postgres_backend")]
 pub trait PgSortExpressionMethods: Sized {
-                                                                                                                                                                                    fn nulls_first(self) -> dsl::NullsFirst<Self> {
+    fn nulls_first(self) -> dsl::NullsFirst<Self> {
         NullsFirst::new(self)
     }
-                                                                                                                                                                                    fn nulls_last(self) -> dsl::NullsLast<Self> {
+    fn nulls_last(self) -> dsl::NullsLast<Self> {
         NullsLast::new(self)
     }
 }
@@ -95,25 +95,25 @@ impl<T> PgSortExpressionMethods for Asc<T> {}
 impl<T> PgSortExpressionMethods for Desc<T> {}
 #[cfg(feature = "postgres_backend")]
 pub trait PgTextExpressionMethods: Expression + Sized {
-                                                                                            fn ilike<T>(self, other: T) -> dsl::ILike<Self, T>
+    fn ilike<T>(self, other: T) -> dsl::ILike<Self, T>
     where
         T: AsExpression<Text>,
     {
         Grouped(ILike::new(self, other.as_expression()))
     }
-                                                                                            fn not_ilike<T>(self, other: T) -> dsl::NotILike<Self, T>
+    fn not_ilike<T>(self, other: T) -> dsl::NotILike<Self, T>
     where
         T: AsExpression<Text>,
     {
         Grouped(NotILike::new(self, other.as_expression()))
     }
-                                                                                        fn similar_to<T>(self, other: T) -> dsl::SimilarTo<Self, T>
+    fn similar_to<T>(self, other: T) -> dsl::SimilarTo<Self, T>
     where
         T: AsExpression<Text>,
     {
         Grouped(SimilarTo::new(self, other.as_expression()))
     }
-                                                                                        fn not_similar_to<T>(self, other: T) -> dsl::NotSimilarTo<Self, T>
+    fn not_similar_to<T>(self, other: T) -> dsl::NotSimilarTo<Self, T>
     where
         T: AsExpression<Text>,
     {
@@ -151,7 +151,7 @@ impl<T, U> EscapeExpressionMethods for Grouped<NotSimilarTo<T, U>> {
 }
 #[cfg(feature = "postgres_backend")]
 pub trait PgRangeExpressionMethods: Expression + Sized {
-                                                                                                                                                                                fn contains<T>(self, other: T) -> dsl::RangeContains<Self, T>
+    fn contains<T>(self, other: T) -> dsl::RangeContains<Self, T>
     where
         Self::SqlType: RangeHelper,
         <Self::SqlType as RangeHelper>::Inner: SqlType + TypedExpressionType,
@@ -167,51 +167,51 @@ where
 {}
 #[cfg(feature = "postgres_backend")]
 pub trait PgNetExpressionMethods: Expression + Sized {
-                                                                                                                                                                                                                                fn contains<T>(self, other: T) -> dsl::ContainsNet<Self, T>
+    fn contains<T>(self, other: T) -> dsl::ContainsNet<Self, T>
     where
         T: AsExpression<Inet>,
     {
         Grouped(ContainsNet::new(self, other.as_expression()))
     }
-                                                                                                                                                                                                                                fn contains_or_eq<T>(self, other: T) -> dsl::ContainsNetLoose<Self, T>
+    fn contains_or_eq<T>(self, other: T) -> dsl::ContainsNetLoose<Self, T>
     where
         T: AsExpression<Inet>,
     {
         Grouped(ContainsNetLoose::new(self, other.as_expression()))
     }
-                                                                                                                                                                                                                                #[allow(clippy::wrong_self_convention)]
+    #[allow(clippy::wrong_self_convention)]
     fn is_contained_by<T>(self, other: T) -> dsl::IsContainedByNet<Self, T>
     where
         T: AsExpression<Inet>,
     {
         Grouped(IsContainedByNet::new(self, other.as_expression()))
     }
-                                                                                                                                                                                                            #[allow(clippy::wrong_self_convention)]
+    #[allow(clippy::wrong_self_convention)]
     fn is_contained_by_or_eq<T>(self, other: T) -> dsl::IsContainedByNetLoose<Self, T>
     where
         T: AsExpression<Inet>,
     {
         Grouped(IsContainedByNetLoose::new(self, other.as_expression()))
     }
-                                                                                                                                                                                                                                fn overlaps_with<T>(self, other: T) -> dsl::OverlapsWithNet<Self, T>
+    fn overlaps_with<T>(self, other: T) -> dsl::OverlapsWithNet<Self, T>
     where
         T: AsExpression<Inet>,
     {
         Grouped(OverlapsWith::new(self, other.as_expression()))
     }
-                                                                                                                                                                                    fn and<T>(self, other: T) -> dsl::AndNet<Self, T>
+    fn and<T>(self, other: T) -> dsl::AndNet<Self, T>
     where
         T: AsExpression<Inet>,
     {
         Grouped(AndNet::new(self, other.as_expression()))
     }
-                                                                                                                                                                                    fn or<T>(self, other: T) -> dsl::OrNet<Self, T>
+    fn or<T>(self, other: T) -> dsl::OrNet<Self, T>
     where
         T: AsExpression<Inet>,
     {
         Grouped(OrNet::new(self, other.as_expression()))
     }
-                                                                                                                                                                                    fn diff<T>(self, other: T) -> dsl::DifferenceNet<Self, T>
+    fn diff<T>(self, other: T) -> dsl::DifferenceNet<Self, T>
     where
         T: AsExpression<Inet>,
     {
@@ -225,58 +225,58 @@ where
 {}
 #[cfg(feature = "postgres_backend")]
 pub trait PgJsonbExpressionMethods: Expression + Sized {
-                                                                                                                                                                                                                                                                        fn concat<T>(self, other: T) -> dsl::ConcatJsonb<Self, T>
+    fn concat<T>(self, other: T) -> dsl::ConcatJsonb<Self, T>
     where
         T: AsExpression<Jsonb>,
     {
         Grouped(ConcatJsonb::new(self, other.as_expression()))
     }
-                                                                                                                                                                                                                            fn has_key<T>(self, other: T) -> dsl::HasKeyJsonb<Self, T>
+    fn has_key<T>(self, other: T) -> dsl::HasKeyJsonb<Self, T>
     where
         T: AsExpression<VarChar>,
     {
         Grouped(HasKeyJsonb::new(self, other.as_expression()))
     }
-                                                                                                                                                                                                                            fn has_any_key<T>(self, other: T) -> dsl::HasAnyKeyJsonb<Self, T>
+    fn has_any_key<T>(self, other: T) -> dsl::HasAnyKeyJsonb<Self, T>
     where
         T: AsExpression<Array<VarChar>>,
     {
         Grouped(HasAnyKeyJsonb::new(self, other.as_expression()))
     }
-                                                                                                                                                                                                                            fn has_all_keys<T>(self, other: T) -> dsl::HasAllKeysJsonb<Self, T>
+    fn has_all_keys<T>(self, other: T) -> dsl::HasAllKeysJsonb<Self, T>
     where
         T: AsExpression<Array<VarChar>>,
     {
         Grouped(HasAllKeysJsonb::new(self, other.as_expression()))
     }
-                                                                                                                                                                                                                        fn contains<T>(self, other: T) -> dsl::ContainsJsonb<Self, T>
+    fn contains<T>(self, other: T) -> dsl::ContainsJsonb<Self, T>
     where
         T: AsExpression<Jsonb>,
     {
         Grouped(ContainsJsonb::new(self, other.as_expression()))
     }
-                                                                                                                                                                                                                                        #[allow(clippy::wrong_self_convention)]
+    #[allow(clippy::wrong_self_convention)]
     fn is_contained_by<T>(self, other: T) -> dsl::IsContainedByJsonb<Self, T>
     where
         T: AsExpression<Jsonb>,
     {
         Grouped(IsContainedByJsonb::new(self, other.as_expression()))
     }
-                                                                                                                                                                                                                                                                                                                                                                                                            fn remove<T>(
+    fn remove<T>(
         self,
         other: T,
     ) -> dsl::RemoveFromJsonb<
-            Self,
-            T::Expression,
-            <T::Expression as Expression>::SqlType,
-        >
+        Self,
+        T::Expression,
+        <T::Expression as Expression>::SqlType,
+    >
     where
         T: JsonRemoveIndex,
         <T::Expression as Expression>::SqlType: SqlType,
     {
         Grouped(RemoveFromJsonb::new(self, other.into_json_index_expression()))
     }
-                                                                                                                                                                                                                                                                                                                                                                                                                                            fn remove_by_path<T>(
+    fn remove_by_path<T>(
         self,
         other: T,
     ) -> dsl::RemoveByPathFromJsonb<Self, T::Expression>
@@ -293,35 +293,35 @@ where
 {}
 #[cfg(feature = "postgres_backend")]
 pub trait PgAnyJsonExpressionMethods: Expression + Sized {
-                                                                                                                                                                                                                                                                                                                                                                    fn retrieve_as_object<T>(
+    fn retrieve_as_object<T>(
         self,
         other: T,
     ) -> dsl::RetrieveAsObjectJson<
-            Self,
-            T::Expression,
-            <T::Expression as Expression>::SqlType,
-        >
+        Self,
+        T::Expression,
+        <T::Expression as Expression>::SqlType,
+    >
     where
         T: JsonIndex,
         <T::Expression as Expression>::SqlType: SqlType,
     {
         Grouped(RetrieveAsObjectJson::new(self, other.into_json_index_expression()))
     }
-                                                                                                                                                                                                                                                                                                                                                                    fn retrieve_as_text<T>(
+    fn retrieve_as_text<T>(
         self,
         other: T,
     ) -> dsl::RetrieveAsTextJson<
-            Self,
-            T::Expression,
-            <T::Expression as Expression>::SqlType,
-        >
+        Self,
+        T::Expression,
+        <T::Expression as Expression>::SqlType,
+    >
     where
         T: JsonIndex,
         <T::Expression as Expression>::SqlType: SqlType,
     {
         Grouped(RetrieveAsTextJson::new(self, other.into_json_index_expression()))
     }
-                                                                                                                                                                                                                                                                                    fn retrieve_by_path_as_object<T>(
+    fn retrieve_by_path_as_object<T>(
         self,
         other: T,
     ) -> dsl::RetrieveByPathAsObjectJson<Self, T::Expression>
@@ -330,7 +330,7 @@ pub trait PgAnyJsonExpressionMethods: Expression + Sized {
     {
         Grouped(RetrieveByPathAsObjectJson::new(self, other.as_expression()))
     }
-                                                                                                                                                                                                                                                                                        fn retrieve_by_path_as_text<T>(
+    fn retrieve_by_path_as_text<T>(
         self,
         other: T,
     ) -> dsl::RetrieveByPathAsTextJson<Self, T::Expression>
@@ -348,21 +348,21 @@ where
 {}
 #[cfg(feature = "postgres_backend")]
 pub trait PgBinaryExpressionMethods: Expression + Sized {
-                                                                                                                                                                                                            fn concat<T>(self, other: T) -> dsl::ConcatBinary<Self, T>
+    fn concat<T>(self, other: T) -> dsl::ConcatBinary<Self, T>
     where
         Self::SqlType: SqlType,
         T: AsExpression<Binary>,
     {
         Grouped(ConcatBinary::new(self, other.as_expression()))
     }
-                                                                                                                                                                            fn like<T>(self, other: T) -> dsl::LikeBinary<Self, T>
+    fn like<T>(self, other: T) -> dsl::LikeBinary<Self, T>
     where
         Self::SqlType: SqlType,
         T: AsExpression<Binary>,
     {
         Grouped(LikeBinary::new(self, other.as_expression()))
     }
-                                                                                                                                                                            fn not_like<T>(self, other: T) -> dsl::NotLikeBinary<Self, T>
+    fn not_like<T>(self, other: T) -> dsl::NotLikeBinary<Self, T>
     where
         Self::SqlType: SqlType,
         T: AsExpression<Binary>,
@@ -381,18 +381,18 @@ mod private {
         Array, Binary, Cidr, Inet, Integer, Json, Jsonb, Nullable, Range, SqlType, Text,
     };
     use crate::{Expression, IntoSql};
-                pub trait ArrayOrNullableArray {}
+    pub trait ArrayOrNullableArray {}
     impl<T> ArrayOrNullableArray for Array<T> {}
     impl<T> ArrayOrNullableArray for Nullable<Array<T>> {}
-        pub trait InetOrCidr {}
+    pub trait InetOrCidr {}
     impl InetOrCidr for Inet {}
     impl InetOrCidr for Cidr {}
     impl InetOrCidr for Nullable<Inet> {}
     impl InetOrCidr for Nullable<Cidr> {}
-                pub trait TextOrNullableText {}
+    pub trait TextOrNullableText {}
     impl TextOrNullableText for Text {}
     impl TextOrNullableText for Nullable<Text> {}
-            pub trait RangeHelper: SqlType {
+    pub trait RangeHelper: SqlType {
         type Inner;
     }
     impl<ST> RangeHelper for Range<ST>
@@ -401,15 +401,15 @@ mod private {
     {
         type Inner = ST;
     }
-                pub trait RangeOrNullableRange {}
+    pub trait RangeOrNullableRange {}
     impl<ST> RangeOrNullableRange for Range<ST> {}
     impl<ST> RangeOrNullableRange for Nullable<Range<ST>> {}
-        pub trait JsonbOrNullableJsonb {}
+    pub trait JsonbOrNullableJsonb {}
     impl JsonbOrNullableJsonb for Jsonb {}
     impl JsonbOrNullableJsonb for Nullable<Jsonb> {}
-        pub trait JsonRemoveIndex {
-                type Expression: Expression;
-                fn into_json_index_expression(self) -> Self::Expression;
+    pub trait JsonRemoveIndex {
+        type Expression: Expression;
+        fn into_json_index_expression(self) -> Self::Expression;
     }
     impl<'a> JsonRemoveIndex for &'a str {
         type Expression = crate::dsl::AsExprOf<&'a str, crate::sql_types::Text>;
@@ -461,7 +461,7 @@ mod private {
     impl TextArrayOrTextOrInteger for Array<Text> {}
     impl TextArrayOrTextOrInteger for Text {}
     impl TextArrayOrTextOrInteger for Integer {}
-        pub trait JsonOrNullableJsonOrJsonbOrNullableJsonb {}
+    pub trait JsonOrNullableJsonOrJsonbOrNullableJsonb {}
     impl JsonOrNullableJsonOrJsonbOrNullableJsonb for Json {}
     impl JsonOrNullableJsonOrJsonbOrNullableJsonb for Nullable<Json> {}
     impl JsonOrNullableJsonOrJsonbOrNullableJsonb for Jsonb {}

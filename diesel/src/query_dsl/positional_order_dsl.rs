@@ -4,7 +4,10 @@ use crate::query_builder::combination_clause::CombinationClause;
 use crate::query_builder::{AstPass, Query, QueryFragment, QueryId};
 use crate::{QueryResult, RunQueryDsl};
 pub trait PositionalOrderDsl<Expr: Order>: Sized {
-    fn positional_order_by(self, expr: Expr) -> PositionalOrderClause<Self, Expr::Fragment> {
+    fn positional_order_by(
+        self,
+        expr: Expr,
+    ) -> PositionalOrderClause<Self, Expr::Fragment> {
         PositionalOrderClause {
             source: self,
             expr: expr.into_fragment(),
@@ -17,9 +20,7 @@ pub struct PositionalOrderClause<Source, Expr> {
     expr: Expr,
 }
 impl<Combinator, Rule, Source, Rhs, Expr: Order> PositionalOrderDsl<Expr>
-    for CombinationClause<Combinator, Rule, Source, Rhs>
-{
-}
+for CombinationClause<Combinator, Rule, Source, Rhs> {}
 impl<Source, Expr> Query for PositionalOrderClause<Source, Expr>
 where
     Source: Query,
@@ -57,7 +58,10 @@ pub trait IntoOrderColumn: Into<OrderColumn> {
         Desc { expr: self.into() }
     }
 }
-impl<T> IntoOrderColumn for T where T: Into<OrderColumn> {}
+impl<T> IntoOrderColumn for T
+where
+    T: Into<OrderColumn>,
+{}
 pub trait Order: Copy {
     type Fragment;
     fn into_fragment(self) -> Self::Fragment;

@@ -44,11 +44,14 @@ where
     Ret: QueryId,
 {
     type QueryId = DeleteStatement<T, U::QueryId, Ret::QueryId>;
-    const HAS_STATIC_QUERY_ID: bool =
-        T::HAS_STATIC_QUERY_ID && U::HAS_STATIC_QUERY_ID && Ret::HAS_STATIC_QUERY_ID;
+    const HAS_STATIC_QUERY_ID: bool = T::HAS_STATIC_QUERY_ID && U::HAS_STATIC_QUERY_ID
+        && Ret::HAS_STATIC_QUERY_ID;
 }
-pub type BoxedDeleteStatement<'a, DB, T, Ret = NoReturningClause> =
-    DeleteStatement<T, BoxedWhereClause<'a, DB>, Ret>;
+pub type BoxedDeleteStatement<'a, DB, T, Ret = NoReturningClause> = DeleteStatement<
+    T,
+    BoxedWhereClause<'a, DB>,
+    Ret,
+>;
 impl<T: QuerySource, U> DeleteStatement<T, U, NoReturningClause> {
     pub(crate) fn new(table: T, where_clause: U) -> Self {
         loop {}
@@ -136,7 +139,10 @@ where
 {
     type SqlType = Ret::SqlType;
 }
-impl<T, U, Ret, Conn> RunQueryDsl<Conn> for DeleteStatement<T, U, Ret> where T: QuerySource {}
+impl<T, U, Ret, Conn> RunQueryDsl<Conn> for DeleteStatement<T, U, Ret>
+where
+    T: QuerySource,
+{}
 impl<T: QuerySource, U> DeleteStatement<T, U, NoReturningClause> {
     pub fn returning<E>(self, returns: E) -> DeleteStatement<T, U, ReturningClause<E>>
     where

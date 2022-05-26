@@ -13,8 +13,12 @@ where
     Self: SelectQuery + LimitDsl,
     <Self as SelectQuery>::SqlType: IntoNullable,
 {
-    type Output =
-        Grouped<Subselect<Limit<Self>, <<Self as SelectQuery>::SqlType as IntoNullable>::Nullable>>;
+    type Output = Grouped<
+        Subselect<
+            Limit<Self>,
+            <<Self as SelectQuery>::SqlType as IntoNullable>::Nullable,
+        >,
+    >;
     fn single_value(self) -> Self::Output {
         loop {}
     }

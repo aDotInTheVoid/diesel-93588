@@ -19,7 +19,12 @@ where
         conn: &'conn mut Conn,
     ) -> QueryResult<<Self as LoadQueryGatWorkaround<'conn, 'query, Conn, U>>::Ret>;
 }
-pub type LoadRet<'conn, 'query, Q, C, U> = <Q as LoadQueryGatWorkaround<'conn, 'query, C, U>>::Ret;
+pub type LoadRet<'conn, 'query, Q, C, U> = <Q as LoadQueryGatWorkaround<
+    'conn,
+    'query,
+    C,
+    U,
+>>::Ret;
 impl<'conn, 'query, Conn, T, U, DB> LoadQueryGatWorkaround<'conn, 'query, Conn, U> for T
 where
     Conn: Connection<Backend = DB>,
@@ -55,9 +60,10 @@ where
         loop {}
     }
 }
-pub trait ExecuteDsl<Conn: Connection<Backend = DB>, DB: Backend = <Conn as Connection>::Backend>:
-    Sized
-{
+pub trait ExecuteDsl<
+    Conn: Connection<Backend = DB>,
+    DB: Backend = <Conn as Connection>::Backend,
+>: Sized {
     fn execute(query: Self, conn: &mut Conn) -> QueryResult<usize>;
 }
 impl<Conn, DB, T> ExecuteDsl<Conn, DB> for T
@@ -143,7 +149,11 @@ mod private {
     }
     #[cfg_attr(
         doc_cfg,
-        doc(cfg(feature = "i-implement-a-third-party-backend-and-opt-into-breaking-changes"))
+        doc(
+            cfg(
+                feature = "i-implement-a-third-party-backend-and-opt-into-breaking-changes"
+            )
+        )
     )]
     pub trait CompatibleType<U, DB> {
         type SqlType;

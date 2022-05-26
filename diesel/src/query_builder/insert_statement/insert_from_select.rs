@@ -20,7 +20,8 @@ impl<Select, Columns> InsertFromSelect<Select, Columns> {
         loop {}
     }
 }
-impl<DB, Select, Columns> CanInsertInSingleQuery<DB> for InsertFromSelect<Select, Columns>
+impl<DB, Select, Columns> CanInsertInSingleQuery<DB>
+for InsertFromSelect<Select, Columns>
 where
     DB: Backend,
 {
@@ -38,9 +39,9 @@ where
         loop {}
     }
 }
-impl<Select, Columns> UndecoratedInsertRecord<Columns::Table> for InsertFromSelect<Select, Columns>
+impl<Select, Columns> UndecoratedInsertRecord<Columns::Table>
+for InsertFromSelect<Select, Columns>
 where
     Columns: ColumnList + Expression,
     Select: Query<SqlType = Columns::SqlType>,
-{
-}
+{}

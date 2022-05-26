@@ -21,11 +21,13 @@ pub trait CommitErrorProcessor {
     doc_cfg,
     doc(cfg(feature = "i-implement-a-third-party-backend-and-opt-into-breaking-changes"))
 )]
-#[cfg(any(
-    feature = "i-implement-a-third-party-backend-and-opt-into-breaking-changes",
-    feature = "mysql",
-    feature = "sqlite"
-))]
+#[cfg(
+    any(
+        feature = "i-implement-a-third-party-backend-and-opt-into-breaking-changes",
+        feature = "mysql",
+        feature = "sqlite"
+    )
+)]
 #[diesel_derives::__diesel_public_if(
     feature = "i-implement-a-third-party-backend-and-opt-into-breaking-changes"
 )]
@@ -36,11 +38,13 @@ pub(crate) fn default_process_commit_error(
     loop {}
 }
 #[cfg(test)]
-#[cfg(any(
-    feature = "i-implement-a-third-party-backend-and-opt-into-breaking-changes",
-    feature = "mysql",
-    feature = "sqlite"
-))]
+#[cfg(
+    any(
+        feature = "i-implement-a-third-party-backend-and-opt-into-breaking-changes",
+        feature = "mysql",
+        feature = "sqlite"
+    )
+)]
 mod tests {
     use super::CommitErrorOutcome;
     use crate::connection::ValidTransactionManagerStatus;

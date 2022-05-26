@@ -16,7 +16,11 @@ where
     C: Column,
     S::Target: FieldAliasMapperAssociatedTypesDisjointnessTrick<C::Table, S, C>,
 {
-    type Out = <S::Target as FieldAliasMapperAssociatedTypesDisjointnessTrick<C::Table, S, C>>::Out;
+    type Out = <S::Target as FieldAliasMapperAssociatedTypesDisjointnessTrick<
+        C::Table,
+        S,
+        C,
+    >>::Out;
     fn map(self, alias: &Alias<S>) -> Self::Out {
         loop {}
     }

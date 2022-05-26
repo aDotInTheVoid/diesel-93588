@@ -87,7 +87,7 @@ fn get_result_field<'a>(res: *mut PGresult, field: ResultField) -> Option<&'a st
     loop {}
 }
 mod error_codes {
-                    pub(in crate::pg::connection) const CONNECTION_EXCEPTION: &str = "08000";
+    pub(in crate::pg::connection) const CONNECTION_EXCEPTION: &str = "08000";
     pub(in crate::pg::connection) const CONNECTION_FAILURE: &str = "08006";
     pub(in crate::pg::connection) const SQLCLIENT_UNABLE_TO_ESTABLISH_SQLCONNECTION: &str = "08001";
     pub(in crate::pg::connection) const SQLSERVER_REJECTED_ESTABLISHMENT_OF_SQLCONNECTION: &str = "08004";

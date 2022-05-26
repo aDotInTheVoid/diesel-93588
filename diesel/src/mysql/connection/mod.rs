@@ -42,7 +42,7 @@ impl CommitErrorProcessor for MysqlConnection {
 impl Connection for MysqlConnection {
     type Backend = Mysql;
     type TransactionManager = AnsiTransactionManager;
-                                    fn establish(database_url: &str) -> ConnectionResult<Self> {
+    fn establish(database_url: &str) -> ConnectionResult<Self> {
         loop {}
     }
     fn load<'conn, 'query, T>(

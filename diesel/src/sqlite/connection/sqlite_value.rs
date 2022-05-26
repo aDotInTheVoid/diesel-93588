@@ -46,7 +46,7 @@ impl<'row, 'stmt, 'query> SqliteValue<'row, 'stmt, 'query> {
     pub(crate) fn read_double(&self) -> f64 {
         loop {}
     }
-        pub fn value_type(&self) -> Option<SqliteType> {
+    pub fn value_type(&self) -> Option<SqliteType> {
         loop {}
     }
 }

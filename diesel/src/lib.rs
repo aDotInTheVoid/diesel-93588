@@ -22,10 +22,8 @@ pub mod serialize;
 #[macro_use]
 pub mod sql_types;
 pub mod row;
-
 mod type_impls;
 mod util;
-
 pub mod dsl {
     #[doc(inline)]
     pub use crate::expression::dsl::*;
@@ -33,7 +31,8 @@ pub mod dsl {
     pub use crate::helper_types::*;
     #[doc(inline)]
     pub use crate::query_builder::functions::{
-        delete, insert_into, insert_or_ignore_into, replace_into, select, sql_query, update,
+        delete, insert_into, insert_or_ignore_into, replace_into, select, sql_query,
+        update,
     };
 }
 pub mod helper_types {
@@ -53,7 +52,9 @@ pub mod helper_types {
     pub type Filter<Source, Predicate> = <Source as FilterDsl<Predicate>>::Output;
     pub type FindBy<Source, Column, Value> = Filter<Source, Eq<Column, Value>>;
     pub type ForUpdate<Source> = <Source as LockingDsl<lock::ForUpdate>>::Output;
-    pub type ForNoKeyUpdate<Source> = <Source as LockingDsl<lock::ForNoKeyUpdate>>::Output;
+    pub type ForNoKeyUpdate<Source> = <Source as LockingDsl<
+        lock::ForNoKeyUpdate,
+    >>::Output;
     pub type ForShare<Source> = <Source as LockingDsl<lock::ForShare>>::Output;
     pub type ForKeyShare<Source> = <Source as LockingDsl<lock::ForKeyShare>>::Output;
     pub type SkipLocked<Source> = <Source as ModifyLockDsl<lock::SkipLocked>>::Output;
@@ -64,14 +65,24 @@ pub mod helper_types {
     pub type ThenOrderBy<Source, Ordering> = <Source as ThenOrderDsl<Ordering>>::Output;
     pub type Limit<Source> = <Source as LimitDsl>::Output;
     pub type Offset<Source> = <Source as OffsetDsl>::Output;
-    pub type InnerJoin<Source, Rhs> =
-        <Source as JoinWithImplicitOnClause<Rhs, joins::Inner>>::Output;
-    pub type InnerJoinOn<Source, Rhs, On> =
-        <Source as InternalJoinDsl<Rhs, joins::Inner, On>>::Output;
-    pub type LeftJoin<Source, Rhs> =
-        <Source as JoinWithImplicitOnClause<Rhs, joins::LeftOuter>>::Output;
-    pub type LeftJoinOn<Source, Rhs, On> =
-        <Source as InternalJoinDsl<Rhs, joins::LeftOuter, On>>::Output;
+    pub type InnerJoin<Source, Rhs> = <Source as JoinWithImplicitOnClause<
+        Rhs,
+        joins::Inner,
+    >>::Output;
+    pub type InnerJoinOn<Source, Rhs, On> = <Source as InternalJoinDsl<
+        Rhs,
+        joins::Inner,
+        On,
+    >>::Output;
+    pub type LeftJoin<Source, Rhs> = <Source as JoinWithImplicitOnClause<
+        Rhs,
+        joins::LeftOuter,
+    >>::Output;
+    pub type LeftJoinOn<Source, Rhs, On> = <Source as InternalJoinDsl<
+        Rhs,
+        joins::LeftOuter,
+        On,
+    >>::Output;
     pub type On<Source, On> = joins::OnClauseWrapper<Source, On>;
     use super::associations::HasTable;
     use super::query_builder::{AsChangeset, IntoUpdateTarget, UpdateStatement};
@@ -124,13 +135,26 @@ pub mod helper_types {
         <Source as CombineDsl>::Query,
         <Rhs as AsQuery>::Query,
     >;
-    type JoinQuerySource<Left, Right, Kind, On> = joins::JoinOn<joins::Join<Left, Right, Kind>, On>;
-    pub type InnerJoinQuerySource<Left, Right, On = <Left as joins::JoinTo<Right>>::OnClause> =
-        JoinQuerySource<Left, Right, joins::Inner, On>;
-    pub type LeftJoinQuerySource<Left, Right, On = <Left as joins::JoinTo<Right>>::OnClause> =
-        JoinQuerySource<Left, Right, joins::LeftOuter, On>;
-    pub type LoadIter<'conn, 'query, Q, Conn, U> =
-        <Q as load_dsl::LoadQueryGatWorkaround<'conn, 'query, Conn, U>>::Ret;
+    type JoinQuerySource<Left, Right, Kind, On> = joins::JoinOn<
+        joins::Join<Left, Right, Kind>,
+        On,
+    >;
+    pub type InnerJoinQuerySource<
+        Left,
+        Right,
+        On = <Left as joins::JoinTo<Right>>::OnClause,
+    > = JoinQuerySource<Left, Right, joins::Inner, On>;
+    pub type LeftJoinQuerySource<
+        Left,
+        Right,
+        On = <Left as joins::JoinTo<Right>>::OnClause,
+    > = JoinQuerySource<Left, Right, joins::LeftOuter, On>;
+    pub type LoadIter<'conn, 'query, Q, Conn, U> = <Q as load_dsl::LoadQueryGatWorkaround<
+        'conn,
+        'query,
+        Conn,
+        U,
+    >>::Ret;
     pub type AliasedFields<S, F> = <F as aliasing::FieldAliasMapper<S>>::Out;
 }
 pub mod prelude {
@@ -146,7 +170,8 @@ pub mod prelude {
     pub use crate::expression::SelectableHelper;
     #[doc(inline)]
     pub use crate::expression::{
-        AppearsOnTable, BoxableExpression, Expression, IntoSql, Selectable, SelectableExpression,
+        AppearsOnTable, BoxableExpression, Expression, IntoSql, Selectable,
+        SelectableExpression,
     };
     #[doc(inline)]
     pub use crate::expression_methods::*;
@@ -171,7 +196,9 @@ pub mod prelude {
     #[doc(inline)]
     pub use crate::query_source::{Column, JoinTo, QuerySource, Table};
     #[doc(inline)]
-    pub use crate::result::{ConnectionError, ConnectionResult, OptionalExtension, QueryResult};
+    pub use crate::result::{
+        ConnectionError, ConnectionResult, OptionalExtension, QueryResult,
+    };
     #[cfg(feature = "sqlite")]
     #[doc(inline)]
     pub use crate::sqlite::SqliteConnection;

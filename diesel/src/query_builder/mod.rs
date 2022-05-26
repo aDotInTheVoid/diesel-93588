@@ -50,8 +50,9 @@ pub(crate) use self::insert_statement::ColumnList;
 pub use self::insert_statement::DefaultValues;
 #[doc(inline)]
 pub use self::insert_statement::{
-    IncompleteInsertOrIgnoreStatement, IncompleteInsertStatement, IncompleteReplaceStatement,
-    InsertOrIgnoreStatement, InsertStatement, ReplaceStatement,
+    IncompleteInsertOrIgnoreStatement, IncompleteInsertStatement,
+    IncompleteReplaceStatement, InsertOrIgnoreStatement, InsertStatement,
+    ReplaceStatement,
 };
 #[diesel_derives::__diesel_public_if(
     feature = "i-implement-a-third-party-backend-and-opt-into-breaking-changes"

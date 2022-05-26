@@ -83,10 +83,9 @@ pub trait ExpressionMethods: Expression + Sized {
         T: AsExpression<Self::SqlType>,
         U: AsExpression<Self::SqlType>,
     {
-        Grouped(Between::new(
-            self,
-            And::new(lower.as_expression(), upper.as_expression()),
-        ))
+        Grouped(
+            Between::new(self, And::new(lower.as_expression(), upper.as_expression())),
+        )
     }
     fn not_between<T, U>(self, lower: T, upper: U) -> dsl::NotBetween<Self, T, U>
     where
@@ -94,10 +93,9 @@ pub trait ExpressionMethods: Expression + Sized {
         T: AsExpression<Self::SqlType>,
         U: AsExpression<Self::SqlType>,
     {
-        Grouped(NotBetween::new(
-            self,
-            And::new(lower.as_expression(), upper.as_expression()),
-        ))
+        Grouped(
+            NotBetween::new(self, And::new(lower.as_expression(), upper.as_expression())),
+        )
     }
     fn desc(self) -> dsl::Desc<Self> {
         Desc::new(self)
@@ -110,8 +108,7 @@ impl<T> ExpressionMethods for T
 where
     T: Expression,
     T::SqlType: SingleValue,
-{
-}
+{}
 pub trait NullableExpressionMethods: Expression + Sized {
     fn nullable(self) -> dsl::Nullable<Self> {
         nullable::Nullable::new(self)

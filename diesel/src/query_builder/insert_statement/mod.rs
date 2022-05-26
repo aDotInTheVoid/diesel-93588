@@ -24,11 +24,23 @@ pub struct IncompleteInsertStatement<T, Op = Insert> {
     target: T,
     operator: Op,
 }
-pub type IncompleteInsertOrIgnoreStatement<T> = IncompleteInsertStatement<T, InsertOrIgnore>;
-pub type InsertOrIgnoreStatement<T, U, Ret = NoReturningClause> =
-    InsertStatement<T, U, InsertOrIgnore, Ret>;
+pub type IncompleteInsertOrIgnoreStatement<T> = IncompleteInsertStatement<
+    T,
+    InsertOrIgnore,
+>;
+pub type InsertOrIgnoreStatement<T, U, Ret = NoReturningClause> = InsertStatement<
+    T,
+    U,
+    InsertOrIgnore,
+    Ret,
+>;
 pub type IncompleteReplaceStatement<T> = IncompleteInsertStatement<T, Replace>;
-pub type ReplaceStatement<T, U, Ret = NoReturningClause> = InsertStatement<T, U, Replace, Ret>;
+pub type ReplaceStatement<T, U, Ret = NoReturningClause> = InsertStatement<
+    T,
+    U,
+    Replace,
+    Ret,
+>;
 impl<T, Op> IncompleteInsertStatement<T, Op>
 where
     T: QuerySource,
@@ -63,10 +75,8 @@ where
     Ret: QueryId,
 {
     type QueryId = InsertStatement<T, U::QueryId, Op::QueryId, Ret::QueryId>;
-    const HAS_STATIC_QUERY_ID: bool = T::HAS_STATIC_QUERY_ID
-        && U::HAS_STATIC_QUERY_ID
-        && Op::HAS_STATIC_QUERY_ID
-        && Ret::HAS_STATIC_QUERY_ID;
+    const HAS_STATIC_QUERY_ID: bool = T::HAS_STATIC_QUERY_ID && U::HAS_STATIC_QUERY_ID
+        && Op::HAS_STATIC_QUERY_ID && Ret::HAS_STATIC_QUERY_ID;
 }
 impl<T: QuerySource, U, Op, Ret> InsertStatement<T, U, Op, Ret> {
     fn new(target: T, records: U, operator: Op, returning: Ret) -> Self {
@@ -122,9 +132,13 @@ where
 {
     type SqlType = Ret::SqlType;
 }
-impl<T: QuerySource, U, Op, Ret, Conn> RunQueryDsl<Conn> for InsertStatement<T, U, Op, Ret> {}
+impl<T: QuerySource, U, Op, Ret, Conn> RunQueryDsl<Conn>
+for InsertStatement<T, U, Op, Ret> {}
 impl<T: QuerySource, U, Op> InsertStatement<T, U, Op> {
-    pub fn returning<E>(self, returns: E) -> InsertStatement<T, U, Op, ReturningClause<E>>
+    pub fn returning<E>(
+        self,
+        returns: E,
+    ) -> InsertStatement<T, U, Op, ReturningClause<E>>
     where
         InsertStatement<T, U, Op, ReturningClause<E>>: Query,
     {
@@ -136,39 +150,52 @@ impl<T: QuerySource, U, Op> InsertStatement<T, U, Op> {
     cfg(feature = "i-implement-a-third-party-backend-and-opt-into-breaking-changes")
 )]
 pub trait UndecoratedInsertRecord<Table> {}
-impl<'a, T, Tab> UndecoratedInsertRecord<Tab> for &'a T where
-    T: ?Sized + UndecoratedInsertRecord<Tab>
-{
-}
-impl<T, U> UndecoratedInsertRecord<T::Table> for ColumnInsertValue<T, U> where T: Column {}
-impl<T, U> UndecoratedInsertRecord<T::Table>
-    for DefaultableColumnInsertValue<ColumnInsertValue<T, U>>
+impl<'a, T, Tab> UndecoratedInsertRecord<Tab> for &'a T
+where
+    T: ?Sized + UndecoratedInsertRecord<Tab>,
+{}
+impl<T, U> UndecoratedInsertRecord<T::Table> for ColumnInsertValue<T, U>
 where
     T: Column,
-{
-}
-impl<T, Table> UndecoratedInsertRecord<Table> for [T] where T: UndecoratedInsertRecord<Table> {}
-impl<T, Table, QId, const STATIC_QUERY_ID: bool> UndecoratedInsertRecord<Table>
-    for BatchInsert<T, Table, QId, STATIC_QUERY_ID>
+{}
+impl<T, U> UndecoratedInsertRecord<T::Table>
+for DefaultableColumnInsertValue<ColumnInsertValue<T, U>>
+where
+    T: Column,
+{}
+impl<T, Table> UndecoratedInsertRecord<Table> for [T]
 where
     T: UndecoratedInsertRecord<Table>,
-{
-}
-impl<T, Table> UndecoratedInsertRecord<Table> for Vec<T> where [T]: UndecoratedInsertRecord<Table> {}
-impl<Lhs, Rhs> UndecoratedInsertRecord<Lhs::Table> for Eq<Lhs, Rhs> where Lhs: Column {}
-impl<Lhs, Rhs, Tab> UndecoratedInsertRecord<Tab> for Option<Eq<Lhs, Rhs>> where
-    Eq<Lhs, Rhs>: UndecoratedInsertRecord<Tab>
-{
-}
-impl<Lhs, Rhs> UndecoratedInsertRecord<Lhs::Table> for Grouped<Eq<Lhs, Rhs>> where Lhs: Column {}
-impl<Lhs, Rhs, Tab> UndecoratedInsertRecord<Tab> for Option<Grouped<Eq<Lhs, Rhs>>> where
-    Eq<Lhs, Rhs>: UndecoratedInsertRecord<Tab>
-{
-}
-impl<T, Table> UndecoratedInsertRecord<Table> for ValuesClause<T, Table> where
-    T: UndecoratedInsertRecord<Table>
-{
-}
+{}
+impl<T, Table, QId, const STATIC_QUERY_ID: bool> UndecoratedInsertRecord<Table>
+for BatchInsert<T, Table, QId, STATIC_QUERY_ID>
+where
+    T: UndecoratedInsertRecord<Table>,
+{}
+impl<T, Table> UndecoratedInsertRecord<Table> for Vec<T>
+where
+    [T]: UndecoratedInsertRecord<Table>,
+{}
+impl<Lhs, Rhs> UndecoratedInsertRecord<Lhs::Table> for Eq<Lhs, Rhs>
+where
+    Lhs: Column,
+{}
+impl<Lhs, Rhs, Tab> UndecoratedInsertRecord<Tab> for Option<Eq<Lhs, Rhs>>
+where
+    Eq<Lhs, Rhs>: UndecoratedInsertRecord<Tab>,
+{}
+impl<Lhs, Rhs> UndecoratedInsertRecord<Lhs::Table> for Grouped<Eq<Lhs, Rhs>>
+where
+    Lhs: Column,
+{}
+impl<Lhs, Rhs, Tab> UndecoratedInsertRecord<Tab> for Option<Grouped<Eq<Lhs, Rhs>>>
+where
+    Eq<Lhs, Rhs>: UndecoratedInsertRecord<Tab>,
+{}
+impl<T, Table> UndecoratedInsertRecord<Table> for ValuesClause<T, Table>
+where
+    T: UndecoratedInsertRecord<Table>,
+{}
 #[derive(Debug, Clone, Copy, QueryId)]
 #[doc(hidden)]
 pub struct DefaultValues;
@@ -199,7 +226,7 @@ where
     }
 }
 impl<DB> QueryFragment<DB, sql_dialect::default_value_clause::AnsiDefaultValueClause>
-    for DefaultValues
+for DefaultValues
 where
     DB: Backend
         + SqlDialect<
