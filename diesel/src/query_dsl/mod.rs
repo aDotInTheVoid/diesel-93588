@@ -55,166 +55,166 @@ pub mod methods {
     pub use super::single_value_dsl::SingleValueDsl;
 }
 pub trait QueryDsl: Sized {
-                                                                                                                            fn distinct(self) -> Distinct<Self>
+    fn distinct(self) -> Distinct<Self>
     where
         Self: methods::DistinctDsl,
     {
         methods::DistinctDsl::distinct(self)
     }
-                                                                                                                                                                                                                #[cfg(feature = "postgres")]
+    #[cfg(feature = "postgres")]
     fn distinct_on<Expr>(self, expr: Expr) -> DistinctOn<Self, Expr>
     where
         Self: methods::DistinctOnDsl<Expr>,
     {
         methods::DistinctOnDsl::distinct_on(self, expr)
     }
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                            fn select<Selection>(self, selection: Selection) -> Select<Self, Selection>
+    fn select<Selection>(self, selection: Selection) -> Select<Self, Selection>
     where
         Selection: Expression,
         Self: methods::SelectDsl<Selection>,
     {
         methods::SelectDsl::select(self, selection)
     }
-                                                            fn count(self) -> Select<Self, CountStar>
+    fn count(self) -> Select<Self, CountStar>
     where
         Self: methods::SelectDsl<CountStar>,
     {
         use crate::dsl::count_star;
         QueryDsl::select(self, count_star())
     }
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                fn inner_join<Rhs>(self, rhs: Rhs) -> InnerJoin<Self, Rhs>
+    fn inner_join<Rhs>(self, rhs: Rhs) -> InnerJoin<Self, Rhs>
     where
         Self: JoinWithImplicitOnClause<Rhs, joins::Inner>,
     {
         self.join_with_implicit_on_clause(rhs, joins::Inner)
     }
-                                                                                                                                                                                                                                                                                                                fn left_outer_join<Rhs>(self, rhs: Rhs) -> LeftJoin<Self, Rhs>
+    fn left_outer_join<Rhs>(self, rhs: Rhs) -> LeftJoin<Self, Rhs>
     where
         Self: JoinWithImplicitOnClause<Rhs, joins::LeftOuter>,
     {
         self.join_with_implicit_on_clause(rhs, joins::LeftOuter)
     }
-                fn left_join<Rhs>(self, rhs: Rhs) -> LeftJoin<Self, Rhs>
+    fn left_join<Rhs>(self, rhs: Rhs) -> LeftJoin<Self, Rhs>
     where
         Self: JoinWithImplicitOnClause<Rhs, joins::LeftOuter>,
     {
         self.left_outer_join(rhs)
     }
-                                                                                    #[doc(alias = "where")]
+    #[doc(alias = "where")]
     fn filter<Predicate>(self, predicate: Predicate) -> Filter<Self, Predicate>
     where
         Self: methods::FilterDsl<Predicate>,
     {
         methods::FilterDsl::filter(self, predicate)
     }
-                                                                                                                                                                        #[doc(alias = "where")]
+    #[doc(alias = "where")]
     fn or_filter<Predicate>(self, predicate: Predicate) -> OrFilter<Self, Predicate>
     where
         Self: methods::OrFilterDsl<Predicate>,
     {
         methods::OrFilterDsl::or_filter(self, predicate)
     }
-                                                                            fn find<PK>(self, id: PK) -> Find<Self, PK>
+    fn find<PK>(self, id: PK) -> Find<Self, PK>
     where
         Self: methods::FindDsl<PK>,
     {
         methods::FindDsl::find(self, id)
     }
-                                                                                                                                                                                                                            fn order<Expr>(self, expr: Expr) -> Order<Self, Expr>
+    fn order<Expr>(self, expr: Expr) -> Order<Self, Expr>
     where
         Expr: Expression,
         Self: methods::OrderDsl<Expr>,
     {
         methods::OrderDsl::order(self, expr)
     }
-        fn order_by<Expr>(self, expr: Expr) -> Order<Self, Expr>
+    fn order_by<Expr>(self, expr: Expr) -> Order<Self, Expr>
     where
         Expr: Expression,
         Self: methods::OrderDsl<Expr>,
     {
         QueryDsl::order(self, expr)
     }
-                                                                                                                                                                                        fn then_order_by<Order>(self, order: Order) -> ThenOrderBy<Self, Order>
+    fn then_order_by<Order>(self, order: Order) -> ThenOrderBy<Self, Order>
     where
         Self: methods::ThenOrderDsl<Order>,
     {
         methods::ThenOrderDsl::then_order_by(self, order)
     }
-                                                                                                                                                                            fn limit(self, limit: i64) -> Limit<Self>
+    fn limit(self, limit: i64) -> Limit<Self>
     where
         Self: methods::LimitDsl,
     {
         methods::LimitDsl::limit(self, limit)
     }
-                                                                                                                                                                                    fn offset(self, offset: i64) -> Offset<Self>
+    fn offset(self, offset: i64) -> Offset<Self>
     where
         Self: methods::OffsetDsl,
     {
         methods::OffsetDsl::offset(self, offset)
     }
-                                                                                                                                                                        fn group_by<GB>(self, group_by: GB) -> GroupBy<Self, GB>
+    fn group_by<GB>(self, group_by: GB) -> GroupBy<Self, GB>
     where
         GB: Expression,
         Self: methods::GroupByDsl<GB>,
     {
         methods::GroupByDsl::group_by(self, group_by)
     }
-                                                                                                fn having<Predicate>(self, predicate: Predicate) -> Having<Self, Predicate>
+    fn having<Predicate>(self, predicate: Predicate) -> Having<Self, Predicate>
     where
         Self: methods::HavingDsl<Predicate>,
     {
         methods::HavingDsl::having(self, predicate)
     }
-                                                                                                                        fn for_update(self) -> ForUpdate<Self>
+    fn for_update(self) -> ForUpdate<Self>
     where
         Self: methods::LockingDsl<lock::ForUpdate>,
     {
         methods::LockingDsl::with_lock(self, lock::ForUpdate)
     }
-                                                                                                                            fn for_no_key_update(self) -> ForNoKeyUpdate<Self>
+    fn for_no_key_update(self) -> ForNoKeyUpdate<Self>
     where
         Self: methods::LockingDsl<lock::ForNoKeyUpdate>,
     {
         methods::LockingDsl::with_lock(self, lock::ForNoKeyUpdate)
     }
-                                                                                                                        fn for_share(self) -> ForShare<Self>
+    fn for_share(self) -> ForShare<Self>
     where
         Self: methods::LockingDsl<lock::ForShare>,
     {
         methods::LockingDsl::with_lock(self, lock::ForShare)
     }
-                                                                                                                            fn for_key_share(self) -> ForKeyShare<Self>
+    fn for_key_share(self) -> ForKeyShare<Self>
     where
         Self: methods::LockingDsl<lock::ForKeyShare>,
     {
         methods::LockingDsl::with_lock(self, lock::ForKeyShare)
     }
-                                                                                                    fn skip_locked(self) -> SkipLocked<Self>
+    fn skip_locked(self) -> SkipLocked<Self>
     where
         Self: methods::ModifyLockDsl<lock::SkipLocked>,
     {
         methods::ModifyLockDsl::modify_lock(self, lock::SkipLocked)
     }
-                                                                                                    fn no_wait(self) -> NoWait<Self>
+    fn no_wait(self) -> NoWait<Self>
     where
         Self: methods::ModifyLockDsl<lock::NoWait>,
     {
         methods::ModifyLockDsl::modify_lock(self, lock::NoWait)
     }
-                                                                                                                                                                                                                                        fn into_boxed<'a, DB>(self) -> IntoBoxed<'a, Self, DB>
+    fn into_boxed<'a, DB>(self) -> IntoBoxed<'a, Self, DB>
     where
         DB: Backend,
         Self: methods::BoxedDsl<'a, DB>,
     {
         methods::BoxedDsl::internal_into_boxed(self)
     }
-                                                                                                                                                        fn single_value(self) -> SingleValue<Self>
+    fn single_value(self) -> SingleValue<Self>
     where
         Self: methods::SingleValueDsl,
     {
         methods::SingleValueDsl::single_value(self)
     }
-                                                                                                                                                fn nullable(self) -> NullableSelect<Self>
+    fn nullable(self) -> NullableSelect<Self>
     where
         Self: methods::SelectNullableDsl,
     {
@@ -223,20 +223,20 @@ pub trait QueryDsl: Sized {
 }
 impl<T: Table> QueryDsl for T {}
 pub trait RunQueryDsl<Conn>: Sized {
-                                                                                                                                            fn execute(self, conn: &mut Conn) -> QueryResult<usize>
+    fn execute(self, conn: &mut Conn) -> QueryResult<usize>
     where
         Conn: Connection,
         Self: methods::ExecuteDsl<Conn>,
     {
         methods::ExecuteDsl::execute(self, conn)
     }
-                                                                                                                                                                                                                                                                                                                                                                                fn load<'query, U>(self, conn: &mut Conn) -> QueryResult<Vec<U>>
+    fn load<'query, U>(self, conn: &mut Conn) -> QueryResult<Vec<U>>
     where
         Self: LoadQuery<'query, Conn, U>,
     {
         self.internal_load(conn)?.collect()
     }
-                                                                                                                                                                                                                                                                                                                                                                                                                    fn load_iter<'conn, 'query: 'conn, U>(
+    fn load_iter<'conn, 'query: 'conn, U>(
         self,
         conn: &'conn mut Conn,
     ) -> QueryResult<LoadIter<'conn, 'query, Self, Conn, U>>
@@ -246,7 +246,7 @@ pub trait RunQueryDsl<Conn>: Sized {
     {
         self.internal_load(conn)
     }
-                                                                                                                                                                                        fn get_result<'query, U>(self, conn: &mut Conn) -> QueryResult<U>
+    fn get_result<'query, U>(self, conn: &mut Conn) -> QueryResult<U>
     where
         Self: LoadQuery<'query, Conn, U>,
     {
@@ -255,13 +255,13 @@ pub trait RunQueryDsl<Conn>: Sized {
             None => Err(crate::result::Error::NotFound),
         }
     }
-                            fn get_results<'query, U>(self, conn: &mut Conn) -> QueryResult<Vec<U>>
+    fn get_results<'query, U>(self, conn: &mut Conn) -> QueryResult<Vec<U>>
     where
         Self: LoadQuery<'query, Conn, U>,
     {
         self.load(conn)
     }
-                                                                                                                                        fn first<'query, U>(self, conn: &mut Conn) -> QueryResult<U>
+    fn first<'query, U>(self, conn: &mut Conn) -> QueryResult<U>
     where
         Self: methods::LimitDsl,
         Limit<Self>: LoadQuery<'query, Conn, U>,
@@ -269,7 +269,4 @@ pub trait RunQueryDsl<Conn>: Sized {
         methods::LimitDsl::limit(self, 1).get_result(conn)
     }
 }
-impl<T, Conn> RunQueryDsl<Conn> for T
-where
-    T: Table,
-{}
+impl<T, Conn> RunQueryDsl<Conn> for T where T: Table {}

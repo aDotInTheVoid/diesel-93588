@@ -22,7 +22,7 @@ pub struct CombinationClause<Combinator, Rule, Source, Rhs> {
     rhs: ParenthesisWrapper<Rhs>,
 }
 impl<Combinator, Rule, Source, Rhs> CombinationClause<Combinator, Rule, Source, Rhs> {
-        pub(crate) fn new(
+    pub(crate) fn new(
         combinator: Combinator,
         duplicate_rule: Rule,
         source: Source,
@@ -31,8 +31,7 @@ impl<Combinator, Rule, Source, Rhs> CombinationClause<Combinator, Rule, Source, 
         loop {}
     }
 }
-impl<Combinator, Rule, Source, Rhs> Query
-for CombinationClause<Combinator, Rule, Source, Rhs>
+impl<Combinator, Rule, Source, Rhs> Query for CombinationClause<Combinator, Rule, Source, Rhs>
 where
     Source: Query,
     Rhs: Query<SqlType = Source::SqlType>,
@@ -40,9 +39,11 @@ where
     type SqlType = Source::SqlType;
 }
 impl<Combinator, Rule, Source, Rhs, Conn> RunQueryDsl<Conn>
-for CombinationClause<Combinator, Rule, Source, Rhs> {}
+    for CombinationClause<Combinator, Rule, Source, Rhs>
+{
+}
 impl<Combinator, Rule, Source, Rhs, T> Insertable<T>
-for CombinationClause<Combinator, Rule, Source, Rhs>
+    for CombinationClause<Combinator, Rule, Source, Rhs>
 where
     T: Table,
     T::AllColumns: NonAggregate,
@@ -54,7 +55,7 @@ where
     }
 }
 impl<Combinator, Rule, Source, OriginRhs> CombineDsl
-for CombinationClause<Combinator, Rule, Source, OriginRhs>
+    for CombinationClause<Combinator, Rule, Source, OriginRhs>
 where
     Self: Query,
 {
@@ -97,14 +98,13 @@ where
     }
 }
 impl<Combinator, Rule, Source, Rhs, DB: Backend> QueryFragment<DB>
-for CombinationClause<Combinator, Rule, Source, Rhs>
+    for CombinationClause<Combinator, Rule, Source, Rhs>
 where
     Combinator: QueryFragment<DB>,
     Rule: QueryFragment<DB>,
     ParenthesisWrapper<Source>: QueryFragment<DB>,
     ParenthesisWrapper<Rhs>: QueryFragment<DB>,
-    DB: Backend + SupportsCombinationClause<Combinator, Rule>
-        + DieselReserveSpecialization,
+    DB: Backend + SupportsCombinationClause<Combinator, Rule> + DieselReserveSpecialization,
 {
     fn walk_ast<'b>(&'b self, mut out: AstPass<'_, 'b, DB>) -> QueryResult<()> {
         loop {}

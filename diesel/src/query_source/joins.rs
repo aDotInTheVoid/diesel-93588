@@ -34,7 +34,8 @@ where
     Right: QuerySource,
     FromClause<Right>: Copy,
     Kind: Copy,
-{}
+{
+}
 impl<Left, Right, Kind> std::fmt::Debug for Join<Left, Right, Kind>
 where
     Left: QuerySource,
@@ -54,8 +55,8 @@ where
     Kind: QueryId,
 {
     type QueryId = Join<Left, Right, Kind::QueryId>;
-    const HAS_STATIC_QUERY_ID: bool = Left::HAS_STATIC_QUERY_ID
-        && Right::HAS_STATIC_QUERY_ID && Kind::HAS_STATIC_QUERY_ID;
+    const HAS_STATIC_QUERY_ID: bool =
+        Left::HAS_STATIC_QUERY_ID && Right::HAS_STATIC_QUERY_ID && Kind::HAS_STATIC_QUERY_ID;
 }
 #[derive(Debug, Clone, Copy, QueryId)]
 #[doc(hidden)]
@@ -169,9 +170,7 @@ where
     Self: QuerySource,
     <Self as QuerySource>::DefaultSelection: TupleAppend<Selection>,
 {
-    type Output = <<Self as QuerySource>::DefaultSelection as TupleAppend<
-        Selection,
-    >>::Output;
+    type Output = <<Self as QuerySource>::DefaultSelection as TupleAppend<Selection>>::Output;
     fn append_selection(&self, selection: Selection) -> Self::Output {
         loop {}
     }
@@ -273,8 +272,7 @@ where
         loop {}
     }
 }
-impl<Rhs, Kind, On1, On2, Lhs> InternalJoinDsl<Rhs, Kind, On1>
-for OnClauseWrapper<Lhs, On2>
+impl<Rhs, Kind, On1, On2, Lhs> InternalJoinDsl<Rhs, Kind, On1> for OnClauseWrapper<Lhs, On2>
 where
     Lhs: InternalJoinDsl<Rhs, Kind, On1>,
 {

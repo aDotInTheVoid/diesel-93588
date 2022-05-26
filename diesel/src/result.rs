@@ -6,44 +6,47 @@ use std::fmt::{self, Display};
 #[allow(clippy::enum_variant_names)]
 #[non_exhaustive]
 pub enum Error {
-                InvalidCString(NulError),
-                            DatabaseError(DatabaseErrorKind, Box<dyn DatabaseErrorInformation + Send + Sync>),
-                                            NotFound,
-                        QueryBuilderError(Box<dyn StdError + Send + Sync>),
-                        DeserializationError(Box<dyn StdError + Send + Sync>),
-                        SerializationError(Box<dyn StdError + Send + Sync>),
-                    RollbackError(Box<Error>),
-                            RollbackTransaction,
-            AlreadyInTransaction,
-            NotInTransaction,
-        BrokenTransaction,
-                        CommitTransactionFailed {
-                commit_error: Box<Error>,
-                rollback_result: Box<QueryResult<()>>,
+    InvalidCString(NulError),
+    DatabaseError(
+        DatabaseErrorKind,
+        Box<dyn DatabaseErrorInformation + Send + Sync>,
+    ),
+    NotFound,
+    QueryBuilderError(Box<dyn StdError + Send + Sync>),
+    DeserializationError(Box<dyn StdError + Send + Sync>),
+    SerializationError(Box<dyn StdError + Send + Sync>),
+    RollbackError(Box<Error>),
+    RollbackTransaction,
+    AlreadyInTransaction,
+    NotInTransaction,
+    BrokenTransaction,
+    CommitTransactionFailed {
+        commit_error: Box<Error>,
+        rollback_result: Box<QueryResult<()>>,
     },
 }
 #[derive(Debug, Clone, Copy)]
 #[non_exhaustive]
 pub enum DatabaseErrorKind {
-        UniqueViolation,
-        ForeignKeyViolation,
-                    UnableToSendCommand,
-                                SerializationFailure,
-                        ReadOnlyTransaction,
-        NotNullViolation,
-        CheckViolation,
-                    ClosedConnection,
+    UniqueViolation,
+    ForeignKeyViolation,
+    UnableToSendCommand,
+    SerializationFailure,
+    ReadOnlyTransaction,
+    NotNullViolation,
+    CheckViolation,
+    ClosedConnection,
     #[doc(hidden)]
     Unknown,
 }
 pub trait DatabaseErrorInformation {
-        fn message(&self) -> &str;
-            fn details(&self) -> Option<&str>;
-            fn hint(&self) -> Option<&str>;
-                            fn table_name(&self) -> Option<&str>;
-                            fn column_name(&self) -> Option<&str>;
-                        fn constraint_name(&self) -> Option<&str>;
-            fn statement_position(&self) -> Option<i32>;
+    fn message(&self) -> &str;
+    fn details(&self) -> Option<&str>;
+    fn hint(&self) -> Option<&str>;
+    fn table_name(&self) -> Option<&str>;
+    fn column_name(&self) -> Option<&str>;
+    fn constraint_name(&self) -> Option<&str>;
+    fn statement_position(&self) -> Option<i32>;
 }
 impl fmt::Debug for dyn DatabaseErrorInformation + Send + Sync {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
@@ -76,15 +79,15 @@ impl DatabaseErrorInformation for String {
 #[derive(Debug, PartialEq)]
 #[non_exhaustive]
 pub enum ConnectionError {
-        InvalidCString(NulError),
-        BadConnection(String),
-        InvalidConnectionUrl(String),
-                            CouldntSetupConfiguration(Error),
+    InvalidCString(NulError),
+    BadConnection(String),
+    InvalidConnectionUrl(String),
+    CouldntSetupConfiguration(Error),
 }
 pub type QueryResult<T> = Result<T, Error>;
 pub type ConnectionResult<T> = Result<T, ConnectionError>;
 pub trait OptionalExtension<T> {
-                                                                                    fn optional(self) -> Result<Option<T>, Error>;
+    fn optional(self) -> Result<Option<T>, Error>;
 }
 impl<T> OptionalExtension<T> for QueryResult<T> {
     fn optional(self) -> Result<Option<T>, Error> {

@@ -9,19 +9,18 @@ pub struct InsertFromSelect<Select, Columns> {
     pub(in crate::query_builder) columns: Columns,
 }
 impl<Select, Columns> InsertFromSelect<Select, Columns> {
-            pub fn new<T>(query: Select) -> Self
+    pub fn new<T>(query: Select) -> Self
     where
         T: Table<AllColumns = Columns>,
         Columns: SelectableExpression<T> + NonAggregate,
     {
         loop {}
     }
-        pub fn with_columns<C>(self, columns: C) -> InsertFromSelect<Select, C> {
+    pub fn with_columns<C>(self, columns: C) -> InsertFromSelect<Select, C> {
         loop {}
     }
 }
-impl<DB, Select, Columns> CanInsertInSingleQuery<DB>
-for InsertFromSelect<Select, Columns>
+impl<DB, Select, Columns> CanInsertInSingleQuery<DB> for InsertFromSelect<Select, Columns>
 where
     DB: Backend,
 {
@@ -39,9 +38,9 @@ where
         loop {}
     }
 }
-impl<Select, Columns> UndecoratedInsertRecord<Columns::Table>
-for InsertFromSelect<Select, Columns>
+impl<Select, Columns> UndecoratedInsertRecord<Columns::Table> for InsertFromSelect<Select, Columns>
 where
     Columns: ColumnList + Expression,
     Select: Query<SqlType = Columns::SqlType>,
-{}
+{
+}

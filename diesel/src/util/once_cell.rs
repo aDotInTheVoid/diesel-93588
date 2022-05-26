@@ -8,10 +8,10 @@ impl<T> Default for OnceCell<T> {
     }
 }
 impl<T> OnceCell<T> {
-        pub(crate) const fn new() -> OnceCell<T> {
+    pub(crate) const fn new() -> OnceCell<T> {
         loop {}
     }
-                                                                                                                pub(crate) fn get_or_init<F>(&self, f: F) -> &T
+    pub(crate) fn get_or_init<F>(&self, f: F) -> &T
     where
         F: FnOnce() -> T,
     {

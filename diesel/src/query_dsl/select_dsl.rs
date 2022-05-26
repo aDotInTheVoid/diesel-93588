@@ -1,8 +1,8 @@
 use crate::expression::Expression;
 use crate::query_source::Table;
 pub trait SelectDsl<Selection: Expression> {
-        type Output;
-        fn select(self, selection: Selection) -> Self::Output;
+    type Output;
+    fn select(self, selection: Selection) -> Self::Output;
 }
 impl<T, Selection> SelectDsl<Selection> for T
 where

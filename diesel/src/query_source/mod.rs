@@ -1,31 +1,31 @@
 pub(crate) mod aliasing;
 pub(crate) mod joins;
 mod peano_numbers;
-use crate::expression::{Expression, SelectableExpression, ValidGrouping};
-use crate::query_builder::*;
 pub use self::aliasing::{Alias, AliasSource, AliasedField};
 pub use self::joins::JoinTo;
 pub use self::peano_numbers::*;
 pub(crate) use self::private::Pick;
+use crate::expression::{Expression, SelectableExpression, ValidGrouping};
+use crate::query_builder::*;
 pub trait QuerySource {
-        type FromClause;
-        type DefaultSelection: SelectableExpression<Self>;
-            #[allow(clippy::wrong_self_convention)]
+    type FromClause;
+    type DefaultSelection: SelectableExpression<Self>;
+    #[allow(clippy::wrong_self_convention)]
     fn from_clause(&self) -> Self::FromClause;
-                fn default_selection(&self) -> Self::DefaultSelection;
+    fn default_selection(&self) -> Self::DefaultSelection;
 }
 pub trait Column: Expression {
-        type Table: Table;
-        const NAME: &'static str;
+    type Table: Table;
+    const NAME: &'static str;
 }
 pub trait Table: QuerySource + AsQuery + Sized {
-        type PrimaryKey: SelectableExpression<Self> + ValidGrouping<()>;
-        type AllColumns: SelectableExpression<Self> + ValidGrouping<()>;
-                fn primary_key(&self) -> Self::PrimaryKey;
-        fn all_columns() -> Self::AllColumns;
+    type PrimaryKey: SelectableExpression<Self> + ValidGrouping<()>;
+    type AllColumns: SelectableExpression<Self> + ValidGrouping<()>;
+    fn primary_key(&self) -> Self::PrimaryKey;
+    fn all_columns() -> Self::AllColumns;
 }
 pub trait AppearsInFromClause<QS> {
-        type Count;
+    type Count;
 }
 pub trait TableNotEqual<T: Table>: Table {}
 impl<T1, T2> AppearsInFromClause<T2> for T1
@@ -37,9 +37,9 @@ where
 }
 pub(crate) mod private {
     use super::{Never, Once};
-                                                                                                            #[doc(hidden)]
+    #[doc(hidden)]
     pub trait Pick<Left, Right> {
-                                        type Selection;
+        type Selection;
     }
     impl<Left, Right> Pick<Left, Right> for (Once, Never) {
         type Selection = Left;

@@ -5,7 +5,7 @@ pub struct Once;
 #[allow(missing_debug_implementations, missing_copy_implementations)]
 pub struct MoreThanOnce;
 pub trait Plus<T> {
-        type Output;
+    type Output;
 }
 impl<T> Plus<T> for Never {
     type Output = T;

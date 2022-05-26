@@ -1,4 +1,3 @@
-use std::marker::PhantomData;
 use crate::backend::{sql_dialect, Backend, DieselReserveSpecialization, SqlDialect};
 use crate::expression::grouped::Grouped;
 use crate::expression::{AppearsOnTable, Expression};
@@ -8,10 +7,11 @@ use crate::query_builder::{
 };
 use crate::query_source::{Column, Table};
 use crate::result::QueryResult;
+use std::marker::PhantomData;
 pub trait Insertable<T> {
-                            type Values;
-                    fn values(self) -> Self::Values;
-                                                                                                                                                    fn insert_into(self, table: T) -> InsertStatement<T, Self::Values>
+    type Values;
+    fn values(self) -> Self::Values;
+    fn insert_into(self, table: T) -> InsertStatement<T, Self::Values>
     where
         T: Table,
         Self: Sized,
@@ -22,7 +22,7 @@ pub trait Insertable<T> {
 #[doc(inline)]
 pub use diesel_derives::Insertable;
 pub trait CanInsertInSingleQuery<DB: Backend> {
-                    fn rows_to_insert(&self) -> Option<usize>;
+    fn rows_to_insert(&self) -> Option<usize>;
 }
 impl<'a, T, DB> CanInsertInSingleQuery<DB> for &'a T
 where
@@ -141,34 +141,26 @@ where
 }
 #[cfg(feature = "sqlite")]
 impl<Col, Expr> InsertValues<Col::Table, crate::sqlite::Sqlite>
-for DefaultableColumnInsertValue<ColumnInsertValue<Col, Expr>>
+    for DefaultableColumnInsertValue<ColumnInsertValue<Col, Expr>>
 where
     Col: Column,
     Expr: Expression<SqlType = Col::SqlType> + AppearsOnTable<NoFromClause>,
     Self: QueryFragment<crate::sqlite::Sqlite>,
 {
-    fn column_names(
-        &self,
-        mut out: AstPass<'_, '_, crate::sqlite::Sqlite>,
-    ) -> QueryResult<()> {
+    fn column_names(&self, mut out: AstPass<'_, '_, crate::sqlite::Sqlite>) -> QueryResult<()> {
         loop {}
     }
 }
 #[cfg(feature = "sqlite")]
-impl<
-    Col,
-    Expr,
-> QueryFragment<
-    crate::sqlite::Sqlite,
-    crate::backend::sql_dialect::default_keyword_for_insert::DoesNotSupportDefaultKeyword,
-> for DefaultableColumnInsertValue<ColumnInsertValue<Col, Expr>>
+impl<Col, Expr>
+    QueryFragment<
+        crate::sqlite::Sqlite,
+        crate::backend::sql_dialect::default_keyword_for_insert::DoesNotSupportDefaultKeyword,
+    > for DefaultableColumnInsertValue<ColumnInsertValue<Col, Expr>>
 where
     Expr: QueryFragment<crate::sqlite::Sqlite>,
 {
-    fn walk_ast<'b>(
-        &'b self,
-        mut out: AstPass<'_, 'b, crate::sqlite::Sqlite>,
-    ) -> QueryResult<()> {
+    fn walk_ast<'b>(&'b self, mut out: AstPass<'_, 'b, crate::sqlite::Sqlite>) -> QueryResult<()> {
         loop {}
     }
 }
@@ -214,12 +206,7 @@ where
     T: Insertable<Tab>,
     &'a T: Insertable<Tab>,
 {
-    type Values = BatchInsert<
-        Vec<<&'a T as Insertable<Tab>>::Values>,
-        Tab,
-        [T::Values; N],
-        true,
-    >;
+    type Values = BatchInsert<Vec<<&'a T as Insertable<Tab>>::Values>, Tab, [T::Values; N], true>;
     fn values(self) -> Self::Values {
         loop {}
     }
@@ -251,15 +238,11 @@ where
         loop {}
     }
 }
-impl<T, Tab, Expr, Col> Insertable<Tab>
-for InsertableOptionHelper<T, ColumnInsertValue<Col, Expr>>
+impl<T, Tab, Expr, Col> Insertable<Tab> for InsertableOptionHelper<T, ColumnInsertValue<Col, Expr>>
 where
     T: Insertable<Tab, Values = ValuesClause<ColumnInsertValue<Col, Expr>, Tab>>,
 {
-    type Values = ValuesClause<
-        DefaultableColumnInsertValue<ColumnInsertValue<Col, Expr>>,
-        Tab,
-    >;
+    type Values = ValuesClause<DefaultableColumnInsertValue<ColumnInsertValue<Col, Expr>>, Tab>;
     fn values(self) -> Self::Values {
         loop {}
     }
@@ -282,15 +265,11 @@ where
         loop {}
     }
 }
-impl<'a, L, R, Tab> Insertable<Tab>
-for &'a Grouped<crate::expression::operators::Eq<L, R>>
+impl<'a, L, R, Tab> Insertable<Tab> for &'a Grouped<crate::expression::operators::Eq<L, R>>
 where
     &'a crate::expression::operators::Eq<L, R>: Insertable<Tab>,
 {
-    type Values = <&'a crate::expression::operators::Eq<
-        L,
-        R,
-    > as Insertable<Tab>>::Values;
+    type Values = <&'a crate::expression::operators::Eq<L, R> as Insertable<Tab>>::Values;
     fn values(self) -> Self::Values {
         loop {}
     }

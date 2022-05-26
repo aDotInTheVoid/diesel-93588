@@ -5,9 +5,7 @@ use crate::dsl;
 use crate::expression::SelectableExpression;
 use crate::expression::{Expression, TypedExpressionType, ValidGrouping};
 use crate::expression_methods::EqAll;
-use crate::query_builder::{
-    combination_clause, AsQuery, FromClause, Query, SelectStatement,
-};
+use crate::query_builder::{combination_clause, AsQuery, FromClause, Query, SelectStatement};
 use crate::query_dsl::methods::*;
 use crate::query_dsl::{CombineDsl, QueryDsl, RunQueryDsl};
 use crate::query_source::{QuerySource, Table};
@@ -40,16 +38,12 @@ where
     <S::Target as Table>::PrimaryKey: FieldAliasMapper<S>,
     <<S::Target as Table>::PrimaryKey as FieldAliasMapper<S>>::Out: EqAll<PK>,
     Self: FilterDsl<
-        <<<S::Target as Table>::PrimaryKey as FieldAliasMapper<
-            S,
-        >>::Out as EqAll<PK>>::Output,
+        <<<S::Target as Table>::PrimaryKey as FieldAliasMapper<S>>::Out as EqAll<PK>>::Output,
     >,
 {
     type Output = dsl::Filter<
         Self,
-        <<<S::Target as Table>::PrimaryKey as FieldAliasMapper<
-            S,
-        >>::Out as EqAll<PK>>::Output,
+        <<<S::Target as Table>::PrimaryKey as FieldAliasMapper<S>>::Out as EqAll<PK>>::Output,
     >;
     fn find(self, id: PK) -> Self::Output {
         loop {}
@@ -59,11 +53,8 @@ impl<'a, S, DB> BoxedDsl<'a, DB> for Alias<S>
 where
     Alias<S>: QuerySource + AsQuery<Query = SelectStatement<FromClause<Alias<S>>>>,
     SelectStatement<FromClause<Alias<S>>>: BoxedDsl<'a, DB>,
-    <Alias<
-        S,
-    > as QuerySource>::DefaultSelection: Expression<
-            SqlType = <Alias<S> as AsQuery>::SqlType,
-        > + ValidGrouping<()>,
+    <Alias<S> as QuerySource>::DefaultSelection:
+        Expression<SqlType = <Alias<S> as AsQuery>::SqlType> + ValidGrouping<()>,
     <Alias<S> as AsQuery>::SqlType: TypedExpressionType,
 {
     type Output = dsl::IntoBoxed<'a, SelectStatement<FromClause<Alias<S>>>, DB>;
@@ -123,9 +114,8 @@ where
     Selection::SqlType: crate::sql_types::SingleValue,
     Self: QuerySource + AsQuery<Query = SelectStatement<FromClause<Self>>>,
     SelectStatement<FromClause<Self>>: DistinctOnDsl<Selection>,
-    <Self as QuerySource>::DefaultSelection: Expression<
-            SqlType = <Self as AsQuery>::SqlType,
-        > + ValidGrouping<()>,
+    <Self as QuerySource>::DefaultSelection:
+        Expression<SqlType = <Self as AsQuery>::SqlType> + ValidGrouping<()>,
     <Self as AsQuery>::SqlType: TypedExpressionType,
 {
     type Output = dsl::DistinctOn<SelectStatement<FromClause<Self>>, Selection>;
@@ -147,9 +137,8 @@ impl<S, Expr> GroupByDsl<Expr> for Alias<S>
 where
     Expr: Expression,
     Self: QuerySource + AsQuery<Query = SelectStatement<FromClause<Self>>>,
-    <Self as QuerySource>::DefaultSelection: Expression<
-            SqlType = <Self as AsQuery>::SqlType,
-        > + ValidGrouping<()>,
+    <Self as QuerySource>::DefaultSelection:
+        Expression<SqlType = <Self as AsQuery>::SqlType> + ValidGrouping<()>,
     <Self as AsQuery>::SqlType: TypedExpressionType,
 {
     type Output = dsl::GroupBy<SelectStatement<FromClause<Self>>, Expr>;
@@ -170,9 +159,8 @@ where
 impl<S, Lock> LockingDsl<Lock> for Alias<S>
 where
     Self: QuerySource + AsQuery<Query = SelectStatement<FromClause<Self>>>,
-    <Self as QuerySource>::DefaultSelection: Expression<
-            SqlType = <Self as AsQuery>::SqlType,
-        > + ValidGrouping<()>,
+    <Self as QuerySource>::DefaultSelection:
+        Expression<SqlType = <Self as AsQuery>::SqlType> + ValidGrouping<()>,
     <Self as AsQuery>::SqlType: TypedExpressionType,
 {
     type Output = <SelectStatement<FromClause<Self>> as LockingDsl<Lock>>::Output;

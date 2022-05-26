@@ -1,19 +1,19 @@
 use super::*;
 pub trait Add {
-        type Rhs: SqlType;
-        type Output: SqlType;
+    type Rhs: SqlType;
+    type Output: SqlType;
 }
 pub trait Sub {
-        type Rhs: SqlType;
-        type Output: SqlType;
+    type Rhs: SqlType;
+    type Output: SqlType;
 }
 pub trait Mul {
-        type Rhs: SqlType;
-        type Output: SqlType;
+    type Rhs: SqlType;
+    type Output: SqlType;
 }
 pub trait Div {
-        type Rhs: SqlType;
-        type Output: SqlType;
+    type Rhs: SqlType;
+    type Output: SqlType;
 }
 macro_rules! numeric_type {
     ($($tpe:ident),*) => {

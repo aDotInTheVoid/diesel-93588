@@ -1,6 +1,5 @@
 simple_clause!(NoOrderClause, OrderClause, " ORDER BY ");
-impl<'a, DB, Expr> From<OrderClause<Expr>>
-for Option<Box<dyn QueryFragment<DB> + Send + 'a>>
+impl<'a, DB, Expr> From<OrderClause<Expr>> for Option<Box<dyn QueryFragment<DB> + Send + 'a>>
 where
     DB: Backend,
     Expr: QueryFragment<DB> + Send + 'a,

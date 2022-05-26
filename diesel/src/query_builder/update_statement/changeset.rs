@@ -7,9 +7,9 @@ use crate::query_source::{Column, QuerySource};
 use crate::result::QueryResult;
 use crate::Table;
 pub trait AsChangeset {
-        type Target: QuerySource;
-        type Changeset;
-        #[allow(clippy::wrong_self_convention)]
+    type Target: QuerySource;
+    type Changeset;
+    #[allow(clippy::wrong_self_convention)]
     fn as_changeset(self) -> Self::Changeset;
 }
 #[allow(unreachable_pub)]
@@ -59,9 +59,9 @@ where
     }
 }
 pub trait AssignmentTarget {
-        type Table: Table;
-            type QueryAstNode;
-        fn into_target(self) -> Self::QueryAstNode;
+    type Table: Table;
+    type QueryAstNode;
+    fn into_target(self) -> Self::QueryAstNode;
 }
 #[derive(Debug, Clone, Copy)]
 pub struct ColumnWrapperForUpdate<C>(pub C);

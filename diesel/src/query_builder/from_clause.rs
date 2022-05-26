@@ -70,7 +70,8 @@ impl<F> Copy for FromClause<F>
 where
     F: QuerySource + Copy,
     F::FromClause: Copy,
-{}
+{
+}
 impl<F> Clone for FromClause<F>
 where
     F: QuerySource + Clone,

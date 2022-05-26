@@ -2,8 +2,8 @@ use super::{Alias, AliasSource, AliasedField};
 use crate::expression;
 use crate::query_source::{Column, Table, TableNotEqual};
 pub trait FieldAliasMapper<S> {
-                    type Out;
-        fn map(self, alias: &Alias<S>) -> Self::Out;
+    type Out;
+    fn map(self, alias: &Alias<S>) -> Self::Out;
 }
 #[doc(hidden)]
 pub trait FieldAliasMapperAssociatedTypesDisjointnessTrick<CT, S, C> {
@@ -16,11 +16,7 @@ where
     C: Column,
     S::Target: FieldAliasMapperAssociatedTypesDisjointnessTrick<C::Table, S, C>,
 {
-    type Out = <S::Target as FieldAliasMapperAssociatedTypesDisjointnessTrick<
-        C::Table,
-        S,
-        C,
-    >>::Out;
+    type Out = <S::Target as FieldAliasMapperAssociatedTypesDisjointnessTrick<C::Table, S, C>>::Out;
     fn map(self, alias: &Alias<S>) -> Self::Out {
         loop {}
     }

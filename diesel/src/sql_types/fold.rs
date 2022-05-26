@@ -1,7 +1,7 @@
 use crate::sql_types::{self, is_nullable, SingleValue, SqlType};
 pub trait Foldable: SingleValue {
-        type Sum: SqlType + SingleValue;
-        type Avg: SqlType + SingleValue;
+    type Sum: SqlType + SingleValue;
+    type Avg: SqlType + SingleValue;
 }
 impl<T> Foldable for sql_types::Nullable<T>
 where

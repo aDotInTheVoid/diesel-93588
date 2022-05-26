@@ -1,4 +1,8 @@
 use self::private::LoadIter;
+#[cfg(feature = "i-implement-a-third-party-backend-and-opt-into-breaking-changes")]
+pub use self::private::{CompatibleType, LoadQueryGatWorkaround};
+#[cfg(not(feature = "i-implement-a-third-party-backend-and-opt-into-breaking-changes"))]
+pub(crate) use self::private::{CompatibleType, LoadQueryGatWorkaround};
 use super::RunQueryDsl;
 use crate::backend::Backend;
 use crate::connection::{Connection, ConnectionGatWorkaround};
@@ -6,25 +10,16 @@ use crate::deserialize::FromSqlRow;
 use crate::expression::QueryMetadata;
 use crate::query_builder::{AsQuery, QueryFragment, QueryId};
 use crate::result::QueryResult;
-#[cfg(feature = "i-implement-a-third-party-backend-and-opt-into-breaking-changes")]
-pub use self::private::{CompatibleType, LoadQueryGatWorkaround};
-#[cfg(not(feature = "i-implement-a-third-party-backend-and-opt-into-breaking-changes"))]
-pub(crate) use self::private::{CompatibleType, LoadQueryGatWorkaround};
 pub trait LoadQuery<'query, Conn, U>: RunQueryDsl<Conn>
 where
     for<'a> Self: LoadQueryGatWorkaround<'a, 'query, Conn, U>,
 {
-        fn internal_load<'conn>(
+    fn internal_load<'conn>(
         self,
         conn: &'conn mut Conn,
     ) -> QueryResult<<Self as LoadQueryGatWorkaround<'conn, 'query, Conn, U>>::Ret>;
 }
-pub type LoadRet<'conn, 'query, Q, C, U> = <Q as LoadQueryGatWorkaround<
-    'conn,
-    'query,
-    C,
-    U,
->>::Ret;
+pub type LoadRet<'conn, 'query, Q, C, U> = <Q as LoadQueryGatWorkaround<'conn, 'query, C, U>>::Ret;
 impl<'conn, 'query, Conn, T, U, DB> LoadQueryGatWorkaround<'conn, 'query, Conn, U> for T
 where
     Conn: Connection<Backend = DB>,
@@ -60,11 +55,10 @@ where
         loop {}
     }
 }
-pub trait ExecuteDsl<
-    Conn: Connection<Backend = DB>,
-    DB: Backend = <Conn as Connection>::Backend,
->: Sized {
-        fn execute(query: Self, conn: &mut Conn) -> QueryResult<usize>;
+pub trait ExecuteDsl<Conn: Connection<Backend = DB>, DB: Backend = <Conn as Connection>::Backend>:
+    Sized
+{
+    fn execute(query: Self, conn: &mut Conn) -> QueryResult<usize>;
 }
 impl<Conn, DB, T> ExecuteDsl<Conn, DB> for T
 where
@@ -149,11 +143,7 @@ mod private {
     }
     #[cfg_attr(
         doc_cfg,
-        doc(
-            cfg(
-                feature = "i-implement-a-third-party-backend-and-opt-into-breaking-changes"
-            )
-        )
+        doc(cfg(feature = "i-implement-a-third-party-backend-and-opt-into-breaking-changes"))
     )]
     pub trait CompatibleType<U, DB> {
         type SqlType;

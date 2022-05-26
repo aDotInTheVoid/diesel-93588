@@ -1,9 +1,9 @@
 use super::QueryFragment;
 use std::any::{Any, TypeId};
 pub trait QueryId {
-                                                                        type QueryId: Any;
-                                const HAS_STATIC_QUERY_ID: bool = true;
-                    fn query_id() -> Option<TypeId> {
+    type QueryId: Any;
+    const HAS_STATIC_QUERY_ID: bool = true;
+    fn query_id() -> Option<TypeId> {
         if Self::HAS_STATIC_QUERY_ID {
             Some(TypeId::of::<Self::QueryId>())
         } else {
@@ -32,9 +32,9 @@ impl<DB> QueryId for dyn QueryFragment<DB> {
 #[cfg(test)]
 #[allow(unused_parens)]
 mod tests {
-    use std::any::TypeId;
     use super::QueryId;
     use crate::prelude::*;
+    use std::any::TypeId;
     table! {
         users { id -> Integer, name -> VarChar, }
     }

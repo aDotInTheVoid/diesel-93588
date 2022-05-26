@@ -6,8 +6,8 @@ use crate::query_builder::SelectStatement;
 use crate::query_source::Table;
 use crate::Expression;
 pub trait LockingDsl<Lock> {
-                    type Output;
-        fn with_lock(self, lock: Lock) -> Self::Output;
+    type Output;
+    fn with_lock(self, lock: Lock) -> Self::Output;
 }
 impl<T, Lock> LockingDsl<Lock> for T
 where
@@ -21,6 +21,6 @@ where
     }
 }
 pub trait ModifyLockDsl<Modifier> {
-                    type Output;
-        fn modify_lock(self, modifier: Modifier) -> Self::Output;
+    type Output;
+    fn modify_lock(self, modifier: Modifier) -> Self::Output;
 }

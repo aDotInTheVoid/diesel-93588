@@ -1,4 +1,3 @@
-use std::marker::PhantomData;
 use super::functions::sql_function;
 use super::{is_aggregate, AsExpression};
 use super::{Expression, ValidGrouping};
@@ -7,6 +6,7 @@ use crate::query_builder::*;
 use crate::result::QueryResult;
 use crate::sql_types::{BigInt, DieselNumericOps, SingleValue, SqlType};
 use crate::{AppearsOnTable, SelectableExpression};
+use std::marker::PhantomData;
 sql_function! {
     #[doc = " Creates a SQL `COUNT` expression"] #[doc = ""] #[doc =
     " As with most bare functions, this is not exported by default. You can import"]
@@ -66,12 +66,14 @@ impl<T, E, QS> SelectableExpression<QS> for CountDistinct<T, E>
 where
     Self: AppearsOnTable<QS>,
     E: SelectableExpression<QS>,
-{}
+{
+}
 impl<T, E, QS> AppearsOnTable<QS> for CountDistinct<T, E>
 where
     Self: Expression,
     E: AppearsOnTable<QS>,
-{}
+{
+}
 impl<T, E, DB> QueryFragment<DB> for CountDistinct<T, E>
 where
     T: SqlType + SingleValue,

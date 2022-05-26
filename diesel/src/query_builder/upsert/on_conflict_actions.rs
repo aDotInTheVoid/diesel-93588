@@ -90,4 +90,5 @@ impl<T> AppearsOnTable<T::Table> for Excluded<T>
 where
     T: Column,
     Excluded<T>: Expression,
-{}
+{
+}

@@ -11,7 +11,7 @@ pub fn exists<T>(query: T) -> exists<T> {
 #[derive(Clone, Copy, QueryId, Debug)]
 #[non_exhaustive]
 pub struct Exists<T> {
-        pub subselect: Subselect<T, Bool>,
+    pub subselect: Subselect<T, Bool>,
 }
 impl<T> Expression for Exists<T>
 where
@@ -34,11 +34,9 @@ where
         loop {}
     }
 }
-impl<T, DB> QueryFragment<DB, sql_dialect::exists_syntax::AnsiSqlExistsSyntax>
-for Exists<T>
+impl<T, DB> QueryFragment<DB, sql_dialect::exists_syntax::AnsiSqlExistsSyntax> for Exists<T>
 where
-    DB: Backend
-        + SqlDialect<ExistsSyntax = sql_dialect::exists_syntax::AnsiSqlExistsSyntax>,
+    DB: Backend + SqlDialect<ExistsSyntax = sql_dialect::exists_syntax::AnsiSqlExistsSyntax>,
     T: QueryFragment<DB>,
 {
     fn walk_ast<'b>(&'b self, mut out: AstPass<'_, 'b, DB>) -> QueryResult<()> {
@@ -49,9 +47,11 @@ impl<T, QS> SelectableExpression<QS> for Exists<T>
 where
     Self: AppearsOnTable<QS>,
     Subselect<T, Bool>: SelectableExpression<QS>,
-{}
+{
+}
 impl<T, QS> AppearsOnTable<QS> for Exists<T>
 where
     Self: Expression,
     Subselect<T, Bool>: AppearsOnTable<QS>,
-{}
+{
+}

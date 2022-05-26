@@ -3,8 +3,8 @@ use crate::query_builder::*;
 use crate::query_source::Column;
 use crate::result::QueryResult;
 pub trait ColumnList {
-        type Table;
-                fn walk_ast<DB: Backend>(&self, out: AstPass<'_, '_, DB>) -> QueryResult<()>;
+    type Table;
+    fn walk_ast<DB: Backend>(&self, out: AstPass<'_, '_, DB>) -> QueryResult<()>;
 }
 impl<C> ColumnList for C
 where

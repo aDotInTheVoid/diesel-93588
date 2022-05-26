@@ -31,9 +31,7 @@ where
     fn from_sql(bytes: backend::RawValue<'_, DB>) -> deserialize::Result<Self> {
         loop {}
     }
-    fn from_nullable_sql(
-        bytes: Option<backend::RawValue<'_, DB>>,
-    ) -> deserialize::Result<Self> {
+    fn from_nullable_sql(bytes: Option<backend::RawValue<'_, DB>>) -> deserialize::Result<Self> {
         loop {}
     }
 }

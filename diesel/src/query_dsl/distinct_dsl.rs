@@ -8,8 +8,8 @@ use crate::query_builder::{AsQuery, SelectStatement};
 use crate::query_source::Table;
 use crate::Expression;
 pub trait DistinctDsl {
-        type Output;
-        fn distinct(self) -> dsl::Distinct<Self>;
+    type Output;
+    fn distinct(self) -> dsl::Distinct<Self>;
 }
 impl<T> DistinctDsl for T
 where
@@ -24,8 +24,8 @@ where
 }
 #[cfg(feature = "postgres_backend")]
 pub trait DistinctOnDsl<Selection> {
-        type Output;
-        fn distinct_on(self, selection: Selection) -> dsl::DistinctOn<Self, Selection>;
+    type Output;
+    fn distinct_on(self, selection: Selection) -> dsl::DistinctOn<Self, Selection>;
 }
 #[cfg(feature = "postgres_backend")]
 impl<T, Selection> DistinctOnDsl<Selection> for T

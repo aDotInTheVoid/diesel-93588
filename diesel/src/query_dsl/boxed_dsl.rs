@@ -7,8 +7,8 @@ use crate::query_builder::SelectStatement;
 use crate::query_source::Table;
 use crate::Expression;
 pub trait BoxedDsl<'a, DB> {
-        type Output;
-        fn internal_into_boxed(self) -> dsl::IntoBoxed<'a, Self, DB>;
+    type Output;
+    fn internal_into_boxed(self) -> dsl::IntoBoxed<'a, Self, DB>;
 }
 impl<'a, T, DB> BoxedDsl<'a, DB> for T
 where

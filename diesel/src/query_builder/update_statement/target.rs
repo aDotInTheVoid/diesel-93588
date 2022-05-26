@@ -9,8 +9,8 @@ pub struct UpdateTarget<Table, WhereClause> {
     pub where_clause: WhereClause,
 }
 pub trait IntoUpdateTarget: HasTable {
-        type WhereClause;
-        fn into_update_target(self) -> UpdateTarget<Self::Table, Self::WhereClause>;
+    type WhereClause;
+    fn into_update_target(self) -> UpdateTarget<Self::Table, Self::WhereClause>;
 }
 impl<T, Tab, V> IntoUpdateTarget for T
 where

@@ -4,8 +4,7 @@ use self::target::UpdateTarget;
 use crate::backend::{Backend, DieselReserveSpecialization};
 use crate::dsl::{Filter, IntoBoxed};
 use crate::expression::{
-    is_aggregate, AppearsOnTable, Expression, MixedAggregates, SelectableExpression,
-    ValidGrouping,
+    is_aggregate, AppearsOnTable, Expression, MixedAggregates, SelectableExpression, ValidGrouping,
 };
 use crate::query_builder::returning_clause::*;
 use crate::query_builder::where_clause::*;
@@ -19,7 +18,7 @@ impl<T: QuerySource, U> UpdateStatement<T, U, SetNotCalled> {
     pub(crate) fn new(target: UpdateTarget<T, U>) -> Self {
         loop {}
     }
-                        pub fn set<V>(self, values: V) -> UpdateStatement<T, U, V::Changeset>
+    pub fn set<V>(self, values: V) -> UpdateStatement<T, U, V::Changeset>
     where
         T: Table,
         V: changeset::AsChangeset<Target = T>,
@@ -30,31 +29,22 @@ impl<T: QuerySource, U> UpdateStatement<T, U, SetNotCalled> {
 }
 #[derive(Clone, Debug)]
 #[must_use = "Queries are only executed when calling `load`, `get_result` or similar."]
-pub struct UpdateStatement<
-    T: QuerySource,
-    U,
-    V = SetNotCalled,
-    Ret = NoReturningClause,
-> {
+pub struct UpdateStatement<T: QuerySource, U, V = SetNotCalled, Ret = NoReturningClause> {
     from_clause: T::FromClause,
     where_clause: U,
     values: V,
     returning: Ret,
 }
-pub type BoxedUpdateStatement<'a, DB, T, V = SetNotCalled, Ret = NoReturningClause> = UpdateStatement<
-    T,
-    BoxedWhereClause<'a, DB>,
-    V,
-    Ret,
->;
+pub type BoxedUpdateStatement<'a, DB, T, V = SetNotCalled, Ret = NoReturningClause> =
+    UpdateStatement<T, BoxedWhereClause<'a, DB>, V, Ret>;
 impl<T: QuerySource, U, V, Ret> UpdateStatement<T, U, V, Ret> {
-                                                                                                                pub fn filter<Predicate>(self, predicate: Predicate) -> Filter<Self, Predicate>
+    pub fn filter<Predicate>(self, predicate: Predicate) -> Filter<Self, Predicate>
     where
         Self: FilterDsl<Predicate>,
     {
         loop {}
     }
-                                                                                                                                                                                    pub fn into_boxed<'a, DB>(self) -> IntoBoxed<'a, Self, DB>
+    pub fn into_boxed<'a, DB>(self) -> IntoBoxed<'a, Self, DB>
     where
         DB: Backend,
         Self: BoxedDsl<'a, DB>,
@@ -108,9 +98,8 @@ where
     T: Table,
     UpdateStatement<T, U, V, ReturningClause<T::AllColumns>>: Query,
     T::AllColumns: ValidGrouping<()>,
-    <T::AllColumns as ValidGrouping<
-        (),
-    >>::IsAggregate: MixedAggregates<is_aggregate::No, Output = is_aggregate::No>,
+    <T::AllColumns as ValidGrouping<()>>::IsAggregate:
+        MixedAggregates<is_aggregate::No, Output = is_aggregate::No>,
 {
     type SqlType = <Self::Query as Query>::SqlType;
     type Query = UpdateStatement<T, U, V, ReturningClause<T::AllColumns>>;
@@ -126,10 +115,9 @@ where
 {
     type SqlType = Ret::SqlType;
 }
-impl<T: QuerySource, U, V, Ret, Conn> RunQueryDsl<Conn>
-for UpdateStatement<T, U, V, Ret> {}
+impl<T: QuerySource, U, V, Ret, Conn> RunQueryDsl<Conn> for UpdateStatement<T, U, V, Ret> {}
 impl<T: QuerySource, U, V> UpdateStatement<T, U, V, NoReturningClause> {
-                                                                                        pub fn returning<E>(self, returns: E) -> UpdateStatement<T, U, V, ReturningClause<E>>
+    pub fn returning<E>(self, returns: E) -> UpdateStatement<T, U, V, ReturningClause<E>>
     where
         T: Table,
         UpdateStatement<T, U, V, ReturningClause<E>>: Query,

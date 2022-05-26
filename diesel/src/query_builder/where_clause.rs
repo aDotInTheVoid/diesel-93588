@@ -7,12 +7,12 @@ use crate::expression::*;
 use crate::result::QueryResult;
 use crate::sql_types::BoolOrNullableBool;
 pub trait WhereAnd<Predicate> {
-        type Output;
-        fn and(self, predicate: Predicate) -> Self::Output;
+    type Output;
+    fn and(self, predicate: Predicate) -> Self::Output;
 }
 pub trait WhereOr<Predicate> {
-        type Output;
-        fn or(self, predicate: Predicate) -> Self::Output;
+    type Output;
+    fn or(self, predicate: Predicate) -> Self::Output;
 }
 #[derive(Debug, Clone, Copy, QueryId)]
 pub struct NoWhereClause;
@@ -99,11 +99,12 @@ impl<QS, Expr> ValidWhereClause<QS> for WhereClause<Expr>
 where
     Expr: AppearsOnTable<QS::QuerySource>,
     QS: AsQuerySource,
-{}
-impl<Expr> ValidWhereClause<NoFromClause> for WhereClause<Expr>
-where
-    Expr: AppearsOnTable<NoFromClause>,
-{}
+{
+}
+impl<Expr> ValidWhereClause<NoFromClause> for WhereClause<Expr> where
+    Expr: AppearsOnTable<NoFromClause>
+{
+}
 #[allow(missing_debug_implementations)]
 pub enum BoxedWhereClause<'a, DB> {
     Where(Box<dyn QueryFragment<DB> + Send + 'a>),

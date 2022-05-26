@@ -1,7 +1,7 @@
 use crate::query_source::Table;
 pub trait LimitDsl {
-        type Output;
-        fn limit(self, limit: i64) -> Self::Output;
+    type Output;
+    fn limit(self, limit: i64) -> Self::Output;
 }
 impl<T> LimitDsl for T
 where

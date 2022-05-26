@@ -70,8 +70,7 @@ impl<F: QuerySource> SelectStatement<FromClause<F>> {
         loop {}
     }
 }
-impl<F, S, D, W, O, LOf, G, H, LC> Query
-for SelectStatement<F, S, D, W, O, LOf, G, H, LC>
+impl<F, S, D, W, O, LOf, G, H, LC> Query for SelectStatement<F, S, D, W, O, LOf, G, H, LC>
 where
     G: ValidGroupByClause,
     S: SelectClauseExpression<F>,
@@ -80,8 +79,7 @@ where
 {
     type SqlType = S::SelectClauseSqlType;
 }
-impl<F, S, D, W, O, LOf, G, H, LC> SelectQuery
-for SelectStatement<F, S, D, W, O, LOf, G, H, LC>
+impl<F, S, D, W, O, LOf, G, H, LC> SelectQuery for SelectStatement<F, S, D, W, O, LOf, G, H, LC>
 where
     S: SelectClauseExpression<F>,
     O: ValidOrderingForDistinct<D>,
@@ -89,7 +87,7 @@ where
     type SqlType = S::SelectClauseSqlType;
 }
 impl<F, S, D, W, O, LOf, G, H, LC, DB> QueryFragment<DB>
-for SelectStatement<F, S, D, W, O, LOf, G, H, LC>
+    for SelectStatement<F, S, D, W, O, LOf, G, H, LC>
 where
     DB: Backend + DieselReserveSpecialization,
     S: QueryFragment<DB>,
@@ -107,34 +105,38 @@ where
     }
 }
 impl<S, F, D, W, O, LOf, G, H, LC, QS> ValidSubselect<QS>
-for SelectStatement<FromClause<F>, S, D, W, O, LOf, G, H, LC>
+    for SelectStatement<FromClause<F>, S, D, W, O, LOf, G, H, LC>
 where
     Self: SelectQuery,
     F: QuerySource,
     QS: QuerySource,
     Join<F, QS, Inner>: QuerySource,
     W: ValidWhereClause<FromClause<Join<F, QS, Inner>>>,
-{}
+{
+}
 impl<S, D, W, O, LOf, G, H, LC> ValidSubselect<NoFromClause>
-for SelectStatement<NoFromClause, S, D, W, O, LOf, G, H, LC>
+    for SelectStatement<NoFromClause, S, D, W, O, LOf, G, H, LC>
 where
     Self: SelectQuery,
     W: ValidWhereClause<NoFromClause>,
-{}
+{
+}
 impl<S, F, D, W, O, LOf, G, H, LC> ValidSubselect<NoFromClause>
-for SelectStatement<FromClause<F>, S, D, W, O, LOf, G, H, LC>
+    for SelectStatement<FromClause<F>, S, D, W, O, LOf, G, H, LC>
 where
     Self: SelectQuery,
     F: QuerySource,
     W: ValidWhereClause<FromClause<F>>,
-{}
+{
+}
 impl<S, D, W, O, LOf, G, H, LC, QS> ValidSubselect<QS>
-for SelectStatement<NoFromClause, S, D, W, O, LOf, G, H, LC>
+    for SelectStatement<NoFromClause, S, D, W, O, LOf, G, H, LC>
 where
     Self: SelectQuery,
     QS: QuerySource,
     W: ValidWhereClause<NoFromClause>,
-{}
+{
+}
 impl<From, T> AppearsInFromClause<T> for SelectStatement<From>
 where
     From: AsQuerySource,

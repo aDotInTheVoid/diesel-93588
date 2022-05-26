@@ -1,4 +1,3 @@
-use std::marker::PhantomData;
 use super::Query;
 use crate::backend::{Backend, DieselReserveSpecialization};
 use crate::connection::Connection;
@@ -7,6 +6,7 @@ use crate::query_dsl::RunQueryDsl;
 use crate::result::QueryResult;
 use crate::serialize::ToSql;
 use crate::sql_types::{HasSqlType, Untyped};
+use std::marker::PhantomData;
 #[derive(Debug, Clone)]
 #[must_use = "Queries are only executed when calling `load`, `get_result` or similar."]
 pub struct SqlQuery<Inner = self::private::Empty> {
@@ -17,13 +17,13 @@ impl<Inner> SqlQuery<Inner> {
     pub(crate) fn new(inner: Inner, query: String) -> Self {
         loop {}
     }
-                                                                                                                                                                                                        pub fn bind<ST, Value>(self, value: Value) -> UncheckedBind<Self, Value, ST> {
+    pub fn bind<ST, Value>(self, value: Value) -> UncheckedBind<Self, Value, ST> {
         loop {}
     }
-                        pub fn into_boxed<'f, DB: Backend>(self) -> BoxedSqlQuery<'f, DB, Self> {
+    pub fn into_boxed<'f, DB: Backend>(self) -> BoxedSqlQuery<'f, DB, Self> {
         loop {}
     }
-        pub fn sql<T: AsRef<str>>(mut self, sql: T) -> Self {
+    pub fn sql<T: AsRef<str>>(mut self, sql: T) -> Self {
         loop {}
     }
 }
@@ -66,7 +66,7 @@ impl<Query, Value, ST> UncheckedBind<Query, Value, ST> {
     pub fn into_boxed<'f, DB: Backend>(self) -> BoxedSqlQuery<'f, DB, Self> {
         loop {}
     }
-                                                                                                                                                                                                                                                pub fn sql<T: Into<String>>(self, sql: T) -> SqlQuery<Self> {
+    pub fn sql<T: Into<String>>(self, sql: T) -> SqlQuery<Self> {
         loop {}
     }
 }
@@ -76,8 +76,7 @@ where
     ST: QueryId,
 {
     type QueryId = UncheckedBind<Query::QueryId, (), ST::QueryId>;
-    const HAS_STATIC_QUERY_ID: bool = Query::HAS_STATIC_QUERY_ID
-        && ST::HAS_STATIC_QUERY_ID;
+    const HAS_STATIC_QUERY_ID: bool = Query::HAS_STATIC_QUERY_ID && ST::HAS_STATIC_QUERY_ID;
 }
 impl<Query, Value, ST, DB> QueryFragment<DB> for UncheckedBind<Query, Value, ST>
 where
@@ -117,7 +116,7 @@ impl<'f, DB: Backend, Query> BoxedSqlQuery<'f, DB, Query> {
     pub(crate) fn new(query: Query) -> Self {
         loop {}
     }
-                pub fn bind<BindSt, Value>(mut self, b: Value) -> Self
+    pub fn bind<BindSt, Value>(mut self, b: Value) -> Self
     where
         DB: HasSqlType<BindSt>,
         Value: ToSql<BindSt, DB> + 'f,
@@ -125,7 +124,7 @@ impl<'f, DB: Backend, Query> BoxedSqlQuery<'f, DB, Query> {
     {
         loop {}
     }
-                pub fn sql<T: AsRef<str>>(mut self, sql: T) -> Self {
+    pub fn sql<T: AsRef<str>>(mut self, sql: T) -> Self {
         loop {}
     }
 }
@@ -148,8 +147,7 @@ where
 {
     type SqlType = Untyped;
 }
-impl<Conn: Connection, Query> RunQueryDsl<Conn>
-for BoxedSqlQuery<'_, Conn::Backend, Query> {}
+impl<Conn: Connection, Query> RunQueryDsl<Conn> for BoxedSqlQuery<'_, Conn::Backend, Query> {}
 mod private {
     use crate::backend::{Backend, DieselReserveSpecialization};
     use crate::query_builder::{QueryFragment, QueryId};

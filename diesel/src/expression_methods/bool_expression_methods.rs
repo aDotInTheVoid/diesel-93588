@@ -4,7 +4,7 @@ use crate::expression::operators::{And, Or};
 use crate::expression::{AsExpression, Expression, TypedExpressionType};
 use crate::sql_types::{BoolOrNullableBool, SqlType};
 pub trait BoolExpressionMethods: Expression + Sized {
-                                                                                                                                    fn and<T, ST>(self, other: T) -> dsl::And<Self, T, ST>
+    fn and<T, ST>(self, other: T) -> dsl::And<Self, T, ST>
     where
         Self::SqlType: SqlType,
         ST: SqlType + TypedExpressionType,
@@ -13,7 +13,7 @@ pub trait BoolExpressionMethods: Expression + Sized {
     {
         Grouped(And::new(self, other.as_expression()))
     }
-                                                                                                                                                            fn or<T, ST>(self, other: T) -> dsl::Or<Self, T, ST>
+    fn or<T, ST>(self, other: T) -> dsl::Or<Self, T, ST>
     where
         Self::SqlType: SqlType,
         ST: SqlType + TypedExpressionType,
@@ -27,4 +27,5 @@ impl<T> BoolExpressionMethods for T
 where
     T: Expression,
     T::SqlType: BoolOrNullableBool,
-{}
+{
+}

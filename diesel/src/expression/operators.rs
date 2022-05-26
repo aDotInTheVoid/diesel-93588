@@ -64,13 +64,17 @@ macro_rules! __diesel_operator_to_sql {
         notation = infix, operator_expr = $op:expr, field_exprs = ($left:expr,
         $right:expr),
     ) => {
-        $left; $op; $right;
+        $left;
+        $op;
+        $right;
     };
     (notation = postfix, operator_expr = $op:expr, field_exprs = ($expr:expr),) => {
-        $expr; $op;
+        $expr;
+        $op;
     };
     (notation = prefix, operator_expr = $op:expr, field_exprs = ($expr:expr),) => {
-        $op; $expr;
+        $op;
+        $expr;
     };
 }
 #[macro_export]
@@ -168,21 +172,34 @@ macro_rules! diesel_infix_operator {
 #[macro_export]
 macro_rules! postfix_operator {
     ($name:ident, $operator:expr) => {
-        $crate ::postfix_operator!($name, $operator, $crate ::sql_types::Bool);
+        $crate::postfix_operator!($name, $operator, $crate::sql_types::Bool);
     };
     ($name:ident, $operator:expr, backend : $backend:ty) => {
-        $crate ::postfix_operator!($name, $operator, $crate ::sql_types::Bool, backend :
-        $backend);
+        $crate::postfix_operator!($name, $operator, $crate::sql_types::Bool, backend: $backend);
     };
     ($name:ident, $operator:expr, $return_ty:ty) => {
-        $crate ::__diesel_operator_body!(notation = postfix, struct_name = $name,
-        operator = $operator, return_ty = ($return_ty), ty_params = (Expr,), field_names
-        = (expr,), backend_ty_params = (DB,), backend_ty = DB,);
+        $crate::__diesel_operator_body!(
+            notation = postfix,
+            struct_name = $name,
+            operator = $operator,
+            return_ty = ($return_ty),
+            ty_params = (Expr,),
+            field_names = (expr,),
+            backend_ty_params = (DB,),
+            backend_ty = DB,
+        );
     };
     ($name:ident, $operator:expr, $return_ty:ty, backend : $backend:ty) => {
-        $crate ::__diesel_operator_body!(notation = postfix, struct_name = $name,
-        operator = $operator, return_ty = ($return_ty), ty_params = (Expr,), field_names
-        = (expr,), backend_ty_params = (), backend_ty = $backend,);
+        $crate::__diesel_operator_body!(
+            notation = postfix,
+            struct_name = $name,
+            operator = $operator,
+            return_ty = ($return_ty),
+            ty_params = (Expr,),
+            field_names = (expr,),
+            backend_ty_params = (),
+            backend_ty = $backend,
+        );
     };
 }
 #[macro_export]
@@ -252,8 +269,16 @@ infix_operator!(Between, " BETWEEN ");
 infix_operator!(NotBetween, " NOT BETWEEN ");
 postfix_operator!(IsNull, " IS NULL");
 postfix_operator!(IsNotNull, " IS NOT NULL");
-postfix_operator!(Asc, " ASC ", crate ::expression::expression_types::NotSelectable);
-postfix_operator!(Desc, " DESC ", crate ::expression::expression_types::NotSelectable);
+postfix_operator!(
+    Asc,
+    " ASC ",
+    crate::expression::expression_types::NotSelectable
+);
+postfix_operator!(
+    Desc,
+    " DESC ",
+    crate::expression::expression_types::NotSelectable
+);
 prefix_operator!(Not, " NOT ");
 use crate::backend::Backend;
 use crate::expression::{TypedExpressionType, ValidGrouping};

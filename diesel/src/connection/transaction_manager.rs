@@ -1,17 +1,15 @@
-use crate::connection::commit_error_processor::{
-    CommitErrorOutcome, CommitErrorProcessor,
-};
+use crate::connection::commit_error_processor::{CommitErrorOutcome, CommitErrorProcessor};
 use crate::connection::Connection;
 use crate::result::{DatabaseErrorKind, Error, QueryResult};
 use std::borrow::Cow;
 use std::num::NonZeroU32;
 pub trait TransactionManager<Conn: Connection> {
-            type TransactionStateData;
-                        fn begin_transaction(conn: &mut Conn) -> QueryResult<()>;
-                        fn rollback_transaction(conn: &mut Conn) -> QueryResult<()>;
-                        fn commit_transaction(conn: &mut Conn) -> QueryResult<()>;
-                        fn transaction_manager_status_mut(conn: &mut Conn) -> &mut TransactionManagerStatus;
-                    fn transaction<F, R, E>(conn: &mut Conn, callback: F) -> Result<R, E>
+    type TransactionStateData;
+    fn begin_transaction(conn: &mut Conn) -> QueryResult<()>;
+    fn rollback_transaction(conn: &mut Conn) -> QueryResult<()>;
+    fn commit_transaction(conn: &mut Conn) -> QueryResult<()>;
+    fn transaction_manager_status_mut(conn: &mut Conn) -> &mut TransactionManagerStatus;
+    fn transaction<F, R, E>(conn: &mut Conn, callback: F) -> Result<R, E>
     where
         F: FnOnce(&mut Conn) -> Result<R, E>,
         E: From<Error>,
@@ -23,8 +21,7 @@ pub trait TransactionManager<Conn: Connection> {
                 Ok(value)
             }
             Err(e) => {
-                Self::rollback_transaction(conn)
-                    .map_err(|e| Error::RollbackError(Box::new(e)))?;
+                Self::rollback_transaction(conn).map_err(|e| Error::RollbackError(Box::new(e)))?;
                 Err(e)
             }
         }
@@ -37,8 +34,8 @@ pub struct AnsiTransactionManager {
 }
 #[derive(Debug)]
 pub enum TransactionManagerStatus {
-        Valid(ValidTransactionManagerStatus),
-        InError,
+    Valid(ValidTransactionManagerStatus),
+    InError,
 }
 impl Default for TransactionManagerStatus {
     fn default() -> Self {
@@ -46,7 +43,7 @@ impl Default for TransactionManagerStatus {
     }
 }
 impl TransactionManagerStatus {
-            pub fn transaction_depth(&self) -> QueryResult<Option<NonZeroU32>> {
+    pub fn transaction_depth(&self) -> QueryResult<Option<NonZeroU32>> {
         loop {}
     }
     fn transaction_state(&mut self) -> QueryResult<&mut ValidTransactionManagerStatus> {
@@ -60,10 +57,10 @@ pub struct ValidTransactionManagerStatus {
     pub(crate) previous_error_relevant_for_rollback: Option<(DatabaseErrorKind, String)>,
 }
 impl ValidTransactionManagerStatus {
-                    pub fn transaction_depth(&self) -> Option<NonZeroU32> {
+    pub fn transaction_depth(&self) -> Option<NonZeroU32> {
         loop {}
     }
-            pub fn change_transaction_depth(
+    pub fn change_transaction_depth(
         &mut self,
         transaction_depth_change: TransactionDepthChange,
         query: QueryResult<()>,
@@ -73,8 +70,8 @@ impl ValidTransactionManagerStatus {
 }
 #[derive(Debug, Clone, Copy)]
 pub enum TransactionDepthChange {
-        IncreaseDepth,
-        DecreaseDepth,
+    IncreaseDepth,
+    DecreaseDepth,
 }
 impl AnsiTransactionManager {
     fn get_transaction_state<Conn>(
@@ -85,7 +82,7 @@ impl AnsiTransactionManager {
     {
         loop {}
     }
-                        pub fn begin_transaction_sql<Conn>(conn: &mut Conn, sql: &str) -> QueryResult<()>
+    pub fn begin_transaction_sql<Conn>(conn: &mut Conn, sql: &str) -> QueryResult<()>
     where
         Conn: Connection<TransactionManager = Self> + CommitErrorProcessor,
     {
@@ -103,7 +100,7 @@ where
     fn rollback_transaction(conn: &mut Conn) -> QueryResult<()> {
         loop {}
     }
-                        fn commit_transaction(conn: &mut Conn) -> QueryResult<()> {
+    fn commit_transaction(conn: &mut Conn) -> QueryResult<()> {
         loop {}
     }
     fn transaction_manager_status_mut(conn: &mut Conn) -> &mut TransactionManagerStatus {
@@ -130,9 +127,7 @@ where
 #[cfg(test)]
 mod test {
     mod mock {
-        use crate::connection::commit_error_processor::{
-            CommitErrorOutcome, CommitErrorProcessor,
-        };
+        use crate::connection::commit_error_processor::{CommitErrorOutcome, CommitErrorProcessor};
         use crate::connection::transaction_manager::AnsiTransactionManager;
         use crate::connection::{
             Connection, ConnectionGatWorkaround, SimpleConnection, TransactionManager,
@@ -152,11 +147,10 @@ mod test {
                 loop {}
             }
         }
-        impl<
-            'conn,
-            'query,
-        > ConnectionGatWorkaround<'conn, 'query, <TestConnection as Connection>::Backend>
-        for MockConnection {
+        impl<'conn, 'query>
+            ConnectionGatWorkaround<'conn, 'query, <TestConnection as Connection>::Backend>
+            for MockConnection
+        {
             type Cursor = <TestConnection as ConnectionGatWorkaround<
                 'conn,
                 'query,
@@ -182,13 +176,7 @@ mod test {
             fn load<'conn, 'query, T>(
                 &'conn mut self,
                 _source: T,
-            ) -> QueryResult<
-                    <Self as ConnectionGatWorkaround<
-                        'conn,
-                        'query,
-                        Self::Backend,
-                    >>::Cursor,
-                >
+            ) -> QueryResult<<Self as ConnectionGatWorkaround<'conn, 'query, Self::Backend>>::Cursor>
             where
                 T: AsQuery,
                 T::Query: QueryFragment<Self::Backend> + QueryId + 'query,
@@ -205,9 +193,8 @@ mod test {
             }
             fn transaction_state(
                 &mut self,
-            ) -> &mut <Self::TransactionManager as TransactionManager<
-                    Self,
-                >>::TransactionStateData {
+            ) -> &mut <Self::TransactionManager as TransactionManager<Self>>::TransactionStateData
+            {
                 loop {}
             }
         }

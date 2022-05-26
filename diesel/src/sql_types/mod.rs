@@ -106,7 +106,10 @@ pub struct Interval;
 #[diesel(sqlite_type(name = "Text"))]
 #[diesel(mysql_type(name = "Time"))]
 pub struct Time;
-#[cfg_attr(feature = "chrono", doc = " [NaiveDateTime]: chrono::naive::NaiveDateTime")]
+#[cfg_attr(
+    feature = "chrono",
+    doc = " [NaiveDateTime]: chrono::naive::NaiveDateTime"
+)]
 #[cfg_attr(
     not(feature = "chrono"),
     doc = " [NaiveDateTime]: https://docs.rs/chrono/*/chrono/naive/struct.NaiveDateTime.html"
@@ -129,23 +132,23 @@ where
     type IsNull = is_nullable::IsNullable;
 }
 #[doc(inline)]
-#[cfg(feature = "postgres_backend")]
-pub use crate::pg::sql_types::*;
-#[doc(inline)]
 #[cfg(feature = "mysql_backend")]
 pub use crate::mysql::sql_types::{Datetime, Unsigned};
+#[doc(inline)]
+#[cfg(feature = "postgres_backend")]
+pub use crate::pg::sql_types::*;
 #[doc(inline)]
 #[cfg(feature = "sqlite")]
 pub use crate::sqlite::sql_types::Timestamptz as TimestamptzSqlite;
 pub trait HasSqlType<ST>: TypeMetadata {
-                    fn metadata(lookup: &mut Self::MetadataLookup) -> Self::TypeMetadata;
+    fn metadata(lookup: &mut Self::MetadataLookup) -> Self::TypeMetadata;
 }
 pub trait TypeMetadata {
-                        type TypeMetadata;
-                    type MetadataLookup: ?Sized;
+    type TypeMetadata;
+    type MetadataLookup: ?Sized;
 }
 pub trait IntoNullable {
-                type Nullable;
+    type Nullable;
 }
 impl<T> IntoNullable for T
 where
@@ -160,7 +163,7 @@ where
     type Nullable = Self;
 }
 pub trait IntoNotNullable {
-                type NotNullable;
+    type NotNullable;
 }
 impl<T> IntoNotNullable for T
 where
@@ -181,25 +184,22 @@ pub use diesel_derives::DieselNumericOps;
 #[doc(inline)]
 pub use diesel_derives::SqlType;
 pub trait SqlType: 'static {
-                            type IsNull: OneIsNullable<is_nullable::IsNullable>
-        + OneIsNullable<is_nullable::NotNull>;
+    type IsNull: OneIsNullable<is_nullable::IsNullable> + OneIsNullable<is_nullable::NotNull>;
 }
 pub trait OneIsNullable<Other> {
-        type Out: OneIsNullable<is_nullable::IsNullable>
-        + OneIsNullable<is_nullable::NotNull>;
+    type Out: OneIsNullable<is_nullable::IsNullable> + OneIsNullable<is_nullable::NotNull>;
 }
 pub trait AllAreNullable<Other> {
-        type Out: AllAreNullable<is_nullable::NotNull>
-        + AllAreNullable<is_nullable::IsNullable>;
+    type Out: AllAreNullable<is_nullable::NotNull> + AllAreNullable<is_nullable::IsNullable>;
 }
 pub trait MaybeNullableType<O> {
-        type Out: SqlType + TypedExpressionType;
+    type Out: SqlType + TypedExpressionType;
 }
 pub mod is_nullable {
     use super::*;
-                    #[derive(Debug, Clone, Copy)]
+    #[derive(Debug, Clone, Copy)]
     pub struct NotNull;
-                        #[derive(Debug, Clone, Copy)]
+    #[derive(Debug, Clone, Copy)]
     pub struct IsNullable;
     impl OneIsNullable<NotNull> for NotNull {
         type Out = NotNull;
@@ -238,14 +238,12 @@ pub mod is_nullable {
     {
         type Out = Nullable<O>;
     }
-        pub type MaybeNullable<N, T> = <N as MaybeNullableType<T>>::Out;
-            pub type IsOneNullable<S1, S2> = <IsSqlTypeNullable<
-        S1,
-    > as OneIsNullable<IsSqlTypeNullable<S2>>>::Out;
-            pub type AreAllNullable<S1, S2> = <IsSqlTypeNullable<
-        S1,
-    > as AllAreNullable<IsSqlTypeNullable<S2>>>::Out;
-        pub type IsSqlTypeNullable<T> = <T as SqlType>::IsNull;
+    pub type MaybeNullable<N, T> = <N as MaybeNullableType<T>>::Out;
+    pub type IsOneNullable<S1, S2> =
+        <IsSqlTypeNullable<S1> as OneIsNullable<IsSqlTypeNullable<S2>>>::Out;
+    pub type AreAllNullable<S1, S2> =
+        <IsSqlTypeNullable<S1> as AllAreNullable<IsSqlTypeNullable<S2>>>::Out;
+    pub type IsSqlTypeNullable<T> = <T as SqlType>::IsNull;
 }
 pub trait BoolOrNullableBool {}
 impl BoolOrNullableBool for Bool {}

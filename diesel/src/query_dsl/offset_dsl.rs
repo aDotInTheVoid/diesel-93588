@@ -1,7 +1,7 @@
 use crate::query_source::Table;
 pub trait OffsetDsl {
-        type Output;
-        fn offset(self, offset: i64) -> Self::Output;
+    type Output;
+    fn offset(self, offset: i64) -> Self::Output;
 }
 impl<T> OffsetDsl for T
 where

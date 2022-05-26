@@ -1,17 +1,14 @@
 use crate::associations::BelongsTo;
 use crate::backend::Backend;
 use crate::deserialize::{
-    self, FromSqlRow, FromStaticSqlRow, Queryable, SqlTypeOrSelectable,
-    StaticallySizedRow,
+    self, FromSqlRow, FromStaticSqlRow, Queryable, SqlTypeOrSelectable, StaticallySizedRow,
 };
 use crate::expression::{
     is_contained_in_group_by, AppearsOnTable, AsExpression, AsExpressionList, Expression,
-    IsContainedInGroupBy, MixedAggregates, QueryMetadata, Selectable,
-    SelectableExpression, TypedExpressionType, ValidGrouping,
+    IsContainedInGroupBy, MixedAggregates, QueryMetadata, Selectable, SelectableExpression,
+    TypedExpressionType, ValidGrouping,
 };
-use crate::insertable::{
-    CanInsertInSingleQuery, InsertValues, Insertable, InsertableOptionHelper,
-};
+use crate::insertable::{CanInsertInSingleQuery, InsertValues, Insertable, InsertableOptionHelper};
 use crate::query_builder::*;
 use crate::query_dsl::load_dsl::CompatibleType;
 use crate::query_source::*;

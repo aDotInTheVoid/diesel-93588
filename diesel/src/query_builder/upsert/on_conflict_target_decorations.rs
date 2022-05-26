@@ -8,8 +8,8 @@ pub trait UndecoratedConflictTarget {}
 impl UndecoratedConflictTarget for NoConflictTarget {}
 impl<T> UndecoratedConflictTarget for ConflictTarget<T> {}
 pub trait DecoratableTarget<P> {
-        type FilterOutput;
-        fn filter_target(self, predicate: P) -> Self::FilterOutput;
+    type FilterOutput;
+    fn filter_target(self, predicate: P) -> Self::FilterOutput;
 }
 #[derive(Debug)]
 pub struct DecoratedConflictTarget<T, U> {

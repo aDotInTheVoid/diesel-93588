@@ -3,12 +3,8 @@ use super::{AliasSource, AliasedField};
 use crate::backend::Backend;
 use crate::expression::{Expression, SelectableExpression, ValidGrouping};
 use crate::helper_types::AliasedFields;
-use crate::query_builder::{
-    AsQuery, AstPass, FromClause, QueryFragment, QueryId, SelectStatement,
-};
-use crate::query_source::{
-    AppearsInFromClause, Column, Never, QuerySource, Table, TableNotEqual,
-};
+use crate::query_builder::{AsQuery, AstPass, FromClause, QueryFragment, QueryId, SelectStatement};
+use crate::query_source::{AppearsInFromClause, Column, Never, QuerySource, Table, TableNotEqual};
 use crate::result::QueryResult;
 use std::marker::PhantomData;
 #[derive(Debug, Clone, Copy, Default)]
@@ -16,13 +12,13 @@ pub struct Alias<S> {
     pub(crate) source: S,
 }
 impl<S: AliasSource> Alias<S> {
-        pub fn field<F>(&self, field: F) -> AliasedField<S, F>
+    pub fn field<F>(&self, field: F) -> AliasedField<S, F>
     where
         F: Column<Table = S::Target>,
     {
         loop {}
     }
-            pub fn fields<Fields>(&self, fields: Fields) -> AliasedFields<S, Fields>
+    pub fn fields<Fields>(&self, fields: Fields) -> AliasedFields<S, Fields>
     where
         Fields: FieldAliasMapper<S>,
     {
@@ -31,7 +27,7 @@ impl<S: AliasSource> Alias<S> {
 }
 impl<S> Alias<S> {
     #[doc(hidden)]
-        pub const fn new(source: S) -> Self {
+    pub const fn new(source: S) -> Self {
         loop {}
     }
 }
@@ -50,14 +46,12 @@ where
     S: AliasSource,
     S::Target: QuerySource,
     <S::Target as QuerySource>::DefaultSelection: FieldAliasMapper<S>,
-    <<S::Target as QuerySource>::DefaultSelection as FieldAliasMapper<
-        S,
-    >>::Out: SelectableExpression<Self>,
+    <<S::Target as QuerySource>::DefaultSelection as FieldAliasMapper<S>>::Out:
+        SelectableExpression<Self>,
 {
     type FromClause = Self;
-    type DefaultSelection = <<S::Target as QuerySource>::DefaultSelection as FieldAliasMapper<
-        S,
-    >>::Out;
+    type DefaultSelection =
+        <<S::Target as QuerySource>::DefaultSelection as FieldAliasMapper<S>>::Out;
     fn from_clause(&self) -> Self::FromClause {
         loop {}
     }
@@ -89,7 +83,7 @@ where
     }
 }
 pub trait AliasAppearsInFromClause<S, QS> {
-        type Count;
+    type Count;
 }
 impl<S, QS> AppearsInFromClause<QS> for Alias<S>
 where
@@ -99,7 +93,7 @@ where
     type Count = <S::Target as AliasAppearsInFromClause<S, QS>>::Count;
 }
 pub trait AliasAliasAppearsInFromClause<T2, S1, S2> {
-        type Count;
+    type Count;
 }
 impl<T1, S1, S2> AliasAppearsInFromClause<S1, Alias<S2>> for T1
 where
@@ -109,7 +103,7 @@ where
     type Count = <T1 as AliasAliasAppearsInFromClause<S2::Target, S1, S2>>::Count;
 }
 pub trait AliasAliasAppearsInFromClauseSameTable<S2, T> {
-        type Count;
+    type Count;
 }
 impl<T1, T2, S> AliasAppearsInFromClause<S, T2> for T1
 where

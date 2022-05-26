@@ -6,7 +6,7 @@ use crate::sql_types::VarChar;
 pub trait EscapeExpressionMethods: Sized {
     #[doc(hidden)]
     type TextExpression;
-        fn escape(self, _character: char) -> dsl::Escape<Self>;
+    fn escape(self, _character: char) -> dsl::Escape<Self>;
 }
 impl<T, U> EscapeExpressionMethods for Grouped<Like<T, U>> {
     type TextExpression = Like<T, U>;

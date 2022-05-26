@@ -29,44 +29,24 @@ where
 }
 #[cfg(feature = "sqlite")]
 impl<F, S, D, W, O, LOf, G, H, LC> QueryFragment<crate::sqlite::Sqlite>
-for OnConflictSelectWrapper<SelectStatement<F, S, D, WhereClause<W>, O, LOf, G, H, LC>>
+    for OnConflictSelectWrapper<SelectStatement<F, S, D, WhereClause<W>, O, LOf, G, H, LC>>
 where
-    SelectStatement<
-        F,
-        S,
-        D,
-        WhereClause<W>,
-        O,
-        LOf,
-        G,
-        H,
-        LC,
-    >: QueryFragment<crate::sqlite::Sqlite>,
+    SelectStatement<F, S, D, WhereClause<W>, O, LOf, G, H, LC>:
+        QueryFragment<crate::sqlite::Sqlite>,
 {
-    fn walk_ast<'b>(
-        &'b self,
-        out: AstPass<'_, 'b, crate::sqlite::Sqlite>,
-    ) -> QueryResult<()> {
+    fn walk_ast<'b>(&'b self, out: AstPass<'_, 'b, crate::sqlite::Sqlite>) -> QueryResult<()> {
         loop {}
     }
 }
 #[cfg(feature = "sqlite")]
 impl<'a, ST, QS, GB> QueryFragment<crate::sqlite::Sqlite>
-for OnConflictSelectWrapper<BoxedSelectStatement<'a, ST, QS, crate::sqlite::Sqlite, GB>>
+    for OnConflictSelectWrapper<BoxedSelectStatement<'a, ST, QS, crate::sqlite::Sqlite, GB>>
 where
-    BoxedSelectStatement<
-        'a,
-        ST,
-        QS,
-        crate::sqlite::Sqlite,
-        GB,
-    >: QueryFragment<crate::sqlite::Sqlite>,
+    BoxedSelectStatement<'a, ST, QS, crate::sqlite::Sqlite, GB>:
+        QueryFragment<crate::sqlite::Sqlite>,
     QS: QueryFragment<crate::sqlite::Sqlite>,
 {
-    fn walk_ast<'b>(
-        &'b self,
-        pass: AstPass<'_, 'b, crate::sqlite::Sqlite>,
-    ) -> QueryResult<()> {
+    fn walk_ast<'b>(&'b self, pass: AstPass<'_, 'b, crate::sqlite::Sqlite>) -> QueryResult<()> {
         loop {}
     }
 }
@@ -77,14 +57,16 @@ impl<Inner, Tab> IntoConflictValueClause for ValuesClause<Inner, Tab> {
     }
 }
 impl<V, Tab, QId, const STATIC_QUERY_ID: bool> IntoConflictValueClause
-for BatchInsert<V, Tab, QId, STATIC_QUERY_ID> {
+    for BatchInsert<V, Tab, QId, STATIC_QUERY_ID>
+{
     type ValueClause = Self;
     fn into_value_clause(self) -> Self::ValueClause {
         loop {}
     }
 }
 impl<F, S, D, W, O, LOf, G, H, LC, Columns> IntoConflictValueClause
-for InsertFromSelect<SelectStatement<F, S, D, W, O, LOf, G, H, LC>, Columns> {
+    for InsertFromSelect<SelectStatement<F, S, D, W, O, LOf, G, H, LC>, Columns>
+{
     type ValueClause = InsertFromSelect<
         OnConflictSelectWrapper<SelectStatement<F, S, D, W, O, LOf, G, H, LC>>,
         Columns,
@@ -94,7 +76,8 @@ for InsertFromSelect<SelectStatement<F, S, D, W, O, LOf, G, H, LC>, Columns> {
     }
 }
 impl<'a, ST, QS, DB, GB, Columns> IntoConflictValueClause
-for InsertFromSelect<BoxedSelectStatement<'a, ST, QS, DB, GB>, Columns> {
+    for InsertFromSelect<BoxedSelectStatement<'a, ST, QS, DB, GB>, Columns>
+{
     type ValueClause = InsertFromSelect<
         OnConflictSelectWrapper<BoxedSelectStatement<'a, ST, QS, DB, GB>>,
         Columns,

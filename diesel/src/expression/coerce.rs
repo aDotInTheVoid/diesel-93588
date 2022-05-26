@@ -1,9 +1,9 @@
-use std::marker::PhantomData;
 use crate::backend::Backend;
 use crate::expression::*;
 use crate::query_builder::*;
 use crate::result::QueryResult;
 use crate::sql_types::{DieselNumericOps, SqlType};
+use std::marker::PhantomData;
 #[derive(Debug, Copy, Clone, QueryId, DieselNumericOps)]
 #[doc(hidden)]
 pub struct Coerce<T, ST> {
@@ -26,12 +26,14 @@ impl<T, ST, QS> SelectableExpression<QS> for Coerce<T, ST>
 where
     T: SelectableExpression<QS>,
     Self: Expression,
-{}
+{
+}
 impl<T, ST, QS> AppearsOnTable<QS> for Coerce<T, ST>
 where
     T: AppearsOnTable<QS>,
     Self: Expression,
-{}
+{
+}
 impl<T, ST, DB> QueryFragment<DB> for Coerce<T, ST>
 where
     T: QueryFragment<DB>,

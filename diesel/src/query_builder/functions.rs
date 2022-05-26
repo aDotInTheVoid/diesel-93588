@@ -4,27 +4,20 @@ use super::insert_statement::{Insert, InsertOrIgnore, Replace};
 use super::select_clause::SelectClause;
 use super::{
     AsQuery, IncompleteInsertOrIgnoreStatement, IncompleteInsertStatement,
-    IncompleteReplaceStatement, IntoUpdateTarget, SelectStatement, SqlQuery,
-    UpdateStatement,
+    IncompleteReplaceStatement, IntoUpdateTarget, SelectStatement, SqlQuery, UpdateStatement,
 };
 use crate::expression::Expression;
 use crate::Table;
-pub fn update<T: IntoUpdateTarget>(
-    source: T,
-) -> UpdateStatement<T::Table, T::WhereClause> {
+pub fn update<T: IntoUpdateTarget>(source: T) -> UpdateStatement<T::Table, T::WhereClause> {
     loop {}
 }
-pub fn delete<T: IntoUpdateTarget>(
-    source: T,
-) -> DeleteStatement<T::Table, T::WhereClause> {
+pub fn delete<T: IntoUpdateTarget>(source: T) -> DeleteStatement<T::Table, T::WhereClause> {
     loop {}
 }
 pub fn insert_into<T: Table>(target: T) -> IncompleteInsertStatement<T> {
     loop {}
 }
-pub fn insert_or_ignore_into<T: Table>(
-    target: T,
-) -> IncompleteInsertOrIgnoreStatement<T> {
+pub fn insert_or_ignore_into<T: Table>(target: T) -> IncompleteInsertOrIgnoreStatement<T> {
     loop {}
 }
 pub fn select<T>(expression: T) -> crate::dsl::BareSelect<T>

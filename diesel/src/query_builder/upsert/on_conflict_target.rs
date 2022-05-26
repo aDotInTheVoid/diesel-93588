@@ -40,10 +40,7 @@ where
         loop {}
     }
 }
-impl<T> OnConflictTarget<T::Table> for ConflictTarget<T>
-where
-    T: Column,
-{}
+impl<T> OnConflictTarget<T::Table> for ConflictTarget<T> where T: Column {}
 impl<DB, ST, SP> QueryFragment<DB, SP> for ConflictTarget<SqlLiteral<ST>>
 where
     DB: Backend<OnConflictClause = SP>,
@@ -65,10 +62,7 @@ where
         loop {}
     }
 }
-impl<T> OnConflictTarget<T::Table> for ConflictTarget<(T,)>
-where
-    T: Column,
-{}
+impl<T> OnConflictTarget<T::Table> for ConflictTarget<(T,)> where T: Column {}
 macro_rules! on_conflict_tuples {
     ($($Tuple:tt { $(($idx:tt) -> $T:ident, $ST:ident, $TT:ident,)* })+) => {
         $(impl < _DB, _T, _SP, $($T),*> QueryFragment < _DB, _SP > for ConflictTarget <

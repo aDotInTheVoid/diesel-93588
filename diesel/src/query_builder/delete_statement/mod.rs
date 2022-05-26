@@ -1,3 +1,4 @@
+use super::from_clause::FromClause;
 use crate::backend::{Backend, DieselReserveSpecialization};
 use crate::dsl::{Filter, IntoBoxed, OrFilter};
 use crate::expression::{AppearsOnTable, SelectableExpression};
@@ -8,7 +9,6 @@ use crate::query_dsl::methods::{BoxedDsl, FilterDsl, OrFilterDsl};
 use crate::query_dsl::RunQueryDsl;
 use crate::query_source::{QuerySource, Table};
 use crate::result::QueryResult;
-use super::from_clause::FromClause;
 #[must_use = "Queries are only executed when calling `load`, `get_result` or similar."]
 pub struct DeleteStatement<T: QuerySource, U, Ret = NoReturningClause> {
     from_clause: FromClause<T>,
@@ -44,31 +44,28 @@ where
     Ret: QueryId,
 {
     type QueryId = DeleteStatement<T, U::QueryId, Ret::QueryId>;
-    const HAS_STATIC_QUERY_ID: bool = T::HAS_STATIC_QUERY_ID && U::HAS_STATIC_QUERY_ID
-        && Ret::HAS_STATIC_QUERY_ID;
+    const HAS_STATIC_QUERY_ID: bool =
+        T::HAS_STATIC_QUERY_ID && U::HAS_STATIC_QUERY_ID && Ret::HAS_STATIC_QUERY_ID;
 }
-pub type BoxedDeleteStatement<'a, DB, T, Ret = NoReturningClause> = DeleteStatement<
-    T,
-    BoxedWhereClause<'a, DB>,
-    Ret,
->;
+pub type BoxedDeleteStatement<'a, DB, T, Ret = NoReturningClause> =
+    DeleteStatement<T, BoxedWhereClause<'a, DB>, Ret>;
 impl<T: QuerySource, U> DeleteStatement<T, U, NoReturningClause> {
     pub(crate) fn new(table: T, where_clause: U) -> Self {
         loop {}
     }
-                                                                                                            pub fn filter<Predicate>(self, predicate: Predicate) -> Filter<Self, Predicate>
+    pub fn filter<Predicate>(self, predicate: Predicate) -> Filter<Self, Predicate>
     where
         Self: FilterDsl<Predicate>,
     {
         loop {}
     }
-                                                                                                            pub fn or_filter<Predicate>(self, predicate: Predicate) -> OrFilter<Self, Predicate>
+    pub fn or_filter<Predicate>(self, predicate: Predicate) -> OrFilter<Self, Predicate>
     where
         Self: OrFilterDsl<Predicate>,
     {
         loop {}
     }
-                                                                                                                                                                                pub fn into_boxed<'a, DB>(self) -> IntoBoxed<'a, Self, DB>
+    pub fn into_boxed<'a, DB>(self) -> IntoBoxed<'a, Self, DB>
     where
         DB: Backend,
         Self: BoxedDsl<'a, DB>,
@@ -139,12 +136,9 @@ where
 {
     type SqlType = Ret::SqlType;
 }
-impl<T, U, Ret, Conn> RunQueryDsl<Conn> for DeleteStatement<T, U, Ret>
-where
-    T: QuerySource,
-{}
+impl<T, U, Ret, Conn> RunQueryDsl<Conn> for DeleteStatement<T, U, Ret> where T: QuerySource {}
 impl<T: QuerySource, U> DeleteStatement<T, U, NoReturningClause> {
-                                                                                        pub fn returning<E>(self, returns: E) -> DeleteStatement<T, U, ReturningClause<E>>
+    pub fn returning<E>(self, returns: E) -> DeleteStatement<T, U, ReturningClause<E>>
     where
         E: SelectableExpression<T>,
         DeleteStatement<T, U, ReturningClause<E>>: Query,

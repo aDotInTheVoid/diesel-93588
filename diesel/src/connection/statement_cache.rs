@@ -1,11 +1,11 @@
+use crate::backend::Backend;
+use crate::query_builder::*;
+use crate::result::QueryResult;
 use std::any::TypeId;
 use std::borrow::Cow;
 use std::collections::HashMap;
 use std::hash::Hash;
 use std::ops::{Deref, DerefMut};
-use crate::backend::Backend;
-use crate::query_builder::*;
-use crate::result::QueryResult;
 #[allow(missing_debug_implementations, unreachable_pub)]
 #[cfg_attr(
     doc_cfg,
@@ -21,10 +21,14 @@ pub struct StatementCache<DB: Backend, Statement> {
 )]
 #[allow(unreachable_pub)]
 pub enum PrepareForCache {
-        Yes,
-        No,
+    Yes,
+    No,
 }
-#[allow(clippy::len_without_is_empty, clippy::new_without_default, unreachable_pub)]
+#[allow(
+    clippy::len_without_is_empty,
+    clippy::new_without_default,
+    unreachable_pub
+)]
 impl<DB, Statement> StatementCache<DB, Statement>
 where
     DB: Backend,
@@ -32,30 +36,24 @@ where
     DB::QueryBuilder: Default,
     StatementCacheKey<DB>: Hash + Eq,
 {
-        #[allow(unreachable_pub)]
+    #[allow(unreachable_pub)]
     pub fn new() -> Self {
         loop {}
     }
-        #[allow(unreachable_pub)]
-    #[cfg(
-        any(
-            feature = "i-implement-a-third-party-backend-and-opt-into-breaking-changes",
-            feature = "postgres",
-            all(feature = "sqlite", test)
-        )
-    )]
+    #[allow(unreachable_pub)]
+    #[cfg(any(
+        feature = "i-implement-a-third-party-backend-and-opt-into-breaking-changes",
+        feature = "postgres",
+        all(feature = "sqlite", test)
+    ))]
     #[cfg_attr(
         doc_cfg,
-        doc(
-            cfg(
-                feature = "i-implement-a-third-party-backend-and-opt-into-breaking-changes"
-            )
-        )
+        doc(cfg(feature = "i-implement-a-third-party-backend-and-opt-into-breaking-changes"))
     )]
     pub fn len(&self) -> usize {
         loop {}
     }
-                                                #[allow(unreachable_pub)]
+    #[allow(unreachable_pub)]
     pub fn cached_statement<T, F>(
         &mut self,
         source: &T,
@@ -77,8 +75,8 @@ where
 )]
 #[non_exhaustive]
 pub enum MaybeCached<'a, T: 'a> {
-        CannotCache(T),
-        Cached(&'a mut T),
+    CannotCache(T),
+    Cached(&'a mut T),
 }
 impl<'a, T> Deref for MaybeCached<'a, T> {
     type Target = T;
@@ -98,10 +96,10 @@ impl<'a, T> DerefMut for MaybeCached<'a, T> {
     doc(cfg(feature = "i-implement-a-third-party-backend-and-opt-into-breaking-changes"))
 )]
 pub enum StatementCacheKey<DB: Backend> {
-                Type(TypeId),
-                        Sql {
-                sql: String,
-                bind_types: Vec<DB::TypeMetadata>,
+    Type(TypeId),
+    Sql {
+        sql: String,
+        bind_types: Vec<DB::TypeMetadata>,
     },
 }
 impl<DB> StatementCacheKey<DB>
@@ -110,7 +108,7 @@ where
     DB::QueryBuilder: Default,
     DB::TypeMetadata: Clone,
 {
-        #[allow(unreachable_pub)]
+    #[allow(unreachable_pub)]
     pub fn for_source<T>(
         source: &T,
         bind_types: &[DB::TypeMetadata],
@@ -121,18 +119,11 @@ where
     {
         loop {}
     }
-                    #[allow(unreachable_pub)]
-    pub fn sql<T: QueryFragment<DB>>(
-        &self,
-        source: &T,
-        backend: &DB,
-    ) -> QueryResult<Cow<'_, str>> {
+    #[allow(unreachable_pub)]
+    pub fn sql<T: QueryFragment<DB>>(&self, source: &T, backend: &DB) -> QueryResult<Cow<'_, str>> {
         loop {}
     }
-    fn construct_sql<T: QueryFragment<DB>>(
-        source: &T,
-        backend: &DB,
-    ) -> QueryResult<String> {
+    fn construct_sql<T: QueryFragment<DB>>(source: &T, backend: &DB) -> QueryResult<String> {
         loop {}
     }
 }

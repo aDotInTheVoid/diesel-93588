@@ -1,5 +1,3 @@
-use std::error::Error;
-use std::io::Write;
 use crate::backend::{self, Backend};
 use crate::deserialize::{self, FromSql, Queryable};
 use crate::query_builder::bind_collector::RawBytesBindCollector;
@@ -7,6 +5,8 @@ use crate::serialize::{self, IsNull, Output, ToSql};
 use crate::sql_types::{
     self, BigInt, Binary, Bool, Double, Float, Integer, SingleValue, SmallInt, Text,
 };
+use std::error::Error;
+use std::io::Write;
 #[allow(dead_code)]
 mod foreign_impls {
     use super::*;

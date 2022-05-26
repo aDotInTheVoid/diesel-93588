@@ -25,7 +25,8 @@ where
     T: Selectable<DB>,
     DB: Backend,
     T::SelectExpression: Copy,
-{}
+{
+}
 impl<T, E, DB> QueryId for SelectBy<T, DB>
 where
     DB: Backend,
@@ -56,7 +57,8 @@ impl<T, DB> TypedExpressionType for SelectBy<T, DB>
 where
     T: Selectable<DB>,
     DB: Backend,
-{}
+{
+}
 impl<T, GB, E, DB> ValidGrouping<GB> for SelectBy<T, DB>
 where
     DB: Backend,
@@ -71,10 +73,7 @@ where
     T: Selectable<DB>,
     DB: QueryMetadata<SqlTypeOf<T::SelectExpression>>,
 {
-    fn row_metadata(
-        lookup: &mut Self::MetadataLookup,
-        out: &mut Vec<Option<Self::TypeMetadata>>,
-    ) {
+    fn row_metadata(lookup: &mut Self::MetadataLookup, out: &mut Vec<Option<Self::TypeMetadata>>) {
         loop {}
     }
 }
@@ -94,11 +93,13 @@ where
     T: Selectable<DB>,
     T::SelectExpression: SelectableExpression<QS>,
     Self: AppearsOnTable<QS>,
-{}
+{
+}
 impl<T, QS, DB> AppearsOnTable<QS> for SelectBy<T, DB>
 where
     DB: Backend,
     T: Selectable<DB>,
     T::SelectExpression: AppearsOnTable<QS>,
     Self: Expression,
-{}
+{
+}

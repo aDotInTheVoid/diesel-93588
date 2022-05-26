@@ -1,4 +1,3 @@
-use std::marker::PhantomData;
 use crate::backend::{Backend, DieselReserveSpecialization};
 use crate::dsl::AsExprOf;
 use crate::expression::subselect::ValidSubselect;
@@ -22,6 +21,7 @@ use crate::query_source::joins::*;
 use crate::query_source::{QuerySource, Table};
 use crate::result::QueryResult;
 use crate::sql_types::{BigInt, BoolOrNullableBool, IntoNullable};
+use std::marker::PhantomData;
 #[doc(hidden)]
 #[allow(missing_debug_implementations)]
 pub struct BoxedSelectStatement<'a, ST, QS, DB, GB = ()> {
@@ -35,13 +35,7 @@ pub struct BoxedSelectStatement<'a, ST, QS, DB, GB = ()> {
     having: Box<dyn QueryFragment<DB> + Send + 'a>,
     _marker: PhantomData<(ST, GB)>,
 }
-impl<
-    'a,
-    ST,
-    QS: QuerySource,
-    DB,
-    GB,
-> BoxedSelectStatement<'a, ST, FromClause<QS>, DB, GB> {
+impl<'a, ST, QS: QuerySource, DB, GB> BoxedSelectStatement<'a, ST, FromClause<QS>, DB, GB> {
     #[allow(clippy::too_many_arguments)]
     pub(crate) fn new<S, G>(
         select: S,
@@ -57,7 +51,9 @@ impl<
         DB: Backend,
         G: ValidGroupByClause<Expressions = GB> + QueryFragment<DB> + Send + 'a,
         S: SelectClauseExpression<FromClause<QS>, SelectClauseSqlType = ST>
-            + QueryFragment<DB> + Send + 'a,
+            + QueryFragment<DB>
+            + Send
+            + 'a,
         S::Selection: ValidGrouping<GB>,
     {
         loop {}
@@ -79,7 +75,9 @@ impl<'a, ST, DB, GB> BoxedSelectStatement<'a, ST, NoFromClause, DB, GB> {
         DB: Backend,
         G: ValidGroupByClause<Expressions = GB> + QueryFragment<DB> + Send + 'a,
         S: SelectClauseExpression<NoFromClause, SelectClauseSqlType = ST>
-            + QueryFragment<DB> + Send + 'a,
+            + QueryFragment<DB>
+            + Send
+            + 'a,
         S::Selection: ValidGrouping<GB>,
     {
         loop {}
@@ -115,11 +113,10 @@ where
 {
     type SqlType = ST;
 }
-impl<'a, ST, QS, QS2, DB, GB> ValidSubselect<QS2>
-for BoxedSelectStatement<'a, ST, QS, DB, GB>
-where
-    Self: Query<SqlType = ST>,
-{}
+impl<'a, ST, QS, QS2, DB, GB> ValidSubselect<QS2> for BoxedSelectStatement<'a, ST, QS, DB, GB> where
+    Self: Query<SqlType = ST>
+{
+}
 impl<'a, ST, QS, DB, GB> QueryFragment<DB> for BoxedSelectStatement<'a, ST, QS, DB, GB>
 where
     DB: Backend + DieselReserveSpecialization,
@@ -135,26 +132,14 @@ impl<'a, ST, QS, DB, GB> QueryId for BoxedSelectStatement<'a, ST, QS, DB, GB> {
     const HAS_STATIC_QUERY_ID: bool = false;
 }
 impl<'a, ST, QS, DB, Rhs, Kind, On, GB> InternalJoinDsl<Rhs, Kind, On>
-for BoxedSelectStatement<'a, ST, FromClause<QS>, DB, GB>
+    for BoxedSelectStatement<'a, ST, FromClause<QS>, DB, GB>
 where
     QS: QuerySource,
     Rhs: QuerySource,
     JoinOn<Join<QS, Rhs, Kind>, On>: QuerySource,
-    BoxedSelectStatement<
-        'a,
-        ST,
-        FromClause<JoinOn<Join<QS, Rhs, Kind>, On>>,
-        DB,
-        GB,
-    >: AsQuery,
+    BoxedSelectStatement<'a, ST, FromClause<JoinOn<Join<QS, Rhs, Kind>, On>>, DB, GB>: AsQuery,
 {
-    type Output = BoxedSelectStatement<
-        'a,
-        ST,
-        FromClause<JoinOn<Join<QS, Rhs, Kind>, On>>,
-        DB,
-        GB,
-    >;
+    type Output = BoxedSelectStatement<'a, ST, FromClause<JoinOn<Join<QS, Rhs, Kind>, On>>, DB, GB>;
     fn join(self, rhs: Rhs, kind: Kind, on: On) -> Self::Output {
         loop {}
     }
@@ -170,12 +155,11 @@ where
     }
 }
 impl<'a, ST, QS, DB, Selection, GB> SelectDsl<Selection>
-for BoxedSelectStatement<'a, ST, FromClause<QS>, DB, GB>
+    for BoxedSelectStatement<'a, ST, FromClause<QS>, DB, GB>
 where
     DB: Backend,
     QS: QuerySource,
-    Selection: SelectableExpression<QS> + QueryFragment<DB> + ValidGrouping<GB> + Send
-        + 'a,
+    Selection: SelectableExpression<QS> + QueryFragment<DB> + ValidGrouping<GB> + Send + 'a,
 {
     type Output = BoxedSelectStatement<'a, Selection::SqlType, FromClause<QS>, DB, GB>;
     fn select(self, selection: Selection) -> Self::Output {
@@ -183,11 +167,11 @@ where
     }
 }
 impl<'a, ST, DB, Selection, GB> SelectDsl<Selection>
-for BoxedSelectStatement<'a, ST, NoFromClause, DB, GB>
+    for BoxedSelectStatement<'a, ST, NoFromClause, DB, GB>
 where
     DB: Backend,
-    Selection: SelectableExpression<NoFromClause> + QueryFragment<DB> + ValidGrouping<GB>
-        + Send + 'a,
+    Selection:
+        SelectableExpression<NoFromClause> + QueryFragment<DB> + ValidGrouping<GB> + Send + 'a,
 {
     type Output = BoxedSelectStatement<'a, Selection::SqlType, NoFromClause, DB, GB>;
     fn select(self, selection: Selection) -> Self::Output {
@@ -195,7 +179,7 @@ where
     }
 }
 impl<'a, ST, QS, DB, Predicate, GB> FilterDsl<Predicate>
-for BoxedSelectStatement<'a, ST, FromClause<QS>, DB, GB>
+    for BoxedSelectStatement<'a, ST, FromClause<QS>, DB, GB>
 where
     QS: QuerySource,
     BoxedWhereClause<'a, DB>: WhereAnd<Predicate, Output = BoxedWhereClause<'a, DB>>,
@@ -208,7 +192,7 @@ where
     }
 }
 impl<'a, ST, DB, Predicate, GB> FilterDsl<Predicate>
-for BoxedSelectStatement<'a, ST, NoFromClause, DB, GB>
+    for BoxedSelectStatement<'a, ST, NoFromClause, DB, GB>
 where
     BoxedWhereClause<'a, DB>: WhereAnd<Predicate, Output = BoxedWhereClause<'a, DB>>,
     Predicate: AppearsOnTable<NoFromClause> + NonAggregate,
@@ -220,7 +204,7 @@ where
     }
 }
 impl<'a, ST, QS, DB, Predicate, GB> OrFilterDsl<Predicate>
-for BoxedSelectStatement<'a, ST, FromClause<QS>, DB, GB>
+    for BoxedSelectStatement<'a, ST, FromClause<QS>, DB, GB>
 where
     QS: QuerySource,
     BoxedWhereClause<'a, DB>: WhereOr<Predicate, Output = BoxedWhereClause<'a, DB>>,
@@ -233,7 +217,7 @@ where
     }
 }
 impl<'a, ST, DB, Predicate, GB> OrFilterDsl<Predicate>
-for BoxedSelectStatement<'a, ST, NoFromClause, DB, GB>
+    for BoxedSelectStatement<'a, ST, NoFromClause, DB, GB>
 where
     BoxedWhereClause<'a, DB>: WhereOr<Predicate, Output = BoxedWhereClause<'a, DB>>,
     Predicate: AppearsOnTable<NoFromClause> + NonAggregate,
@@ -264,8 +248,7 @@ where
         loop {}
     }
 }
-impl<'a, ST, QS, DB, Order, GB> OrderDsl<Order>
-for BoxedSelectStatement<'a, ST, QS, DB, GB>
+impl<'a, ST, QS, DB, Order, GB> OrderDsl<Order> for BoxedSelectStatement<'a, ST, QS, DB, GB>
 where
     DB: Backend,
     Order: QueryFragment<DB> + AppearsOnTable<QS> + Send + 'a,
@@ -275,8 +258,7 @@ where
         loop {}
     }
 }
-impl<'a, ST, QS, DB, Order, GB> ThenOrderDsl<Order>
-for BoxedSelectStatement<'a, ST, QS, DB, GB>
+impl<'a, ST, QS, DB, Order, GB> ThenOrderDsl<Order> for BoxedSelectStatement<'a, ST, QS, DB, GB>
 where
     DB: Backend + 'a,
     Order: QueryFragment<DB> + AppearsOnTable<QS> + Send + 'a,
@@ -286,8 +268,7 @@ where
         loop {}
     }
 }
-impl<'a, ST, QS, DB, Rhs> JoinTo<Rhs>
-for BoxedSelectStatement<'a, ST, FromClause<QS>, DB, ()>
+impl<'a, ST, QS, DB, Rhs> JoinTo<Rhs> for BoxedSelectStatement<'a, ST, FromClause<QS>, DB, ()>
 where
     QS: JoinTo<Rhs> + QuerySource,
 {
@@ -298,29 +279,25 @@ where
     }
 }
 impl<'a, ST, QS, DB, GB> QueryDsl for BoxedSelectStatement<'a, ST, QS, DB, GB> {}
-impl<'a, ST, QS, DB, Conn, GB> RunQueryDsl<Conn>
-for BoxedSelectStatement<'a, ST, QS, DB, GB> {}
+impl<'a, ST, QS, DB, Conn, GB> RunQueryDsl<Conn> for BoxedSelectStatement<'a, ST, QS, DB, GB> {}
 impl<'a, ST, QS, DB, T, GB> Insertable<T> for BoxedSelectStatement<'a, ST, QS, DB, GB>
 where
     T: Table,
     Self: Query,
-    <T::AllColumns as ValidGrouping<
-        (),
-    >>::IsAggregate: MixedAggregates<is_aggregate::No, Output = is_aggregate::No>,
+    <T::AllColumns as ValidGrouping<()>>::IsAggregate:
+        MixedAggregates<is_aggregate::No, Output = is_aggregate::No>,
 {
     type Values = InsertFromSelect<Self, T::AllColumns>;
     fn values(self) -> Self::Values {
         loop {}
     }
 }
-impl<'a, 'b, ST, QS, DB, T, GB> Insertable<T>
-for &'b BoxedSelectStatement<'a, ST, QS, DB, GB>
+impl<'a, 'b, ST, QS, DB, T, GB> Insertable<T> for &'b BoxedSelectStatement<'a, ST, QS, DB, GB>
 where
     T: Table,
     Self: Query,
-    <T::AllColumns as ValidGrouping<
-        (),
-    >>::IsAggregate: MixedAggregates<is_aggregate::No, Output = is_aggregate::No>,
+    <T::AllColumns as ValidGrouping<()>>::IsAggregate:
+        MixedAggregates<is_aggregate::No, Output = is_aggregate::No>,
 {
     type Values = InsertFromSelect<Self, T::AllColumns>;
     fn values(self) -> Self::Values {
@@ -337,7 +314,7 @@ where
     }
 }
 impl<'a, ST, QS, DB, GB, Predicate> HavingDsl<Predicate>
-for BoxedSelectStatement<'a, ST, QS, DB, GB>
+    for BoxedSelectStatement<'a, ST, QS, DB, GB>
 where
     DB: Backend,
     GB: Expression,
@@ -405,11 +382,14 @@ mod tests {
         loop {}
     }
     macro_rules! assert_boxed_query_send {
-        ($backend:ty) => {
-            { assert_send(users::table.into_boxed::<$backend > ());
-            assert_send(users::table.filter(users::id.eq(10)).into_boxed::<$backend >
-            (),); };
-        };
+        ($backend:ty) => {{
+            assert_send(users::table.into_boxed::<$backend>());
+            assert_send(
+                users::table
+                    .filter(users::id.eq(10))
+                    .into_boxed::<$backend>(),
+            );
+        };};
     }
     #[test]
     fn boxed_is_send() {
