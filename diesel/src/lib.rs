@@ -26,13 +26,6 @@ pub mod row;
 mod type_impls;
 mod util;
 
-#[doc(hidden)]
-#[cfg(all(feature = "with-deprecated", not(feature = "without-deprecated")))]
-#[deprecated(since = "2.0.0", note = "Use explicit macro imports instead")]
-pub use diesel_derives::{
-    AsChangeset, AsExpression, Associations, DieselNumericOps, FromSqlRow, Identifiable,
-    Insertable, QueryId, Queryable, QueryableByName, SqlType,
-};
 pub mod dsl {
     #[doc(inline)]
     pub use crate::expression::dsl::*;
