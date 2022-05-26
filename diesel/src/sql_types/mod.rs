@@ -12,17 +12,13 @@
 //! [`FromSql`]: super::deserialize::FromSql
 //!
 //! Any backend specific types are re-exported through this module
-
 mod fold;
 pub mod ops;
 mod ord;
-
 pub use self::fold::Foldable;
 pub use self::ord::SqlOrd;
-
 use crate::expression::TypedExpressionType;
 use crate::query_builder::QueryId;
-
 /// The boolean SQL type.
 ///
 /// On backends without a native boolean type,
@@ -42,7 +38,6 @@ use crate::query_builder::QueryId;
 #[diesel(sqlite_type(name = "Integer"))]
 #[diesel(mysql_type(name = "Tiny"))]
 pub struct Bool;
-
 /// The tiny integer SQL type.
 ///
 /// This is only available on MySQL.
@@ -63,7 +58,6 @@ pub struct Bool;
 pub struct TinyInt;
 #[doc(hidden)]
 pub type Tinyint = TinyInt;
-
 /// The small integer SQL type.
 ///
 /// ### [`ToSql`](crate::serialize::ToSql) impls
@@ -84,7 +78,6 @@ pub struct SmallInt;
 pub type Int2 = SmallInt;
 #[doc(hidden)]
 pub type Smallint = SmallInt;
-
 /// The integer SQL type.
 ///
 /// ### [`ToSql`](crate::serialize::ToSql) impls
@@ -103,7 +96,6 @@ pub type Smallint = SmallInt;
 pub struct Integer;
 #[doc(hidden)]
 pub type Int4 = Integer;
-
 /// The big integer SQL type.
 ///
 /// ### [`ToSql`](crate::serialize::ToSql) impls
@@ -124,7 +116,6 @@ pub struct BigInt;
 pub type Int8 = BigInt;
 #[doc(hidden)]
 pub type Bigint = BigInt;
-
 /// The float SQL type.
 ///
 /// ### [`ToSql`](crate::serialize::ToSql) impls
@@ -143,7 +134,6 @@ pub type Bigint = BigInt;
 pub struct Float;
 #[doc(hidden)]
 pub type Float4 = Float;
-
 /// The double precision float SQL type.
 ///
 /// ### [`ToSql`](crate::serialize::ToSql) impls
@@ -162,7 +152,6 @@ pub type Float4 = Float;
 pub struct Double;
 #[doc(hidden)]
 pub type Float8 = Double;
-
 /// The arbitrary precision numeric SQL type.
 ///
 /// This type is only supported on PostgreSQL and MySQL.
@@ -182,10 +171,8 @@ pub type Float8 = Double;
 #[diesel(mysql_type(name = "Numeric"))]
 #[diesel(sqlite_type(name = "Double"))]
 pub struct Numeric;
-
 /// Alias for `Numeric`
 pub type Decimal = Numeric;
-
 /// The text SQL type.
 ///
 /// On all backends strings must be valid UTF-8.
@@ -210,7 +197,6 @@ pub type Decimal = Numeric;
 #[diesel(sqlite_type(name = "Text"))]
 #[diesel(mysql_type(name = "String"))]
 pub struct Text;
-
 /// The SQL `VARCHAR` type
 ///
 /// This type is generally interchangeable with `TEXT`, so Diesel has this as an
@@ -231,7 +217,6 @@ pub type Tinytext = Text;
 pub type Mediumtext = Text;
 #[doc(hidden)]
 pub type Longtext = Text;
-
 /// The binary SQL type.
 ///
 /// Schema inference will treat all variants of `BLOB` as this type (e.g.
@@ -253,7 +238,6 @@ pub type Longtext = Text;
 #[diesel(sqlite_type(name = "Binary"))]
 #[diesel(mysql_type(name = "Blob"))]
 pub struct Binary;
-
 #[doc(hidden)]
 pub type Tinyblob = Binary;
 #[doc(hidden)]
@@ -266,7 +250,6 @@ pub type Longblob = Binary;
 pub type Varbinary = Binary;
 #[doc(hidden)]
 pub type Bit = Binary;
-
 /// The date SQL type.
 ///
 /// ### [`ToSql`](crate::serialize::ToSql) impls
@@ -283,7 +266,6 @@ pub type Bit = Binary;
 #[diesel(sqlite_type(name = "Text"))]
 #[diesel(mysql_type(name = "Date"))]
 pub struct Date;
-
 /// The interval SQL type.
 ///
 /// This type is currently only implemented for PostgreSQL.
@@ -301,7 +283,6 @@ pub struct Date;
 #[derive(Debug, Clone, Copy, Default, QueryId, SqlType)]
 #[diesel(postgres_type(oid = 1186, array_oid = 1187))]
 pub struct Interval;
-
 /// The time SQL type.
 ///
 /// ### [`ToSql`](crate::serialize::ToSql) impls
@@ -318,7 +299,6 @@ pub struct Interval;
 #[diesel(sqlite_type(name = "Text"))]
 #[diesel(mysql_type(name = "Time"))]
 pub struct Time;
-
 /// The timestamp SQL type.
 ///
 /// ### [`ToSql`](crate::serialize::ToSql) impls
@@ -334,10 +314,7 @@ pub struct Time;
 /// - [`time::Timespec`][Timespec] with `feature = "deprecated-time"` (PG only)
 ///
 /// [SystemTime]: std::time::SystemTime
-#[cfg_attr(
-    feature = "chrono",
-    doc = " [NaiveDateTime]: chrono::naive::NaiveDateTime"
-)]
+#[cfg_attr(feature = "chrono", doc = " [NaiveDateTime]: chrono::naive::NaiveDateTime")]
 #[cfg_attr(
     not(feature = "chrono"),
     doc = " [NaiveDateTime]: https://docs.rs/chrono/*/chrono/naive/struct.NaiveDateTime.html"
@@ -348,7 +325,6 @@ pub struct Time;
 #[diesel(sqlite_type(name = "Text"))]
 #[diesel(mysql_type(name = "Timestamp"))]
 pub struct Timestamp;
-
 /// The JSON SQL type.  This type can only be used with `feature =
 /// "serde_json"`
 ///
@@ -370,7 +346,6 @@ pub struct Timestamp;
 #[diesel(postgres_type(oid = 114, array_oid = 199))]
 #[diesel(mysql_type(name = "String"))]
 pub struct Json;
-
 /// The nullable SQL type.
 ///
 /// This wraps another SQL type to indicate that it can be null.
@@ -386,26 +361,21 @@ pub struct Json;
 /// - `Option<T>` for any `T` which implements `FromSql<ST>`
 #[derive(Debug, Clone, Copy, Default)]
 pub struct Nullable<ST>(ST);
-
 impl<ST> SqlType for Nullable<ST>
 where
     ST: SqlType,
 {
     type IsNull = is_nullable::IsNullable;
 }
-
 #[doc(inline)]
 #[cfg(feature = "postgres_backend")]
 pub use crate::pg::sql_types::*;
-
 #[doc(inline)]
 #[cfg(feature = "mysql_backend")]
 pub use crate::mysql::sql_types::{Datetime, Unsigned};
-
 #[doc(inline)]
 #[cfg(feature = "sqlite")]
 pub use crate::sqlite::sql_types::Timestamptz as TimestamptzSqlite;
-
 /// Indicates that a SQL type exists for a backend.
 ///
 /// This trait can be derived using the [`SqlType` derive](derive@SqlType)
@@ -426,7 +396,6 @@ pub trait HasSqlType<ST>: TypeMetadata {
     /// of this method should not do dynamic lookup unless absolutely necessary
     fn metadata(lookup: &mut Self::MetadataLookup) -> Self::TypeMetadata;
 }
-
 /// Information about how a backend stores metadata about given SQL types
 pub trait TypeMetadata {
     /// The actual type used to represent metadata.
@@ -441,7 +410,6 @@ pub trait TypeMetadata {
     /// be `()`.
     type MetadataLookup: ?Sized;
 }
-
 /// Converts a type which may or may not be nullable into its nullable
 /// representation.
 pub trait IntoNullable {
@@ -450,21 +418,18 @@ pub trait IntoNullable {
     /// For all types except `Nullable`, this will be `Nullable<Self>`.
     type Nullable;
 }
-
 impl<T> IntoNullable for T
 where
     T: SqlType<IsNull = is_nullable::NotNull> + SingleValue,
 {
     type Nullable = Nullable<T>;
 }
-
 impl<T> IntoNullable for Nullable<T>
 where
     T: SqlType,
 {
     type Nullable = Self;
 }
-
 /// Converts a type which may or may not be nullable into its not nullable
 /// representation.
 pub trait IntoNotNullable {
@@ -473,21 +438,18 @@ pub trait IntoNotNullable {
     /// For `Nullable<T>`, this will be `T` otherwise the type itself
     type NotNullable;
 }
-
 impl<T> IntoNotNullable for T
 where
     T: SqlType<IsNull = is_nullable::NotNull>,
 {
     type NotNullable = T;
 }
-
 impl<T> IntoNotNullable for Nullable<T>
 where
     T: SqlType,
 {
     type NotNullable = T;
 }
-
 /// A marker trait indicating that a SQL type represents a single value, as
 /// opposed to a list of values.
 ///
@@ -500,14 +462,11 @@ where
 /// This trait is automatically implemented by [`#[derive(SqlType)]`](derive@SqlType)
 ///
 pub trait SingleValue: SqlType {}
-
 impl<T: SqlType + SingleValue> SingleValue for Nullable<T> {}
-
 #[doc(inline)]
 pub use diesel_derives::DieselNumericOps;
 #[doc(inline)]
 pub use diesel_derives::SqlType;
-
 /// A marker trait for SQL types
 ///
 /// # Deriving
@@ -522,23 +481,23 @@ pub trait SqlType: 'static {
     /// module. See the documentation of those structs for more details.
     ///
     /// ['is_nullable`]: is_nullable
-    type IsNull: OneIsNullable<is_nullable::IsNullable> + OneIsNullable<is_nullable::NotNull>;
+    type IsNull: OneIsNullable<is_nullable::IsNullable>
+        + OneIsNullable<is_nullable::NotNull>;
 }
-
 /// Is one value of `IsNull` nullable?
 ///
 /// You should never implement this trait.
 pub trait OneIsNullable<Other> {
     /// See the trait documentation
-    type Out: OneIsNullable<is_nullable::IsNullable> + OneIsNullable<is_nullable::NotNull>;
+    type Out: OneIsNullable<is_nullable::IsNullable>
+        + OneIsNullable<is_nullable::NotNull>;
 }
-
 /// Are both values of `IsNull` are nullable?
 pub trait AllAreNullable<Other> {
     /// See the trait documentation
-    type Out: AllAreNullable<is_nullable::NotNull> + AllAreNullable<is_nullable::IsNullable>;
+    type Out: AllAreNullable<is_nullable::NotNull>
+        + AllAreNullable<is_nullable::IsNullable>;
 }
-
 /// A type level constructor for maybe nullable types
 ///
 /// Constructs either `Nullable<O>` (for `Self` == `is_nullable::IsNullable`)
@@ -547,18 +506,15 @@ pub trait MaybeNullableType<O> {
     /// See the trait documentation
     type Out: SqlType + TypedExpressionType;
 }
-
 /// Possible values for `SqlType::IsNullable`
 pub mod is_nullable {
     use super::*;
-
     /// No, this type cannot be null as it is marked as `NOT NULL` at database level
     ///
     /// This should be choosen for basically all manual impls of `SqlType`
     /// beside implementing your own `Nullable<>` wrapper type
     #[derive(Debug, Clone, Copy)]
     pub struct NotNull;
-
     /// Yes, this type can be null
     ///
     /// The only diesel provided `SqlType` that uses this value is [`Nullable<T>`]
@@ -566,46 +522,36 @@ pub mod is_nullable {
     /// [`Nullable<T>`]: Nullable
     #[derive(Debug, Clone, Copy)]
     pub struct IsNullable;
-
     impl OneIsNullable<NotNull> for NotNull {
         type Out = NotNull;
     }
-
     impl OneIsNullable<IsNullable> for NotNull {
         type Out = IsNullable;
     }
-
     impl OneIsNullable<NotNull> for IsNullable {
         type Out = IsNullable;
     }
-
     impl OneIsNullable<IsNullable> for IsNullable {
         type Out = IsNullable;
     }
-
     impl AllAreNullable<NotNull> for NotNull {
         type Out = NotNull;
     }
-
     impl AllAreNullable<IsNullable> for NotNull {
         type Out = NotNull;
     }
-
     impl AllAreNullable<NotNull> for IsNullable {
         type Out = NotNull;
     }
-
     impl AllAreNullable<IsNullable> for IsNullable {
         type Out = IsNullable;
     }
-
     impl<O> MaybeNullableType<O> for NotNull
     where
         O: SqlType + TypedExpressionType,
     {
         type Out = O;
     }
-
     impl<O> MaybeNullableType<O> for IsNullable
     where
         O: SqlType,
@@ -613,30 +559,25 @@ pub mod is_nullable {
     {
         type Out = Nullable<O>;
     }
-
     /// Represents the output type of [`MaybeNullableType`]
     pub type MaybeNullable<N, T> = <N as MaybeNullableType<T>>::Out;
-
     /// Represents the output type of [`OneIsNullable`]
     /// for two given SQL types
-    pub type IsOneNullable<S1, S2> =
-        <IsSqlTypeNullable<S1> as OneIsNullable<IsSqlTypeNullable<S2>>>::Out;
-
+    pub type IsOneNullable<S1, S2> = <IsSqlTypeNullable<
+        S1,
+    > as OneIsNullable<IsSqlTypeNullable<S2>>>::Out;
     /// Represents the output type of [`AllAreNullable`]
     /// for two given SQL types
-    pub type AreAllNullable<S1, S2> =
-        <IsSqlTypeNullable<S1> as AllAreNullable<IsSqlTypeNullable<S2>>>::Out;
-
+    pub type AreAllNullable<S1, S2> = <IsSqlTypeNullable<
+        S1,
+    > as AllAreNullable<IsSqlTypeNullable<S2>>>::Out;
     /// Represents if the SQL type is nullable or not
     pub type IsSqlTypeNullable<T> = <T as SqlType>::IsNull;
 }
-
 /// A marker trait for accepting expressions of the type `Bool` and
 /// `Nullable<Bool>` in the same place
 pub trait BoolOrNullableBool {}
-
 impl BoolOrNullableBool for Bool {}
 impl BoolOrNullableBool for Nullable<Bool> {}
-
 #[doc(inline)]
 pub use crate::expression::expression_types::Untyped;

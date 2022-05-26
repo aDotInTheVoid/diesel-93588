@@ -1,12 +1,10 @@
 pub(super) mod batch_insert;
 mod column_list;
 mod insert_from_select;
-
 pub(crate) use self::batch_insert::BatchInsert;
 pub(crate) use self::column_list::ColumnList;
 pub(crate) use self::insert_from_select::InsertFromSelect;
 pub(crate) use self::private::{Insert, InsertOrIgnore, Replace};
-
 use super::returning_clause::*;
 use crate::backend::{sql_dialect, Backend, DieselReserveSpecialization, SqlDialect};
 use crate::expression::grouped::Grouped;
@@ -18,10 +16,8 @@ use crate::query_source::{Column, Table};
 use crate::result::QueryResult;
 use crate::{insertable::*, QuerySource};
 use std::marker::PhantomData;
-
 #[cfg(feature = "sqlite")]
 mod insert_with_default_for_sqlite;
-
 /// The structure returned by [`insert_into`].
 ///
 /// The provided methods [`values`] and [`default_values`] will insert
@@ -36,28 +32,34 @@ pub struct IncompleteInsertStatement<T, Op = Insert> {
     target: T,
     operator: Op,
 }
-
 /// Represents the return type of [`diesel::insert_or_ignore_into`](crate::insert_or_ignore_into)
-pub type IncompleteInsertOrIgnoreStatement<T> = IncompleteInsertStatement<T, InsertOrIgnore>;
-
+pub type IncompleteInsertOrIgnoreStatement<T> = IncompleteInsertStatement<
+    T,
+    InsertOrIgnore,
+>;
 /// Represents a complete `INSERT OR IGNORE` statement.
-pub type InsertOrIgnoreStatement<T, U, Ret = NoReturningClause> =
-    InsertStatement<T, U, InsertOrIgnore, Ret>;
-
+pub type InsertOrIgnoreStatement<T, U, Ret = NoReturningClause> = InsertStatement<
+    T,
+    U,
+    InsertOrIgnore,
+    Ret,
+>;
 /// Represents the return type of [`diesel::replace_into`](crate::replace_into)
 pub type IncompleteReplaceStatement<T> = IncompleteInsertStatement<T, Replace>;
-
 /// Represents a complete `INSERT OR REPLACE` statement.
-pub type ReplaceStatement<T, U, Ret = NoReturningClause> = InsertStatement<T, U, Replace, Ret>;
-
+pub type ReplaceStatement<T, U, Ret = NoReturningClause> = InsertStatement<
+    T,
+    U,
+    Replace,
+    Ret,
+>;
 impl<T, Op> IncompleteInsertStatement<T, Op>
 where
     T: QuerySource,
 {
     pub(crate) fn new(target: T, operator: Op) -> Self {
-        IncompleteInsertStatement { target, operator }
+        loop {}
     }
-
     /// Inserts `DEFAULT VALUES` into the targeted table.
     ///
     /// ```rust
@@ -95,9 +97,8 @@ where
     /// # }
     /// ```
     pub fn default_values(self) -> InsertStatement<T, DefaultValues, Op> {
-        self.values(DefaultValues)
+        loop {}
     }
-
     /// Inserts the given values into the table passed to `insert_into`.
     ///
     /// See the documentation of [`insert_into`] for
@@ -113,15 +114,9 @@ where
     where
         U: Insertable<T>,
     {
-        InsertStatement::new(
-            self.target,
-            records.values(),
-            self.operator,
-            NoReturningClause,
-        )
+        loop {}
     }
 }
-
 #[derive(Debug, Copy, Clone)]
 #[must_use = "Queries are only executed when calling `load`, `get_result` or similar."]
 /// A fully constructed insert statement.
@@ -143,7 +138,6 @@ pub struct InsertStatement<T: QuerySource, U, Op = Insert, Ret = NoReturningClau
     returning: Ret,
     into_clause: T::FromClause,
 }
-
 impl<T, U, Op, Ret> QueryId for InsertStatement<T, U, Op, Ret>
 where
     T: QuerySource + QueryId + 'static,
@@ -152,32 +146,20 @@ where
     Ret: QueryId,
 {
     type QueryId = InsertStatement<T, U::QueryId, Op::QueryId, Ret::QueryId>;
-
-    const HAS_STATIC_QUERY_ID: bool = T::HAS_STATIC_QUERY_ID
-        && U::HAS_STATIC_QUERY_ID
-        && Op::HAS_STATIC_QUERY_ID
-        && Ret::HAS_STATIC_QUERY_ID;
+    const HAS_STATIC_QUERY_ID: bool = T::HAS_STATIC_QUERY_ID && U::HAS_STATIC_QUERY_ID
+        && Op::HAS_STATIC_QUERY_ID && Ret::HAS_STATIC_QUERY_ID;
 }
-
 impl<T: QuerySource, U, Op, Ret> InsertStatement<T, U, Op, Ret> {
     fn new(target: T, records: U, operator: Op, returning: Ret) -> Self {
-        InsertStatement {
-            into_clause: target.from_clause(),
-            operator,
-            target,
-            records,
-            returning,
-        }
+        loop {}
     }
-
     pub(crate) fn replace_values<F, V>(self, f: F) -> InsertStatement<T, V, Op, Ret>
     where
         F: FnOnce(U) -> V,
     {
-        InsertStatement::new(self.target, f(self.records), self.operator, self.returning)
+        loop {}
     }
 }
-
 impl<T: QuerySource, U, C, Op, Ret> InsertStatement<T, InsertFromSelect<U, C>, Op, Ret> {
     /// Set the column list when inserting from a select statement
     ///
@@ -192,15 +174,9 @@ impl<T: QuerySource, U, C, Op, Ret> InsertStatement<T, InsertFromSelect<U, C>, O
         C2: ColumnList<Table = T> + Expression,
         U: Query<SqlType = C2::SqlType>,
     {
-        InsertStatement::new(
-            self.target,
-            self.records.with_columns(columns),
-            self.operator,
-            self.returning,
-        )
+        loop {}
     }
 }
-
 impl<T, U, Op, Ret, DB> QueryFragment<DB> for InsertStatement<T, U, Op, Ret>
 where
     DB: Backend + DieselReserveSpecialization,
@@ -211,23 +187,9 @@ where
     Ret: QueryFragment<DB>,
 {
     fn walk_ast<'b>(&'b self, mut out: AstPass<'_, 'b, DB>) -> QueryResult<()> {
-        if self.records.rows_to_insert() == Some(0) {
-            out.push_sql("SELECT 1 FROM ");
-            self.into_clause.walk_ast(out.reborrow())?;
-            out.push_sql(" WHERE 1=0");
-            return Ok(());
-        }
-
-        self.operator.walk_ast(out.reborrow())?;
-        out.push_sql(" INTO ");
-        self.into_clause.walk_ast(out.reborrow())?;
-        out.push_sql(" ");
-        self.records.walk_ast(out.reborrow())?;
-        self.returning.walk_ast(out.reborrow())?;
-        Ok(())
+        loop {}
     }
 }
-
 impl<T, U, Op> AsQuery for InsertStatement<T, U, Op, NoReturningClause>
 where
     T: Table,
@@ -235,12 +197,10 @@ where
 {
     type SqlType = <Self::Query as Query>::SqlType;
     type Query = InsertStatement<T, U, Op, ReturningClause<T::AllColumns>>;
-
     fn as_query(self) -> Self::Query {
-        self.returning(T::all_columns())
+        loop {}
     }
 }
-
 impl<T, U, Op, Ret> Query for InsertStatement<T, U, Op, ReturningClause<Ret>>
 where
     T: QuerySource,
@@ -248,9 +208,8 @@ where
 {
     type SqlType = Ret::SqlType;
 }
-
-impl<T: QuerySource, U, Op, Ret, Conn> RunQueryDsl<Conn> for InsertStatement<T, U, Op, Ret> {}
-
+impl<T: QuerySource, U, Op, Ret, Conn> RunQueryDsl<Conn>
+for InsertStatement<T, U, Op, Ret> {}
 impl<T: QuerySource, U, Op> InsertStatement<T, U, Op> {
     /// Specify what expression is returned after execution of the `insert`.
     /// # Examples
@@ -273,19 +232,16 @@ impl<T: QuerySource, U, Op> InsertStatement<T, U, Op> {
     /// # #[cfg(not(feature = "postgres"))]
     /// # fn main() {}
     /// ```
-    pub fn returning<E>(self, returns: E) -> InsertStatement<T, U, Op, ReturningClause<E>>
+    pub fn returning<E>(
+        self,
+        returns: E,
+    ) -> InsertStatement<T, U, Op, ReturningClause<E>>
     where
         InsertStatement<T, U, Op, ReturningClause<E>>: Query,
     {
-        InsertStatement::new(
-            self.target,
-            self.records,
-            self.operator,
-            ReturningClause(returns),
-        )
+        loop {}
     }
 }
-
 /// Marker trait to indicate that no additional operations have been added
 /// to a record for insert.
 ///
@@ -297,89 +253,83 @@ impl<T: QuerySource, U, Op> InsertStatement<T, U, Op> {
     cfg(feature = "i-implement-a-third-party-backend-and-opt-into-breaking-changes")
 )]
 pub trait UndecoratedInsertRecord<Table> {}
-
-impl<'a, T, Tab> UndecoratedInsertRecord<Tab> for &'a T where
-    T: ?Sized + UndecoratedInsertRecord<Tab>
-{
-}
-
-impl<T, U> UndecoratedInsertRecord<T::Table> for ColumnInsertValue<T, U> where T: Column {}
-
-impl<T, U> UndecoratedInsertRecord<T::Table>
-    for DefaultableColumnInsertValue<ColumnInsertValue<T, U>>
+impl<'a, T, Tab> UndecoratedInsertRecord<Tab> for &'a T
+where
+    T: ?Sized + UndecoratedInsertRecord<Tab>,
+{}
+impl<T, U> UndecoratedInsertRecord<T::Table> for ColumnInsertValue<T, U>
 where
     T: Column,
-{
-}
-
-impl<T, Table> UndecoratedInsertRecord<Table> for [T] where T: UndecoratedInsertRecord<Table> {}
-
-impl<T, Table, QId, const STATIC_QUERY_ID: bool> UndecoratedInsertRecord<Table>
-    for BatchInsert<T, Table, QId, STATIC_QUERY_ID>
+{}
+impl<T, U> UndecoratedInsertRecord<T::Table>
+for DefaultableColumnInsertValue<ColumnInsertValue<T, U>>
+where
+    T: Column,
+{}
+impl<T, Table> UndecoratedInsertRecord<Table> for [T]
 where
     T: UndecoratedInsertRecord<Table>,
-{
-}
-
-impl<T, Table> UndecoratedInsertRecord<Table> for Vec<T> where [T]: UndecoratedInsertRecord<Table> {}
-
-impl<Lhs, Rhs> UndecoratedInsertRecord<Lhs::Table> for Eq<Lhs, Rhs> where Lhs: Column {}
-
-impl<Lhs, Rhs, Tab> UndecoratedInsertRecord<Tab> for Option<Eq<Lhs, Rhs>> where
-    Eq<Lhs, Rhs>: UndecoratedInsertRecord<Tab>
-{
-}
-
-impl<Lhs, Rhs> UndecoratedInsertRecord<Lhs::Table> for Grouped<Eq<Lhs, Rhs>> where Lhs: Column {}
-
-impl<Lhs, Rhs, Tab> UndecoratedInsertRecord<Tab> for Option<Grouped<Eq<Lhs, Rhs>>> where
-    Eq<Lhs, Rhs>: UndecoratedInsertRecord<Tab>
-{
-}
-
-impl<T, Table> UndecoratedInsertRecord<Table> for ValuesClause<T, Table> where
-    T: UndecoratedInsertRecord<Table>
-{
-}
-
+{}
+impl<T, Table, QId, const STATIC_QUERY_ID: bool> UndecoratedInsertRecord<Table>
+for BatchInsert<T, Table, QId, STATIC_QUERY_ID>
+where
+    T: UndecoratedInsertRecord<Table>,
+{}
+impl<T, Table> UndecoratedInsertRecord<Table> for Vec<T>
+where
+    [T]: UndecoratedInsertRecord<Table>,
+{}
+impl<Lhs, Rhs> UndecoratedInsertRecord<Lhs::Table> for Eq<Lhs, Rhs>
+where
+    Lhs: Column,
+{}
+impl<Lhs, Rhs, Tab> UndecoratedInsertRecord<Tab> for Option<Eq<Lhs, Rhs>>
+where
+    Eq<Lhs, Rhs>: UndecoratedInsertRecord<Tab>,
+{}
+impl<Lhs, Rhs> UndecoratedInsertRecord<Lhs::Table> for Grouped<Eq<Lhs, Rhs>>
+where
+    Lhs: Column,
+{}
+impl<Lhs, Rhs, Tab> UndecoratedInsertRecord<Tab> for Option<Grouped<Eq<Lhs, Rhs>>>
+where
+    Eq<Lhs, Rhs>: UndecoratedInsertRecord<Tab>,
+{}
+impl<T, Table> UndecoratedInsertRecord<Table> for ValuesClause<T, Table>
+where
+    T: UndecoratedInsertRecord<Table>,
+{}
 #[derive(Debug, Clone, Copy, QueryId)]
 #[doc(hidden)]
 pub struct DefaultValues;
-
 impl<DB: Backend> CanInsertInSingleQuery<DB> for DefaultValues {
     fn rows_to_insert(&self) -> Option<usize> {
-        Some(1)
+        loop {}
     }
 }
-
 impl<Tab> Insertable<Tab> for DefaultValues {
     type Values = DefaultValues;
-
     fn values(self) -> Self::Values {
-        self
+        loop {}
     }
 }
-
 impl<'a, Tab> Insertable<Tab> for &'a DefaultValues {
     type Values = DefaultValues;
-
     fn values(self) -> Self::Values {
-        *self
+        loop {}
     }
 }
-
 impl<DB> QueryFragment<DB> for DefaultValues
 where
     DB: Backend,
     Self: QueryFragment<DB, DB::DefaultValueClauseForInsert>,
 {
     fn walk_ast<'b>(&'b self, pass: AstPass<'_, 'b, DB>) -> QueryResult<()> {
-        <Self as QueryFragment<DB, DB::DefaultValueClauseForInsert>>::walk_ast(self, pass)
+        loop {}
     }
 }
-
 impl<DB> QueryFragment<DB, sql_dialect::default_value_clause::AnsiDefaultValueClause>
-    for DefaultValues
+for DefaultValues
 where
     DB: Backend
         + SqlDialect<
@@ -387,11 +337,9 @@ where
         >,
 {
     fn walk_ast<'b>(&'b self, mut out: AstPass<'_, 'b, DB>) -> QueryResult<()> {
-        out.push_sql("DEFAULT VALUES");
-        Ok(())
+        loop {}
     }
 }
-
 /// This type represents a values clause used as part of insert statements
 ///
 /// Diesel exposes this type for third party backends so that
@@ -406,32 +354,25 @@ pub struct ValuesClause<T, Tab> {
     pub values: T,
     _marker: PhantomData<Tab>,
 }
-
 impl<T: Default, Tab> Default for ValuesClause<T, Tab> {
     fn default() -> Self {
-        Self::new(T::default())
+        loop {}
     }
 }
-
 impl<T, Tab> ValuesClause<T, Tab> {
     pub(crate) fn new(values: T) -> Self {
-        Self {
-            values,
-            _marker: PhantomData,
-        }
+        loop {}
     }
 }
-
 impl<T, Tab, DB> CanInsertInSingleQuery<DB> for ValuesClause<T, Tab>
 where
     DB: Backend,
     T: CanInsertInSingleQuery<DB>,
 {
     fn rows_to_insert(&self) -> Option<usize> {
-        self.values.rows_to_insert()
+        loop {}
     }
 }
-
 impl<T, Tab, DB> QueryFragment<DB> for ValuesClause<T, Tab>
 where
     DB: Backend,
@@ -440,84 +381,61 @@ where
     DefaultValues: QueryFragment<DB>,
 {
     fn walk_ast<'b>(&'b self, mut out: AstPass<'_, 'b, DB>) -> QueryResult<()> {
-        if self.values.is_noop(out.backend())? {
-            DefaultValues.walk_ast(out)?;
-        } else {
-            out.push_sql("(");
-            self.values.column_names(out.reborrow())?;
-            out.push_sql(") VALUES (");
-            self.values.walk_ast(out.reborrow())?;
-            out.push_sql(")");
-        }
-        Ok(())
+        loop {}
     }
 }
-
 mod private {
     use crate::backend::{Backend, DieselReserveSpecialization};
     use crate::query_builder::{AstPass, QueryFragment, QueryId};
     use crate::QueryResult;
-
     #[derive(Debug, Copy, Clone, QueryId)]
     pub struct Insert;
-
     impl<DB> QueryFragment<DB> for Insert
     where
         DB: Backend + DieselReserveSpecialization,
     {
         fn walk_ast<'b>(&'b self, mut out: AstPass<'_, 'b, DB>) -> QueryResult<()> {
-            out.push_sql("INSERT");
-            Ok(())
+            loop {}
         }
     }
-
     #[derive(Debug, Copy, Clone, QueryId)]
     pub struct InsertOrIgnore;
-
     #[cfg(feature = "sqlite")]
     impl QueryFragment<crate::sqlite::Sqlite> for InsertOrIgnore {
         fn walk_ast<'b>(
             &'b self,
             mut out: AstPass<'_, 'b, crate::sqlite::Sqlite>,
         ) -> QueryResult<()> {
-            out.push_sql("INSERT OR IGNORE");
-            Ok(())
+            loop {}
         }
     }
-
     #[cfg(feature = "mysql")]
     impl QueryFragment<crate::mysql::Mysql> for InsertOrIgnore {
         fn walk_ast<'b>(
             &'b self,
             mut out: AstPass<'_, 'b, crate::mysql::Mysql>,
         ) -> QueryResult<()> {
-            out.push_sql("INSERT IGNORE");
-            Ok(())
+            loop {}
         }
     }
-
     #[derive(Debug, Copy, Clone, QueryId)]
     pub struct Replace;
-
     #[cfg(feature = "sqlite")]
     impl QueryFragment<crate::sqlite::Sqlite> for Replace {
         fn walk_ast<'b>(
             &'b self,
             mut out: AstPass<'_, 'b, crate::sqlite::Sqlite>,
         ) -> QueryResult<()> {
-            out.push_sql("REPLACE");
-            Ok(())
+            loop {}
         }
     }
-
     #[cfg(feature = "mysql")]
     impl QueryFragment<crate::mysql::Mysql> for Replace {
         fn walk_ast<'b>(
             &'b self,
             mut out: AstPass<'_, 'b, crate::mysql::Mysql>,
         ) -> QueryResult<()> {
-            out.push_sql("REPLACE");
-            Ok(())
+            loop {}
         }
     }
 }

@@ -5,7 +5,6 @@ use crate::query_builder::FromClause;
 use crate::query_builder::SelectStatement;
 use crate::query_source::Table;
 use crate::Expression;
-
 /// Methods related to locking select statements
 ///
 /// This trait should not be relied on directly by most apps. Its behavior is
@@ -19,11 +18,9 @@ pub trait LockingDsl<Lock> {
     ///
     /// [`dsl::ForUpdate`]: crate::dsl::ForUpdate
     type Output;
-
     /// See the trait level documentation
     fn with_lock(self, lock: Lock) -> Self::Output;
 }
-
 impl<T, Lock> LockingDsl<Lock> for T
 where
     T: Table + AsQuery<Query = SelectStatement<FromClause<T>>>,
@@ -31,12 +28,10 @@ where
     T::SqlType: TypedExpressionType,
 {
     type Output = <SelectStatement<FromClause<T>> as LockingDsl<Lock>>::Output;
-
     fn with_lock(self, lock: Lock) -> Self::Output {
-        self.as_query().with_lock(lock)
+        loop {}
     }
 }
-
 /// Methods related to modifiers on locking select statements
 ///
 /// This trait should not be relied on directly by most apps. Its behavior is
@@ -50,7 +45,6 @@ pub trait ModifyLockDsl<Modifier> {
     ///
     /// [`dsl::SkipLocked`]: crate::dsl::SkipLocked
     type Output;
-
     /// See the trait level documentation
     fn modify_lock(self, modifier: Modifier) -> Self::Output;
 }

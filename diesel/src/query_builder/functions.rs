@@ -4,11 +4,11 @@ use super::insert_statement::{Insert, InsertOrIgnore, Replace};
 use super::select_clause::SelectClause;
 use super::{
     AsQuery, IncompleteInsertOrIgnoreStatement, IncompleteInsertStatement,
-    IncompleteReplaceStatement, IntoUpdateTarget, SelectStatement, SqlQuery, UpdateStatement,
+    IncompleteReplaceStatement, IntoUpdateTarget, SelectStatement, SqlQuery,
+    UpdateStatement,
 };
 use crate::expression::Expression;
 use crate::Table;
-
 /// Creates an `UPDATE` statement.
 ///
 /// When a table is passed to `update`, every row in the table will be updated.
@@ -77,10 +77,11 @@ use crate::Table;
 /// # #[cfg(not(feature = "postgres"))]
 /// # fn main() {}
 /// ```
-pub fn update<T: IntoUpdateTarget>(source: T) -> UpdateStatement<T::Table, T::WhereClause> {
-    UpdateStatement::new(source.into_update_target())
+pub fn update<T: IntoUpdateTarget>(
+    source: T,
+) -> UpdateStatement<T::Table, T::WhereClause> {
+    loop {}
 }
-
 /// Creates a `DELETE` statement.
 ///
 /// When a table is passed to `delete`,
@@ -129,11 +130,11 @@ pub fn update<T: IntoUpdateTarget>(source: T) -> UpdateStatement<T::Table, T::Wh
 /// # Ok(())
 /// # }
 /// ```
-pub fn delete<T: IntoUpdateTarget>(source: T) -> DeleteStatement<T::Table, T::WhereClause> {
-    let target = source.into_update_target();
-    DeleteStatement::new(target.table, target.where_clause)
+pub fn delete<T: IntoUpdateTarget>(
+    source: T,
+) -> DeleteStatement<T::Table, T::WhereClause> {
+    loop {}
 }
-
 /// Creates an `INSERT` statement for the target table.
 ///
 /// You may add data by calling [`values()`] or [`default_values()`]
@@ -403,9 +404,8 @@ pub fn delete<T: IntoUpdateTarget>(source: T) -> DeleteStatement<T::Table, T::Wh
 /// # fn main() {}
 /// ```
 pub fn insert_into<T: Table>(target: T) -> IncompleteInsertStatement<T> {
-    IncompleteInsertStatement::new(target, Insert)
+    loop {}
 }
-
 /// Creates an `INSERT [OR] IGNORE` statement.
 ///
 /// If a constraint violation fails, the database will ignore the offending
@@ -453,10 +453,11 @@ pub fn insert_into<T: Table>(target: T) -> IncompleteInsertStatement<T> {
 /// #     Ok(())
 /// # }
 /// ```
-pub fn insert_or_ignore_into<T: Table>(target: T) -> IncompleteInsertOrIgnoreStatement<T> {
-    IncompleteInsertStatement::new(target, InsertOrIgnore)
+pub fn insert_or_ignore_into<T: Table>(
+    target: T,
+) -> IncompleteInsertOrIgnoreStatement<T> {
+    loop {}
 }
-
 /// Creates a bare select statement, with no from clause. Primarily used for
 /// testing diesel itself, but likely useful for third party crates as well. The
 /// given expressions must be selectable from anywhere.
@@ -465,22 +466,8 @@ where
     T: Expression,
     crate::dsl::BareSelect<T>: AsQuery,
 {
-    SelectStatement::new(
-        SelectClause(expression),
-        super::NoFromClause,
-        NoDistinctClause,
-        super::where_clause::NoWhereClause,
-        super::order_clause::NoOrderClause,
-        super::limit_offset_clause::LimitOffsetClause {
-            limit_clause: super::limit_clause::NoLimitClause,
-            offset_clause: super::offset_clause::NoOffsetClause,
-        },
-        super::group_by_clause::NoGroupByClause,
-        super::having_clause::NoHavingClause,
-        super::locking_clause::NoLockingClause,
-    )
+    loop {}
 }
-
 /// Creates a `REPLACE` statement.
 ///
 /// If a constraint violation fails, the database will attempt to replace the
@@ -517,9 +504,8 @@ where
 /// # }
 /// # #[cfg(feature = "postgres")] fn main() {}
 pub fn replace_into<T: Table>(target: T) -> IncompleteReplaceStatement<T> {
-    IncompleteInsertStatement::new(target, Replace)
+    loop {}
 }
-
 /// Construct a full SQL query using raw SQL.
 ///
 /// This function exists for cases where a query needs to be written that is not
@@ -602,5 +588,5 @@ pub fn replace_into<T: Table>(target: T) -> IncompleteReplaceStatement<T> {
 /// ```
 /// [`SqlQuery::bind()`]: crate::query_builder::SqlQuery::bind()
 pub fn sql_query<T: Into<String>>(query: T) -> SqlQuery {
-    SqlQuery::from_sql(query.into())
+    loop {}
 }

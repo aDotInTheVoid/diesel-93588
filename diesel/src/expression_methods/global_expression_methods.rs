@@ -4,7 +4,6 @@ use crate::expression::grouped::Grouped;
 use crate::expression::operators::*;
 use crate::expression::{assume_not_null, nullable, AsExpression, Expression};
 use crate::sql_types::{SingleValue, SqlType};
-
 /// Methods present on all expressions, except tuples
 pub trait ExpressionMethods: Expression + Sized {
     /// Creates a SQL `=` expression.
@@ -29,7 +28,6 @@ pub trait ExpressionMethods: Expression + Sized {
     {
         Grouped(Eq::new(self, other.as_expression()))
     }
-
     /// Creates a SQL `!=` expression.
     ///
     /// # Example
@@ -52,7 +50,6 @@ pub trait ExpressionMethods: Expression + Sized {
     {
         Grouped(NotEq::new(self, other.as_expression()))
     }
-
     /// Creates a SQL `IN` statement.
     ///
     /// Queries using this method will not typically be
@@ -98,7 +95,6 @@ pub trait ExpressionMethods: Expression + Sized {
     {
         Grouped(In::new(self, values.as_in_expression()))
     }
-
     /// Creates a SQL `NOT IN` statement.
     ///
     /// Queries using this method will not be
@@ -134,7 +130,6 @@ pub trait ExpressionMethods: Expression + Sized {
     {
         Grouped(NotIn::new(self, values.as_in_expression()))
     }
-
     /// Creates a SQL `IS NULL` expression.
     ///
     /// # Example
@@ -157,15 +152,10 @@ pub trait ExpressionMethods: Expression + Sized {
     /// assert_eq!("spider", data);
     /// #     Ok(())
     /// # }
-    // This method is part of the public API,
-    // so we cannot just change the name to appease clippy
-    // (Otherwise it's also named after the `IS NULL` sql expression
-    // so that name is really fine)
     #[allow(clippy::wrong_self_convention)]
     fn is_null(self) -> dsl::IsNull<Self> {
         Grouped(IsNull::new(self))
     }
-
     /// Creates a SQL `IS NOT NULL` expression.
     ///
     /// # Example
@@ -188,15 +178,10 @@ pub trait ExpressionMethods: Expression + Sized {
     /// assert_eq!("dog", data);
     /// #     Ok(())
     /// # }
-    // This method is part of the public API,
-    // so we cannot just change the name to appease clippy
-    // (Otherwise it's also named after the `IS NOT NULL` sql expression
-    // so that name is really fine)
     #[allow(clippy::wrong_self_convention)]
     fn is_not_null(self) -> dsl::IsNotNull<Self> {
         Grouped(IsNotNull::new(self))
     }
-
     /// Creates a SQL `>` expression.
     ///
     /// # Example
@@ -227,7 +212,6 @@ pub trait ExpressionMethods: Expression + Sized {
     {
         Grouped(Gt::new(self, other.as_expression()))
     }
-
     /// Creates a SQL `>=` expression.
     ///
     /// # Example
@@ -258,7 +242,6 @@ pub trait ExpressionMethods: Expression + Sized {
     {
         Grouped(GtEq::new(self, other.as_expression()))
     }
-
     /// Creates a SQL `<` expression.
     ///
     /// # Example
@@ -289,7 +272,6 @@ pub trait ExpressionMethods: Expression + Sized {
     {
         Grouped(Lt::new(self, other.as_expression()))
     }
-
     /// Creates a SQL `<=` expression.
     ///
     /// # Example
@@ -319,7 +301,6 @@ pub trait ExpressionMethods: Expression + Sized {
     {
         Grouped(LtEq::new(self, other.as_expression()))
     }
-
     /// Creates a SQL `BETWEEN` expression using the given lower and upper
     /// bounds.
     ///
@@ -346,12 +327,10 @@ pub trait ExpressionMethods: Expression + Sized {
         T: AsExpression<Self::SqlType>,
         U: AsExpression<Self::SqlType>,
     {
-        Grouped(Between::new(
-            self,
-            And::new(lower.as_expression(), upper.as_expression()),
-        ))
+        Grouped(
+            Between::new(self, And::new(lower.as_expression(), upper.as_expression())),
+        )
     }
-
     /// Creates a SQL `NOT BETWEEN` expression using the given lower and upper
     /// bounds.
     ///
@@ -381,12 +360,10 @@ pub trait ExpressionMethods: Expression + Sized {
         T: AsExpression<Self::SqlType>,
         U: AsExpression<Self::SqlType>,
     {
-        Grouped(NotBetween::new(
-            self,
-            And::new(lower.as_expression(), upper.as_expression()),
-        ))
+        Grouped(
+            NotBetween::new(self, And::new(lower.as_expression(), upper.as_expression())),
+        )
     }
-
     /// Creates a SQL `DESC` expression, representing this expression in
     /// descending order.
     ///
@@ -414,7 +391,6 @@ pub trait ExpressionMethods: Expression + Sized {
     fn desc(self) -> dsl::Desc<Self> {
         Desc::new(self)
     }
-
     /// Creates a SQL `ASC` expression, representing this expression in
     /// ascending order.
     ///
@@ -443,14 +419,11 @@ pub trait ExpressionMethods: Expression + Sized {
         Asc::new(self)
     }
 }
-
 impl<T> ExpressionMethods for T
 where
     T: Expression,
     T::SqlType: SingleValue,
-{
-}
-
+{}
 /// Methods present on all expressions
 pub trait NullableExpressionMethods: Expression + Sized {
     /// Converts this potentially non-null expression into one which is treated
@@ -490,7 +463,6 @@ pub trait NullableExpressionMethods: Expression + Sized {
     fn nullable(self) -> dsl::Nullable<Self> {
         nullable::Nullable::new(self)
     }
-
     /// Converts this potentially nullable expression into one which will be **assumed**
     /// to be not-null. This method has no impact on the generated SQL, however it will
     /// enable you to attempt deserialization of the returned value in a non-`Option`.
@@ -609,5 +581,4 @@ pub trait NullableExpressionMethods: Expression + Sized {
         assume_not_null::AssumeNotNull::new(self)
     }
 }
-
 impl<T: Expression> NullableExpressionMethods for T {}

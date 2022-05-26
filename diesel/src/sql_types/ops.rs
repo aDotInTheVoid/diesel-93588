@@ -30,9 +30,7 @@
 //! the implementing type. If there were two valid types for `ST` which
 //! satisfied all constraints, Rust would not know which one to use, and there
 //! would be no way for the user to specify which one should be used.
-
 use super::*;
-
 /// Represents SQL types which can be added.
 pub trait Add {
     /// The SQL type which can be added to this one
@@ -40,7 +38,6 @@ pub trait Add {
     /// The SQL type of the result of adding `Rhs` to `Self`
     type Output: SqlType;
 }
-
 /// Represents SQL types which can be subtracted.
 pub trait Sub {
     /// The SQL type which can be subtracted from this one
@@ -48,7 +45,6 @@ pub trait Sub {
     /// The SQL type of the result of subtracting `Rhs` from `Self`
     type Output: SqlType;
 }
-
 /// Represents SQL types which can be multiplied.
 pub trait Mul {
     /// The SQL type which this can be multiplied by
@@ -56,7 +52,6 @@ pub trait Mul {
     /// The SQL type of the result of multiplying `Self` by `Rhs`
     type Output: SqlType;
 }
-
 /// Represents SQL types which can be divided.
 pub trait Div {
     /// The SQL type which this one can be divided by
@@ -64,85 +59,54 @@ pub trait Div {
     /// The SQL type of the result of dividing `Self` by `Rhs`
     type Output: SqlType;
 }
-
 macro_rules! numeric_type {
-    ($($tpe: ident),*) => {
-        $(
-        impl Add for $tpe {
-            type Rhs = $tpe;
-            type Output = $tpe;
-        }
-
-        impl Sub for $tpe {
-            type Rhs = $tpe;
-            type Output = $tpe;
-        }
-
-        impl Mul for $tpe {
-            type Rhs = $tpe;
-            type Output = $tpe;
-        }
-
-        impl Div for $tpe {
-            type Rhs = $tpe;
-            type Output = $tpe;
-        }
-        )*
-    }
+    ($($tpe:ident),*) => {
+        $(impl Add for $tpe { type Rhs = $tpe; type Output = $tpe; } impl Sub for $tpe {
+        type Rhs = $tpe; type Output = $tpe; } impl Mul for $tpe { type Rhs = $tpe; type
+        Output = $tpe; } impl Div for $tpe { type Rhs = $tpe; type Output = $tpe; })*
+    };
 }
-
 numeric_type!(SmallInt, Integer, BigInt, Float, Double, Numeric);
-
 impl Add for Time {
     type Rhs = Interval;
     type Output = Time;
 }
-
 impl Sub for Time {
     type Rhs = Interval;
     type Output = Time;
 }
-
 impl Add for Date {
     type Rhs = Interval;
     type Output = Timestamp;
 }
-
 impl Sub for Date {
     type Rhs = Interval;
     type Output = Timestamp;
 }
-
 impl Add for Timestamp {
     type Rhs = Interval;
     type Output = Timestamp;
 }
-
 impl Sub for Timestamp {
     type Rhs = Interval;
     type Output = Timestamp;
 }
-
 impl Add for Interval {
     type Rhs = Interval;
     type Output = Interval;
 }
-
 impl Sub for Interval {
     type Rhs = Interval;
     type Output = Interval;
 }
-
 impl Mul for Interval {
     type Rhs = Integer;
     type Output = Interval;
 }
-
 impl Div for Interval {
     type Rhs = Integer;
     type Output = Interval;
 }
-
 impl<T> Add for Nullable<T>
 where
     T: Add + SqlType<IsNull = is_nullable::NotNull>,
@@ -152,7 +116,6 @@ where
     type Rhs = Nullable<T::Rhs>;
     type Output = Nullable<T::Output>;
 }
-
 impl<T> Sub for Nullable<T>
 where
     T: Sub + SqlType<IsNull = is_nullable::NotNull>,
@@ -162,7 +125,6 @@ where
     type Rhs = Nullable<T::Rhs>;
     type Output = Nullable<T::Output>;
 }
-
 impl<T> Mul for Nullable<T>
 where
     T: Mul + SqlType<IsNull = is_nullable::NotNull>,
@@ -172,7 +134,6 @@ where
     type Rhs = Nullable<T::Rhs>;
     type Output = Nullable<T::Output>;
 }
-
 impl<T> Div for Nullable<T>
 where
     T: Div + SqlType<IsNull = is_nullable::NotNull>,

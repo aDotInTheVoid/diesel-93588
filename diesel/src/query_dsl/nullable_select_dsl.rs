@@ -8,7 +8,6 @@
 pub trait SelectNullableDsl {
     /// The return type of `nullable`
     type Output;
-
     /// See the trait documentation
     fn nullable(self) -> Self::Output;
 }

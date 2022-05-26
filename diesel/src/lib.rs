@@ -99,7 +99,6 @@
 //! The following feature flags are considered to be part of diesels public
 //! API. Any feature flag that is not listed here is **not** considered to
 //! be part of the public API and can disappear at any point in time:
-
 //!
 //! - `sqlite`: This feature enables the diesel sqlite backend. Enabling this feature requires a compatible copy
 //! of `libsqlite3` for your target architecture.
@@ -158,11 +157,9 @@
 //!
 //! - `with-deprecated`
 //! - `32-column-tables`
-
 #![cfg_attr(feature = "unstable", feature(trait_alias))]
 #![cfg_attr(doc_cfg, feature(doc_cfg, doc_auto_cfg))]
 #![cfg_attr(feature = "128-column-tables", recursion_limit = "256")]
-// Built-in Lints
 #![warn(
     unreachable_pub,
     missing_debug_implementations,
@@ -170,7 +167,6 @@
     elided_lifetimes_in_paths,
     missing_docs
 )]
-// Clippy lints
 #![allow(
     clippy::match_same_arms,
     clippy::needless_doctest_main,
@@ -191,22 +187,17 @@
     clippy::used_underscore_binding
 )]
 #![cfg_attr(test, allow(clippy::map_unwrap_or, clippy::unwrap_used))]
-
 extern crate diesel_derives;
-
 #[macro_use]
 #[doc(hidden)]
 pub mod macros;
 #[doc(hidden)]
 pub mod internal;
-
 #[cfg(test)]
 #[macro_use]
 extern crate cfg_if;
-
 #[cfg(test)]
 pub mod test_helpers;
-
 pub mod associations;
 pub mod backend;
 pub mod connection;
@@ -229,17 +220,14 @@ pub mod upsert;
 pub mod sql_types;
 pub mod migration;
 pub mod row;
-
 #[cfg(feature = "mysql_backend")]
 pub mod mysql;
 #[cfg(feature = "postgres_backend")]
 pub mod pg;
 #[cfg(feature = "sqlite")]
 pub mod sqlite;
-
 mod type_impls;
 mod util;
-
 #[doc(hidden)]
 #[cfg(all(feature = "with-deprecated", not(feature = "without-deprecated")))]
 #[deprecated(since = "2.0.0", note = "Use explicit macro imports instead")]
@@ -247,23 +235,19 @@ pub use diesel_derives::{
     AsChangeset, AsExpression, Associations, DieselNumericOps, FromSqlRow, Identifiable,
     Insertable, QueryId, Queryable, QueryableByName, SqlType,
 };
-
 pub mod dsl {
     //! Includes various helper types and bare functions which are named too
     //! generically to be included in prelude, but are often used when using Diesel.
-
     #[doc(inline)]
     pub use crate::helper_types::*;
-
     #[doc(inline)]
     pub use crate::expression::dsl::*;
-
     #[doc(inline)]
     pub use crate::query_builder::functions::{
-        delete, insert_into, insert_or_ignore_into, replace_into, select, sql_query, update,
+        delete, insert_into, insert_or_ignore_into, replace_into, select, sql_query,
+        update,
     };
 }
-
 pub mod helper_types {
     //! Provide helper types for concisely writing the return type of functions.
     //! As with iterators, it is unfortunately difficult to return a partially
@@ -281,112 +265,92 @@ pub mod helper_types {
     use super::query_dsl::*;
     use super::query_source::{aliasing, joins};
     use crate::query_builder::select_clause::SelectClause;
-
     #[doc(inline)]
     pub use crate::expression::helper_types::*;
-
     /// Represents the return type of [`.select(selection)`](crate::prelude::QueryDsl::select)
     pub type Select<Source, Selection> = <Source as SelectDsl<Selection>>::Output;
-
     /// Represents the return type of [`diesel::select(selection)`](crate::select)
     pub type BareSelect<Selection> = crate::query_builder::SelectStatement<
         crate::query_builder::NoFromClause,
         SelectClause<Selection>,
     >;
-
     /// Represents the return type of [`.filter(predicate)`](crate::prelude::QueryDsl::filter)
     pub type Filter<Source, Predicate> = <Source as FilterDsl<Predicate>>::Output;
-
     /// Represents the return type of [`.filter(lhs.eq(rhs))`](crate::prelude::QueryDsl::filter)
     pub type FindBy<Source, Column, Value> = Filter<Source, Eq<Column, Value>>;
-
     /// Represents the return type of [`.for_update()`](crate::prelude::QueryDsl::for_update)
     pub type ForUpdate<Source> = <Source as LockingDsl<lock::ForUpdate>>::Output;
-
     /// Represents the return type of [`.for_no_key_update()`](crate::prelude::QueryDsl::for_no_key_update)
-    pub type ForNoKeyUpdate<Source> = <Source as LockingDsl<lock::ForNoKeyUpdate>>::Output;
-
+    pub type ForNoKeyUpdate<Source> = <Source as LockingDsl<
+        lock::ForNoKeyUpdate,
+    >>::Output;
     /// Represents the return type of [`.for_share()`](crate::prelude::QueryDsl::for_share)
     pub type ForShare<Source> = <Source as LockingDsl<lock::ForShare>>::Output;
-
     /// Represents the return type of [`.for_key_share()`](crate::prelude::QueryDsl::for_key_share)
     pub type ForKeyShare<Source> = <Source as LockingDsl<lock::ForKeyShare>>::Output;
-
     /// Represents the return type of [`.skip_locked()`](crate::prelude::QueryDsl::skip_locked)
     pub type SkipLocked<Source> = <Source as ModifyLockDsl<lock::SkipLocked>>::Output;
-
     /// Represents the return type of [`.no_wait()`](crate::prelude::QueryDsl::no_wait)
     pub type NoWait<Source> = <Source as ModifyLockDsl<lock::NoWait>>::Output;
-
     /// Represents the return type of [`.find(pk)`](crate::prelude::QueryDsl::find)
     pub type Find<Source, PK> = <Source as FindDsl<PK>>::Output;
-
     /// Represents the return type of [`.or_filter(predicate)`](crate::prelude::QueryDsl::or_filter)
     pub type OrFilter<Source, Predicate> = <Source as OrFilterDsl<Predicate>>::Output;
-
     /// Represents the return type of [`.order(ordering)`](crate::prelude::QueryDsl::order)
     pub type Order<Source, Ordering> = <Source as OrderDsl<Ordering>>::Output;
-
     /// Represents the return type of [`.then_order_by(ordering)`](crate::prelude::QueryDsl::then_order_by)
     pub type ThenOrderBy<Source, Ordering> = <Source as ThenOrderDsl<Ordering>>::Output;
-
     /// Represents the return type of [`.limit()`](crate::prelude::QueryDsl::limit)
     pub type Limit<Source> = <Source as LimitDsl>::Output;
-
     /// Represents the return type of [`.offset()`](crate::prelude::QueryDsl::offset)
     pub type Offset<Source> = <Source as OffsetDsl>::Output;
-
     /// Represents the return type of [`.inner_join(rhs)`](crate::prelude::QueryDsl::inner_join)
-    pub type InnerJoin<Source, Rhs> =
-        <Source as JoinWithImplicitOnClause<Rhs, joins::Inner>>::Output;
-
+    pub type InnerJoin<Source, Rhs> = <Source as JoinWithImplicitOnClause<
+        Rhs,
+        joins::Inner,
+    >>::Output;
     /// Represents the return type of [`.inner_join(rhs.on(on))`](crate::prelude::QueryDsl::inner_join)
-    pub type InnerJoinOn<Source, Rhs, On> =
-        <Source as InternalJoinDsl<Rhs, joins::Inner, On>>::Output;
-
+    pub type InnerJoinOn<Source, Rhs, On> = <Source as InternalJoinDsl<
+        Rhs,
+        joins::Inner,
+        On,
+    >>::Output;
     /// Represents the return type of [`.left_join(rhs)`](crate::prelude::QueryDsl::left_join)
-    pub type LeftJoin<Source, Rhs> =
-        <Source as JoinWithImplicitOnClause<Rhs, joins::LeftOuter>>::Output;
-
+    pub type LeftJoin<Source, Rhs> = <Source as JoinWithImplicitOnClause<
+        Rhs,
+        joins::LeftOuter,
+    >>::Output;
     /// Represents the return type of [`.left_join(rhs.on(on))`](crate::prelude::QueryDsl::left_join)
-    pub type LeftJoinOn<Source, Rhs, On> =
-        <Source as InternalJoinDsl<Rhs, joins::LeftOuter, On>>::Output;
-
+    pub type LeftJoinOn<Source, Rhs, On> = <Source as InternalJoinDsl<
+        Rhs,
+        joins::LeftOuter,
+        On,
+    >>::Output;
     /// Represents the return type of [`rhs.on(on)`](crate::query_dsl::JoinOnDsl::on)
     pub type On<Source, On> = joins::OnClauseWrapper<Source, On>;
-
     use super::associations::HasTable;
     use super::query_builder::{AsChangeset, IntoUpdateTarget, UpdateStatement};
-
     /// Represents the return type of [`update(lhs).set(rhs)`](crate::query_builder::UpdateStatement::set)
     pub type Update<Target, Changes> = UpdateStatement<
         <Target as HasTable>::Table,
         <Target as IntoUpdateTarget>::WhereClause,
         <Changes as AsChangeset>::Changeset,
     >;
-
     /// Represents the return type of [`.into_boxed::<'a, DB>()`](crate::prelude::QueryDsl::into_boxed)
     pub type IntoBoxed<'a, Source, DB> = <Source as BoxedDsl<'a, DB>>::Output;
-
     /// Represents the return type of [`.distinct()`](crate::prelude::QueryDsl::distinct)
     pub type Distinct<Source> = <Source as DistinctDsl>::Output;
-
     /// Represents the return type of [`.distinct_on(expr)`](crate::prelude::QueryDsl::distinct_on)
     #[cfg(feature = "postgres_backend")]
     pub type DistinctOn<Source, Expr> = <Source as DistinctOnDsl<Expr>>::Output;
-
     /// Represents the return type of [`.single_value()`](SingleValueDsl::single_value)
     pub type SingleValue<Source> = <Source as SingleValueDsl>::Output;
-
     /// Represents the return type of [`.nullable()`](SelectNullableDsl::nullable)
     pub type NullableSelect<Source> = <Source as SelectNullableDsl>::Output;
-
     /// Represents the return type of [`.group_by(expr)`](crate::prelude::QueryDsl::group_by)
     pub type GroupBy<Source, Expr> = <Source as GroupByDsl<Expr>>::Output;
-
     /// Represents the return type of [`.having(predicate)`](crate::prelude::QueryDsl::having)
     pub type Having<Source, Predicate> = <Source as HavingDsl<Predicate>>::Output;
-
     /// Represents the return type of [`.union(rhs)`](crate::prelude::CombineDsl::union)
     pub type Union<Source, Rhs> = CombinationClause<
         combination_clause::Union,
@@ -394,7 +358,6 @@ pub mod helper_types {
         <Source as CombineDsl>::Query,
         <Rhs as AsQuery>::Query,
     >;
-
     /// Represents the return type of [`.union_all(rhs)`](crate::prelude::CombineDsl::union_all)
     pub type UnionAll<Source, Rhs> = CombinationClause<
         combination_clause::Union,
@@ -402,7 +365,6 @@ pub mod helper_types {
         <Source as CombineDsl>::Query,
         <Rhs as AsQuery>::Query,
     >;
-
     /// Represents the return type of [`.intersect(rhs)`](crate::prelude::CombineDsl::intersect)
     pub type Intersect<Source, Rhs> = CombinationClause<
         combination_clause::Intersect,
@@ -410,7 +372,6 @@ pub mod helper_types {
         <Source as CombineDsl>::Query,
         <Rhs as AsQuery>::Query,
     >;
-
     /// Represents the return type of [`.intersect_all(rhs)`](crate::prelude::CombineDsl::intersect_all)
     pub type IntersectAll<Source, Rhs> = CombinationClause<
         combination_clause::Intersect,
@@ -418,7 +379,6 @@ pub mod helper_types {
         <Source as CombineDsl>::Query,
         <Rhs as AsQuery>::Query,
     >;
-
     /// Represents the return type of [`.except(rhs)`](crate::prelude::CombineDsl::except)
     pub type Except<Source, Rhs> = CombinationClause<
         combination_clause::Except,
@@ -426,7 +386,6 @@ pub mod helper_types {
         <Source as CombineDsl>::Query,
         <Rhs as AsQuery>::Query,
     >;
-
     /// Represents the return type of [`.except_all(rhs)`](crate::prelude::CombineDsl::except_all)
     pub type ExceptAll<Source, Rhs> = CombinationClause<
         combination_clause::Except,
@@ -434,29 +393,37 @@ pub mod helper_types {
         <Source as CombineDsl>::Query,
         <Rhs as AsQuery>::Query,
     >;
-
-    type JoinQuerySource<Left, Right, Kind, On> = joins::JoinOn<joins::Join<Left, Right, Kind>, On>;
-
+    type JoinQuerySource<Left, Right, Kind, On> = joins::JoinOn<
+        joins::Join<Left, Right, Kind>,
+        On,
+    >;
     /// A query source representing the inner join between two tables.
     /// For example, for the inner join between three tables that implement `JoinTo`:
     /// `InnerJoinQuerySource<InnerJoinQuerySource<table1, table2>, table3>`
     /// Which conveniently lets you omit the exact join condition.
-    pub type InnerJoinQuerySource<Left, Right, On = <Left as joins::JoinTo<Right>>::OnClause> =
-        JoinQuerySource<Left, Right, joins::Inner, On>;
-
+    pub type InnerJoinQuerySource<
+        Left,
+        Right,
+        On = <Left as joins::JoinTo<Right>>::OnClause,
+    > = JoinQuerySource<Left, Right, joins::Inner, On>;
     /// A query source representing the left outer join between two tables.
     /// For example, for the left join between three tables that implement `JoinTo`:
     /// `LeftJoinQuerySource<LeftJoinQuerySource<table1, table2>, table3>`
     /// Which conveniently lets you omit the exact join condition.
-    pub type LeftJoinQuerySource<Left, Right, On = <Left as joins::JoinTo<Right>>::OnClause> =
-        JoinQuerySource<Left, Right, joins::LeftOuter, On>;
-
+    pub type LeftJoinQuerySource<
+        Left,
+        Right,
+        On = <Left as joins::JoinTo<Right>>::OnClause,
+    > = JoinQuerySource<Left, Right, joins::LeftOuter, On>;
     /// [`Iterator`](std::iter::Iterator) of [`QueryResult<U>`](crate::result::QueryResult)
     ///
     /// See [`RunQueryDsl::load_iter`] for more information
-    pub type LoadIter<'conn, 'query, Q, Conn, U> =
-        <Q as load_dsl::LoadQueryGatWorkaround<'conn, 'query, Conn, U>>::Ret;
-
+    pub type LoadIter<'conn, 'query, Q, Conn, U> = <Q as load_dsl::LoadQueryGatWorkaround<
+        'conn,
+        'query,
+        Conn,
+        U,
+    >>::Ret;
     /// Maps `F` to `Alias<S>`
     ///
     /// Any column `F` that belongs to `S::Table` will be transformed into
@@ -467,10 +434,8 @@ pub mod helper_types {
     /// This also works with tuples and some expressions.
     pub type AliasedFields<S, F> = <F as aliasing::FieldAliasMapper<S>>::Out;
 }
-
 pub mod prelude {
     //! Re-exports important traits and types. Meant to be glob imported when using Diesel.
-
     #[doc(inline)]
     pub use crate::associations::{Associations, GroupedBy, Identifiable};
     #[doc(inline)]
@@ -479,12 +444,11 @@ pub mod prelude {
     pub use crate::deserialize::{Queryable, QueryableByName};
     #[doc(inline)]
     pub use crate::expression::{
-        AppearsOnTable, BoxableExpression, Expression, IntoSql, Selectable, SelectableExpression,
+        AppearsOnTable, BoxableExpression, Expression, IntoSql, Selectable,
+        SelectableExpression,
     };
-
     #[doc(inline)]
     pub use crate::expression::functions::sql_function;
-
     #[doc(inline)]
     pub use crate::expression::SelectableHelper;
     #[doc(inline)]
@@ -504,8 +468,9 @@ pub mod prelude {
     #[doc(inline)]
     pub use crate::query_source::{Column, JoinTo, QuerySource, Table};
     #[doc(inline)]
-    pub use crate::result::{ConnectionError, ConnectionResult, OptionalExtension, QueryResult};
-
+    pub use crate::result::{
+        ConnectionError, ConnectionResult, OptionalExtension, QueryResult,
+    };
     #[cfg(feature = "mysql")]
     #[doc(inline)]
     pub use crate::mysql::MysqlConnection;
@@ -516,7 +481,6 @@ pub mod prelude {
     #[doc(inline)]
     pub use crate::sqlite::SqliteConnection;
 }
-
 pub use crate::prelude::*;
 #[doc(inline)]
 pub use crate::query_builder::debug_query;
@@ -525,11 +489,8 @@ pub use crate::query_builder::functions::{
     delete, insert_into, insert_or_ignore_into, replace_into, select, sql_query, update,
 };
 pub use crate::result::Error::NotFound;
-
 pub(crate) mod diesel {
     pub(crate) use super::*;
 }
-
-// workaround https://github.com/rust-lang/rust/pull/52234
 #[doc(hidden)]
 pub use __diesel_check_column_count_internal as __diesel_check_column_count;

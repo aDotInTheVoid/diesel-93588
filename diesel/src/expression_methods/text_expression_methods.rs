@@ -4,7 +4,6 @@ use crate::expression::grouped::Grouped;
 use crate::expression::operators::{Concat, Like, NotLike};
 use crate::expression::{AsExpression, Expression};
 use crate::sql_types::SqlType;
-
 /// Methods present on text expressions
 pub trait TextExpressionMethods: Expression + Sized {
     /// Concatenates two strings using the `||` operator.
@@ -64,7 +63,6 @@ pub trait TextExpressionMethods: Expression + Sized {
     {
         Grouped(Concat::new(self, other.as_expression()))
     }
-
     /// Returns a SQL `LIKE` expression
     ///
     /// This method is case insensitive for SQLite and MySQL.
@@ -100,7 +98,6 @@ pub trait TextExpressionMethods: Expression + Sized {
     {
         Grouped(Like::new(self, other.as_expression()))
     }
-
     /// Returns a SQL `NOT LIKE` expression
     ///
     /// This method is case insensitive for SQLite and MySQL.
@@ -137,22 +134,17 @@ pub trait TextExpressionMethods: Expression + Sized {
         Grouped(NotLike::new(self, other.as_expression()))
     }
 }
-
 impl<T> TextExpressionMethods for T
 where
     T: Expression,
     T::SqlType: TextOrNullableText,
-{
-}
-
+{}
 mod private {
     use crate::sql_types::{Nullable, Text};
-
     /// Marker trait used to implement `TextExpressionMethods` on the appropriate
     /// types. Once coherence takes associated types into account, we can remove
     /// this trait.
     pub trait TextOrNullableText {}
-
     impl TextOrNullableText for Text {}
     impl TextOrNullableText for Nullable<Text> {}
 }

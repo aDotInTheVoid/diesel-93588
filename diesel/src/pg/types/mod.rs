@@ -1,5 +1,4 @@
 //! PostgreSQL specific types
-
 mod array;
 #[doc(hidden)]
 pub(in crate::pg) mod date_and_time;
@@ -19,14 +18,12 @@ mod ranges;
 mod record;
 #[cfg(feature = "uuid")]
 mod uuid;
-
 /// PostgreSQL specific SQL types
 ///
 /// Note: All types in this module can be accessed through `diesel::sql_types`
 pub mod sql_types {
     use crate::query_builder::QueryId;
     use crate::sql_types::SqlType;
-
     /// The [`OID`] SQL type. This is a PostgreSQL specific type.
     ///
     /// ### [`ToSql`] impls
@@ -45,7 +42,6 @@ pub mod sql_types {
     #[derive(Debug, Clone, Copy, Default, QueryId, SqlType)]
     #[diesel(postgres_type(oid = 26, array_oid = 1018))]
     pub struct Oid;
-
     /// The ["timestamp with time zone" SQL type][tz], which PostgreSQL abbreviates
     /// to `timestamptz`.
     ///
@@ -82,7 +78,6 @@ pub mod sql_types {
     #[derive(Debug, Clone, Copy, Default, QueryId, SqlType)]
     #[diesel(postgres_type(oid = 1184, array_oid = 1185))]
     pub struct Timestamptz;
-
     /// The [`Array`] SQL type.
     ///
     /// This wraps another type to represent a SQL array of that type.
@@ -105,7 +100,6 @@ pub mod sql_types {
     #[derive(Debug, Clone, Copy, Default, QueryId, SqlType)]
     #[cfg(feature = "postgres_backend")]
     pub struct Array<ST: 'static>(ST);
-
     /// The [`Range`] SQL type.
     ///
     /// This wraps another type to represent a SQL range of that type.
@@ -125,7 +119,6 @@ pub mod sql_types {
     #[derive(Debug, Clone, Copy, Default, QueryId, SqlType)]
     #[cfg(feature = "postgres_backend")]
     pub struct Range<ST: 'static>(ST);
-
     #[doc(hidden)]
     pub type Int4range = Range<crate::sql_types::Int4>;
     #[doc(hidden)]
@@ -138,7 +131,6 @@ pub mod sql_types {
     pub type Tsrange = Range<crate::sql_types::Timestamp>;
     #[doc(hidden)]
     pub type Tstzrange = Range<crate::sql_types::Timestamptz>;
-
     /// The [`Record`] (a.k.a. tuple) SQL type.
     ///
     /// ### [`ToSql`] impls
@@ -181,19 +173,15 @@ pub mod sql_types {
     #[derive(Debug, Clone, Copy, Default, QueryId, SqlType)]
     #[diesel(postgres_type(oid = 2249, array_oid = 2287))]
     pub struct Record<ST: 'static>(ST);
-
     /// Alias for [`SmallInt`](crate::sql_types::SmallInt)
     #[cfg(feature = "postgres_backend")]
     pub type SmallSerial = crate::sql_types::SmallInt;
-
     /// Alias for [`Integer`](crate::sql_types::Integer)
     #[cfg(feature = "postgres_backend")]
     pub type Serial = crate::sql_types::Integer;
-
     /// Alias for [`BigInt`](crate::sql_types::BigInt)
     #[cfg(feature = "postgres_backend")]
     pub type BigSerial = crate::sql_types::BigInt;
-
     /// The [`UUID`] SQL type. This type can only be used with `feature = "uuid"`
     ///
     /// ### [`ToSql`] impls
@@ -212,14 +200,11 @@ pub mod sql_types {
     #[derive(Debug, Clone, Copy, Default, QueryId, SqlType)]
     #[diesel(postgres_type(oid = 2950, array_oid = 2951))]
     pub struct Uuid;
-
     /// Alias for `Binary`, to ensure `infer_schema!` works
     #[doc(hidden)]
     pub type Bytea = crate::sql_types::Binary;
-
     #[doc(hidden)]
     pub type Bpchar = crate::sql_types::VarChar;
-
     /// The [`jsonb`] SQL type.  This type can only be used with `feature =
     /// "serde_json"`
     ///
@@ -305,7 +290,6 @@ pub mod sql_types {
     #[derive(Debug, Clone, Copy, Default, QueryId, SqlType)]
     #[diesel(postgres_type(oid = 3802, array_oid = 3807))]
     pub struct Jsonb;
-
     /// The PostgreSQL [Money](https://www.postgresql.org/docs/current/static/datatype-money.html) type.
     ///
     /// ### [`ToSql`] impls
@@ -354,7 +338,6 @@ pub mod sql_types {
     #[derive(Debug, Clone, Copy, Default, QueryId, SqlType)]
     #[diesel(postgres_type(oid = 790, array_oid = 791))]
     pub struct Money;
-
     /// The [`MACADDR`](https://www.postgresql.org/docs/current/static/datatype-net-types.html) SQL type.
     ///
     /// ### [`ToSql`] impls
@@ -399,11 +382,9 @@ pub mod sql_types {
     #[derive(Debug, Clone, Copy, Default, QueryId, SqlType)]
     #[diesel(postgres_type(oid = 829, array_oid = 1040))]
     pub struct MacAddr;
-
     #[doc(hidden)]
     /// Alias for `MacAddr` to be able to use it with `infer_schema`.
     pub type Macaddr = MacAddr;
-
     /// The [`INET`](https://www.postgresql.org/docs/current/static/datatype-net-types.html) SQL type. This type can only be used with `feature = "network-address"`
     ///
     /// ### [`ToSql`] impls
@@ -461,7 +442,6 @@ pub mod sql_types {
     #[derive(Debug, Clone, Copy, Default, QueryId, SqlType)]
     #[diesel(postgres_type(oid = 869, array_oid = 1041))]
     pub struct Inet;
-
     /// The [`CIDR`](https://www.postgresql.org/docs/postgresql/static/datatype-net-types.html) SQL type. This type can only be used with `feature = "network-address"`
     ///
     /// ### [`ToSql`] impls
@@ -519,37 +499,30 @@ pub mod sql_types {
     #[diesel(postgres_type(oid = 650, array_oid = 651))]
     pub struct Cidr;
 }
-
 mod ops {
     use super::sql_types::*;
     use crate::sql_types::ops::*;
     use crate::sql_types::{Bigint, Cidr, Inet, Interval};
-
     impl Add for Timestamptz {
         type Rhs = Interval;
         type Output = Timestamptz;
     }
-
     impl Sub for Timestamptz {
         type Rhs = Interval;
         type Output = Timestamptz;
     }
-
     impl Add for Cidr {
         type Rhs = Bigint;
         type Output = Inet;
     }
-
     impl Add for Inet {
         type Rhs = Bigint;
         type Output = Inet;
     }
-
     impl Sub for Cidr {
         type Rhs = Bigint;
         type Output = Inet;
     }
-
     impl Sub for Inet {
         type Rhs = Bigint;
         type Output = Inet;

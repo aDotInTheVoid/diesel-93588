@@ -1,18 +1,14 @@
 //! Types and traits related to deserializing values from the database
-
 use std::error::Error;
 use std::result;
-
 use crate::backend::{self, Backend};
 use crate::expression::select_by::SelectBy;
 use crate::row::{NamedRow, Row};
 use crate::sql_types::{SingleValue, SqlType, Untyped};
 use crate::Selectable;
-
 /// A specialized result type representing the result of deserializing
 /// a value from the database.
 pub type Result<T> = result::Result<T, Box<dyn Error + Send + Sync>>;
-
 /// Trait indicating that a record can be queried from the database.
 ///
 /// Types which implement `Queryable` represent the result of a SQL query. This
@@ -249,14 +245,11 @@ where
     ///
     /// This is typically a tuple of all of your struct's fields.
     type Row: FromStaticSqlRow<ST, DB>;
-
     /// Construct an instance of this type
     fn build(row: Self::Row) -> Result<Self>;
 }
-
 #[doc(inline)]
 pub use diesel_derives::Queryable;
-
 /// Deserializes the result of a query constructed with [`sql_query`].
 ///
 /// This trait can be [derived](derive@QueryableByName)
@@ -351,10 +344,8 @@ where
     /// Construct an instance of `Self` from the database row
     fn build<'a>(row: &impl NamedRow<'a, DB>) -> Result<Self>;
 }
-
 #[doc(inline)]
 pub use diesel_derives::QueryableByName;
-
 /// Deserialize a single field of a given SQL type.
 ///
 /// When possible, implementations of this trait should prefer to use an
@@ -412,7 +403,6 @@ pub use diesel_derives::QueryableByName;
 pub trait FromSql<A, DB: Backend>: Sized {
     /// See the trait documentation.
     fn from_sql(bytes: backend::RawValue<'_, DB>) -> Result<Self>;
-
     /// A specialized variant of `from_sql` for handling null values.
     ///
     /// The default implementation returns an `UnexpectedNullError` for
@@ -428,7 +418,6 @@ pub trait FromSql<A, DB: Backend>: Sized {
         }
     }
 }
-
 /// Deserialize a database row into a rust data structure
 ///
 /// Diesel provides wild card implementations of this trait for all types
@@ -439,10 +428,8 @@ pub trait FromSqlRow<ST, DB: Backend>: Sized {
     /// See the trait documentation.
     fn build_from_row<'a>(row: &impl Row<'a, DB>) -> Result<Self>;
 }
-
 #[doc(inline)]
 pub use diesel_derives::FromSqlRow;
-
 /// A marker trait indicating that the corresponding type consumes a static at
 /// compile time known number of field
 ///
@@ -453,17 +440,15 @@ pub trait StaticallySizedRow<ST, DB: Backend>: FromSqlRow<ST, DB> {
     /// The number of fields that this type will consume.
     const FIELD_COUNT: usize;
 }
-
 impl<DB, T> FromSqlRow<Untyped, DB> for T
 where
     DB: Backend,
     T: QueryableByName<DB>,
 {
     fn build_from_row<'a>(row: &impl Row<'a, DB>) -> Result<Self> {
-        T::build(row)
+        loop {}
     }
 }
-
 /// A helper trait to deserialize a statically sized row into an tuple
 ///
 /// **If you see an error message mentioning this trait you likly
@@ -474,26 +459,21 @@ where
 /// Diesel provides wild card implementations for any supported tuple size
 /// and for any type that implements `FromSql<ST, DB>`.
 ///
-// This is a distinct trait from `FromSqlRow` because otherwise we
-// are getting conflicting implementation errors for our `FromSqlRow`
-// implementation for tuples and our wild card impl for all types
-// implementing `Queryable`
 pub trait FromStaticSqlRow<ST, DB: Backend>: Sized {
     /// See the trait documentation
     fn build_from_row<'a>(row: &impl Row<'a, DB>) -> Result<Self>;
 }
-
 #[doc(hidden)]
 pub trait SqlTypeOrSelectable {}
-
-impl<ST> SqlTypeOrSelectable for ST where ST: SqlType + SingleValue {}
+impl<ST> SqlTypeOrSelectable for ST
+where
+    ST: SqlType + SingleValue,
+{}
 impl<U, DB> SqlTypeOrSelectable for SelectBy<U, DB>
 where
     U: Selectable<DB>,
     DB: Backend,
-{
-}
-
+{}
 impl<T, ST, DB> FromSqlRow<ST, DB> for T
 where
     T: Queryable<ST, DB>,
@@ -501,17 +481,11 @@ where
     DB: Backend,
     T::Row: FromStaticSqlRow<ST, DB>,
 {
-    // This inline(always) attribute is here as benchmarks have shown
-    // a up to 5% reduction in instruction count of having it here
-    //
-    // A plain inline attribute does not show similar improvements
     #[inline(always)]
     fn build_from_row<'a>(row: &impl Row<'a, DB>) -> Result<Self> {
-        let row = <T::Row as FromStaticSqlRow<ST, DB>>::build_from_row(row)?;
-        T::build(row)
+        loop {}
     }
 }
-
 impl<T, ST, DB> FromStaticSqlRow<ST, DB> for T
 where
     DB: Backend,
@@ -519,33 +493,9 @@ where
     ST: SingleValue,
 {
     fn build_from_row<'a>(row: &impl Row<'a, DB>) -> Result<Self> {
-        use crate::row::Field;
-
-        let field = row.get(0).ok_or(crate::result::UnexpectedEndOfRow)?;
-        T::from_nullable_sql(field.value())
+        loop {}
     }
 }
-
-// We cannot have this impl because rustc
-// then complains in third party crates that
-// diesel may implement `SingleValue` for tuples
-// in the future. While that is theoretically true,
-// that will likly not happen in practice.
-// If we get negative trait impls at some point in time
-// it should be possible to make this work.
-/*impl<T, ST, DB> Queryable<ST, DB> for T
-where
-    DB: Backend,
-    T: FromStaticSqlRow<ST, DB>,
-    ST: SingleValue,
-{
-    type Row = Self;
-
-    fn build(row: Self::Row) -> Self {
-        row
-    }
-}*/
-
 impl<T, ST, DB> StaticallySizedRow<ST, DB> for T
 where
     ST: SqlTypeOrSelectable + crate::util::TupleSize,

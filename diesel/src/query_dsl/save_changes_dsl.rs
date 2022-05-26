@@ -16,7 +16,6 @@ use crate::query_dsl::{LoadQuery, RunQueryDsl};
 use crate::result::QueryResult;
 #[cfg(any(feature = "sqlite", feature = "postgres", feature = "mysql"))]
 use crate::Table;
-
 /// A trait defining how to update a record and fetch the updated entry
 /// on a certain backend.
 ///
@@ -31,27 +30,25 @@ pub trait UpdateAndFetchResults<Changes, Output>: Connection {
     /// See the traits documentation.
     fn update_and_fetch(&mut self, changeset: Changes) -> QueryResult<Output>;
 }
-
 #[cfg(feature = "postgres")]
 use crate::pg::PgConnection;
-
 #[cfg(feature = "postgres")]
 impl<'b, Changes, Output> UpdateAndFetchResults<Changes, Output> for PgConnection
 where
-    Changes: Copy + AsChangeset<Target = <Changes as HasTable>::Table> + IntoUpdateTarget,
+    Changes: Copy + AsChangeset<Target = <Changes as HasTable>::Table>
+        + IntoUpdateTarget,
     Update<Changes, Changes>: LoadQuery<'b, PgConnection, Output>,
     <Changes::Table as Table>::AllColumns: ValidGrouping<()>,
-    <<Changes::Table as Table>::AllColumns as ValidGrouping<()>>::IsAggregate:
-        MixedAggregates<is_aggregate::No, Output = is_aggregate::No>,
+    <<Changes::Table as Table>::AllColumns as ValidGrouping<
+        (),
+    >>::IsAggregate: MixedAggregates<is_aggregate::No, Output = is_aggregate::No>,
 {
     fn update_and_fetch(&mut self, changeset: Changes) -> QueryResult<Output> {
-        crate::update(changeset).set(changeset).get_result(self)
+        loop {}
     }
 }
-
 #[cfg(feature = "sqlite")]
 use crate::sqlite::SqliteConnection;
-
 #[cfg(feature = "sqlite")]
 impl<'b, Changes, Output> UpdateAndFetchResults<Changes, Output> for SqliteConnection
 where
@@ -61,18 +58,16 @@ where
     Update<Changes, Changes>: ExecuteDsl<SqliteConnection>,
     Find<Changes::Table, Changes::Id>: LoadQuery<'b, SqliteConnection, Output>,
     <Changes::Table as Table>::AllColumns: ValidGrouping<()>,
-    <<Changes::Table as Table>::AllColumns as ValidGrouping<()>>::IsAggregate:
-        MixedAggregates<is_aggregate::No, Output = is_aggregate::No>,
+    <<Changes::Table as Table>::AllColumns as ValidGrouping<
+        (),
+    >>::IsAggregate: MixedAggregates<is_aggregate::No, Output = is_aggregate::No>,
 {
     fn update_and_fetch(&mut self, changeset: Changes) -> QueryResult<Output> {
-        crate::update(changeset).set(changeset).execute(self)?;
-        Changes::table().find(changeset.id()).get_result(self)
+        loop {}
     }
 }
-
 #[cfg(feature = "mysql")]
 use crate::mysql::MysqlConnection;
-
 #[cfg(feature = "mysql")]
 impl<'b, Changes, Output> UpdateAndFetchResults<Changes, Output> for MysqlConnection
 where
@@ -82,15 +77,14 @@ where
     Update<Changes, Changes>: ExecuteDsl<MysqlConnection>,
     Find<Changes::Table, Changes::Id>: LoadQuery<'b, MysqlConnection, Output>,
     <Changes::Table as Table>::AllColumns: ValidGrouping<()>,
-    <<Changes::Table as Table>::AllColumns as ValidGrouping<()>>::IsAggregate:
-        MixedAggregates<is_aggregate::No, Output = is_aggregate::No>,
+    <<Changes::Table as Table>::AllColumns as ValidGrouping<
+        (),
+    >>::IsAggregate: MixedAggregates<is_aggregate::No, Output = is_aggregate::No>,
 {
     fn update_and_fetch(&mut self, changeset: Changes) -> QueryResult<Output> {
-        crate::update(changeset).set(changeset).execute(self)?;
-        Changes::table().find(changeset.id()).get_result(self)
+        loop {}
     }
 }
-
 /// Sugar for types which implement both `AsChangeset` and `Identifiable`
 ///
 /// On backends which support the `RETURNING` keyword,
@@ -148,8 +142,7 @@ pub trait SaveChangesDsl<Conn> {
         connection.update_and_fetch(self)
     }
 }
-
-impl<T, Conn> SaveChangesDsl<Conn> for T where
-    T: Copy + AsChangeset<Target = <T as HasTable>::Table> + IntoUpdateTarget
-{
-}
+impl<T, Conn> SaveChangesDsl<Conn> for T
+where
+    T: Copy + AsChangeset<Target = <T as HasTable>::Table> + IntoUpdateTarget,
+{}

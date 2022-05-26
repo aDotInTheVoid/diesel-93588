@@ -17,7 +17,6 @@
 #[macro_use]
 pub(crate) mod ops;
 pub mod functions;
-
 #[cfg(not(feature = "i-implement-a-third-party-backend-and-opt-into-breaking-changes"))]
 pub(crate) mod array_comparison;
 #[cfg(feature = "i-implement-a-third-party-backend-and-opt-into-breaking-changes")]
@@ -39,15 +38,9 @@ pub(crate) mod operators;
 pub(crate) mod select_by;
 mod sql_literal;
 pub(crate) mod subselect;
-
-// we allow unreachable_pub here
-// as rustc otherwise shows false positives
-// for every item in this module. We reexport
-// everything from `crate::helper_types::`
 #[allow(non_camel_case_types, unreachable_pub)]
 pub(crate) mod dsl {
     use crate::dsl::SqlTypeOf;
-
     #[doc(inline)]
     pub use super::count::*;
     #[doc(inline)]
@@ -62,30 +55,22 @@ pub(crate) mod dsl {
     pub use super::not::not;
     #[doc(inline)]
     pub use super::sql_literal::sql;
-
     #[cfg(feature = "postgres_backend")]
     pub use crate::pg::expression::dsl::*;
-
     /// The return type of [`count(expr)`](crate::dsl::count())
     pub type count<Expr> = super::count::count::HelperType<SqlTypeOf<Expr>, Expr>;
-
     /// The return type of [`count_star()`](crate::dsl::count_star())
     pub type count_star = super::count::CountStar;
-
     /// The return type of [`count_distinct()`](crate::dsl::count_distinct())
     pub type count_distinct<Expr> = super::count::CountDistinct<SqlTypeOf<Expr>, Expr>;
-
     /// The return type of [`date(expr)`](crate::dsl::date())
     pub type date<Expr> = super::functions::date_and_time::date::HelperType<Expr>;
 }
-
 #[doc(inline)]
 pub use self::sql_literal::{SqlLiteral, UncheckedBind};
-
 use crate::backend::Backend;
 use crate::dsl::{AsExprOf, AsSelect};
 use crate::sql_types::{HasSqlType, SingleValue, SqlType};
-
 /// Represents a typed fragment of SQL.
 ///
 /// Apps should not need to implement this type directly, but it may be common
@@ -97,18 +82,15 @@ pub trait Expression {
     /// The type that this expression represents in SQL
     type SqlType: TypedExpressionType;
 }
-
 /// Marker trait for possible types of [`Expression::SqlType`]
 ///
 pub trait TypedExpressionType {}
-
 /// Possible types for []`Expression::SqlType`]
 ///
 pub mod expression_types {
     use super::{QueryMetadata, TypedExpressionType};
     use crate::backend::Backend;
     use crate::sql_types::SingleValue;
-
     /// Query nodes with this expression type do not have a statically at compile
     /// time known expression type.
     ///
@@ -121,34 +103,33 @@ pub mod expression_types {
     ///
     #[derive(Clone, Copy, Debug)]
     pub struct Untyped;
-
     /// Query nodes witch cannot be part of a select clause.
     ///
     /// If you see an error message containing `FromSqlRow` and this type
     /// recheck that you have written a valid select clause
     #[derive(Debug, Clone, Copy)]
     pub struct NotSelectable;
-
     impl TypedExpressionType for Untyped {}
     impl TypedExpressionType for NotSelectable {}
-
-    impl<ST> TypedExpressionType for ST where ST: SingleValue {}
-
+    impl<ST> TypedExpressionType for ST
+    where
+        ST: SingleValue,
+    {}
     impl<DB: Backend> QueryMetadata<Untyped> for DB {
-        fn row_metadata(_: &mut DB::MetadataLookup, row: &mut Vec<Option<DB::TypeMetadata>>) {
-            row.push(None)
+        fn row_metadata(
+            _: &mut DB::MetadataLookup,
+            row: &mut Vec<Option<DB::TypeMetadata>>,
+        ) {
+            loop {}
         }
     }
 }
-
 impl<T: Expression + ?Sized> Expression for Box<T> {
     type SqlType = T::SqlType;
 }
-
 impl<'a, T: Expression + ?Sized> Expression for &'a T {
     type SqlType = T::SqlType;
 }
-
 /// A helper to translate type level sql type information into
 /// runtime type information for specific queries
 ///
@@ -158,19 +139,23 @@ pub trait QueryMetadata<T>: Backend {
     /// The exact return value of this function is considerded to be a
     /// backend specific implementation detail. You should not rely on those
     /// values if you not own the corresponding backend
-    fn row_metadata(lookup: &mut Self::MetadataLookup, out: &mut Vec<Option<Self::TypeMetadata>>);
+    fn row_metadata(
+        lookup: &mut Self::MetadataLookup,
+        out: &mut Vec<Option<Self::TypeMetadata>>,
+    );
 }
-
 impl<T, DB> QueryMetadata<T> for DB
 where
     DB: Backend + HasSqlType<T>,
     T: SingleValue,
 {
-    fn row_metadata(lookup: &mut Self::MetadataLookup, out: &mut Vec<Option<Self::TypeMetadata>>) {
-        out.push(Some(<DB as HasSqlType<T>>::metadata(lookup)))
+    fn row_metadata(
+        lookup: &mut Self::MetadataLookup,
+        out: &mut Vec<Option<Self::TypeMetadata>>,
+    ) {
+        loop {}
     }
 }
-
 /// Converts a type to its representation for use in Diesel's query builder.
 ///
 /// This trait is used directly. Apps should typically use [`IntoSql`] instead.
@@ -197,28 +182,22 @@ where
 {
     /// The expression being returned
     type Expression: Expression<SqlType = T>;
-
     /// Perform the conversion
     #[allow(clippy::wrong_self_convention)]
-    // That's public API we cannot change it to appease clippy
     fn as_expression(self) -> Self::Expression;
 }
-
 #[doc(inline)]
 pub use diesel_derives::AsExpression;
-
 impl<T, ST> AsExpression<ST> for T
 where
     T: Expression<SqlType = ST>,
     ST: SqlType + TypedExpressionType,
 {
     type Expression = Self;
-
     fn as_expression(self) -> Self {
-        self
+        loop {}
     }
 }
-
 /// Converts a type to its representation for use in Diesel's query builder.
 ///
 /// This trait only exists to make usage of `AsExpression` more ergonomic when
@@ -257,7 +236,6 @@ pub trait IntoSql {
     {
         self.as_expression()
     }
-
     /// Convert `&self` to an expression for Diesel's query builder.
     ///
     /// There is no difference in behavior between `x.as_sql::<Y>()` and
@@ -270,9 +248,7 @@ pub trait IntoSql {
         <&'a Self as AsExpression<T>>::as_expression(self)
     }
 }
-
 impl<T> IntoSql for T {}
-
 /// Indicates that all elements of an expression are valid given a from clause.
 ///
 /// This is used to ensure that `users.filter(posts::id.eq(1))` fails to
@@ -281,21 +257,16 @@ impl<T> IntoSql for T {}
 /// places where nullability is important, `SelectableExpression` is used
 /// instead.
 pub trait AppearsOnTable<QS: ?Sized>: Expression {}
-
 impl<T: ?Sized, QS> AppearsOnTable<QS> for Box<T>
 where
     T: AppearsOnTable<QS>,
     Box<T>: Expression,
-{
-}
-
+{}
 impl<'a, T: ?Sized, QS> AppearsOnTable<QS> for &'a T
 where
     T: AppearsOnTable<QS>,
     &'a T: Expression,
-{
-}
-
+{}
 /// Indicates that an expression can be selected from a source.
 ///
 /// Columns will implement this for their table. Certain special types, like
@@ -306,21 +277,16 @@ where
 /// join. To select a column or expression using a column from the right side of
 /// a left join, you must call `.nullable()` on it.
 pub trait SelectableExpression<QS: ?Sized>: AppearsOnTable<QS> {}
-
 impl<T: ?Sized, QS> SelectableExpression<QS> for Box<T>
 where
     T: SelectableExpression<QS>,
     Box<T>: AppearsOnTable<QS>,
-{
-}
-
+{}
 impl<'a, T: ?Sized, QS> SelectableExpression<QS> for &'a T
 where
     T: SelectableExpression<QS>,
     &'a T: AppearsOnTable<QS>,
-{
-}
-
+{}
 /// Trait indicating that a record can be selected and queried from the database.
 ///
 /// Types which implement `Selectable` represent the select clause of a SQL query.
@@ -407,14 +373,11 @@ pub trait Selectable<DB: Backend> {
     ///
     /// This is typically a tuple of corresponding to the table columns of your struct's fields.
     type SelectExpression: Expression;
-
     /// Construct an instance of the expression
     fn construct_selection() -> Self::SelectExpression;
 }
-
 #[doc(inline)]
 pub use diesel_derives::Selectable;
-
 /// This helper trait provides several methods for
 /// constructing a select or returning clause based on a
 /// [`Selectable`] implementation.
@@ -424,23 +387,20 @@ pub trait SelectableHelper<DB: Backend>: Selectable<DB> + Sized {
     /// The returned select clause enforces that you use the same type
     /// for constructing the select clause and for loading the query result into.
     fn as_select() -> AsSelect<Self, DB>;
-
     /// An alias for `as_select` that can be used with returning clauses
     fn as_returning() -> AsSelect<Self, DB> {
         Self::as_select()
     }
 }
-
 impl<T, DB> SelectableHelper<DB> for T
 where
     T: Selectable<DB>,
     DB: Backend,
 {
     fn as_select() -> AsSelect<Self, DB> {
-        select_by::SelectBy::new()
+        loop {}
     }
 }
-
 /// Is this expression valid for a given group by clause?
 ///
 /// Implementations of this trait must ensure that aggregate expressions are
@@ -464,46 +424,36 @@ pub trait ValidGrouping<GroupByClause> {
     ///
     type IsAggregate;
 }
-
 impl<T: ValidGrouping<GB> + ?Sized, GB> ValidGrouping<GB> for Box<T> {
     type IsAggregate = T::IsAggregate;
 }
-
 impl<'a, T: ValidGrouping<GB> + ?Sized, GB> ValidGrouping<GB> for &'a T {
     type IsAggregate = T::IsAggregate;
 }
-
 #[doc(inline)]
 pub use diesel_derives::ValidGrouping;
-
 #[doc(hidden)]
 pub trait IsContainedInGroupBy<T> {
     type Output;
 }
-
 #[doc(hidden)]
 #[allow(missing_debug_implementations, missing_copy_implementations)]
 pub mod is_contained_in_group_by {
     pub struct Yes;
     pub struct No;
-
     pub trait IsAny<O> {
         type Output;
     }
-
     impl<T> IsAny<T> for Yes {
         type Output = Yes;
     }
-
     impl IsAny<Yes> for No {
         type Output = Yes;
     }
-
     impl IsAny<No> for No {
         type Output = No;
     }
 }
-
 /// Can two `IsAggregate` types appear in the same expression?
 ///
 /// You should never implement this trait. It will eventually become a trait
@@ -517,19 +467,15 @@ pub trait MixedAggregates<Other> {
     /// What is the resulting `IsAggregate` type?
     type Output;
 }
-
 #[allow(missing_debug_implementations, missing_copy_implementations)]
 /// Possible values for `ValidGrouping::IsAggregate`
 pub mod is_aggregate {
     use super::MixedAggregates;
-
     /// Yes, this expression is aggregate for the given group by clause.
     pub struct Yes;
-
     /// No, this expression is not aggregate with the given group by clause,
     /// but it might be aggregate with a different group by clause.
     pub struct No;
-
     /// This expression is never aggregate, and can appear with any other
     /// expression, regardless of whether it is aggregate.
     ///
@@ -537,31 +483,22 @@ pub mod is_aggregate {
     /// `foo + 1` is always valid, regardless of whether `foo` appears in the
     /// group by clause or not.
     pub struct Never;
-
     impl MixedAggregates<Yes> for Yes {
         type Output = Yes;
     }
-
     impl MixedAggregates<Never> for Yes {
         type Output = Yes;
     }
-
     impl MixedAggregates<No> for No {
         type Output = No;
     }
-
     impl MixedAggregates<Never> for No {
         type Output = No;
     }
-
     impl<T> MixedAggregates<T> for Never {
         type Output = T;
     }
 }
-
-// Note that these docs are similar to but slightly different than the stable
-// docs below. Make sure if you change these that you also change the docs
-// below.
 /// Trait alias to represent an expression that isn't aggregate by default.
 ///
 /// This alias represents a type which is not aggregate if there is no group by
@@ -579,12 +516,9 @@ pub mod is_aggregate {
 #[cfg(feature = "unstable")]
 pub trait NonAggregate = ValidGrouping<()>
 where
-    <Self as ValidGrouping<()>>::IsAggregate:
-        MixedAggregates<is_aggregate::No, Output = is_aggregate::No>;
-
-// Note that these docs are similar to but slightly different than the unstable
-// docs above. Make sure if you change these that you also change the docs
-// above.
+    <Self as ValidGrouping<
+        (),
+    >>::IsAggregate: MixedAggregates<is_aggregate::No, Output = is_aggregate::No>;
 /// Trait alias to represent an expression that isn't aggregate by default.
 ///
 /// This trait should never be implemented directly. It is replaced with a
@@ -604,17 +538,13 @@ where
 /// [`ValidGrouping<()>`]: ValidGrouping
 #[cfg(not(feature = "unstable"))]
 pub trait NonAggregate: ValidGrouping<()> {}
-
 #[cfg(not(feature = "unstable"))]
 impl<T> NonAggregate for T
 where
     T: ValidGrouping<()>,
     T::IsAggregate: MixedAggregates<is_aggregate::No, Output = is_aggregate::No>,
-{
-}
-
+{}
 use crate::query_builder::{QueryFragment, QueryId};
-
 /// Helper trait used when boxing expressions.
 ///
 /// In Rust you cannot create a trait object with more than one trait.
@@ -797,9 +727,7 @@ where
     Self: SelectableExpression<QS>,
     Self: QueryFragment<DB>,
     Self: Send,
-{
-}
-
+{}
 impl<QS, T, DB, GB, IsAggregate> BoxableExpression<QS, DB, GB, IsAggregate> for T
 where
     DB: Backend,
@@ -809,23 +737,16 @@ where
     T: QueryFragment<DB>,
     T: Send,
     T::IsAggregate: MixedAggregates<IsAggregate, Output = IsAggregate>,
-{
-}
-
+{}
 impl<'a, QS, ST, DB, GB, IsAggregate> QueryId
-    for dyn BoxableExpression<QS, DB, GB, IsAggregate, SqlType = ST> + 'a
-{
+for dyn BoxableExpression<QS, DB, GB, IsAggregate, SqlType = ST> + 'a {
     type QueryId = ();
-
     const HAS_STATIC_QUERY_ID: bool = false;
 }
-
 impl<'a, QS, ST, DB, GB, IsAggregate> ValidGrouping<GB>
-    for dyn BoxableExpression<QS, DB, GB, IsAggregate, SqlType = ST> + 'a
-{
+for dyn BoxableExpression<QS, DB, GB, IsAggregate, SqlType = ST> + 'a {
     type IsAggregate = IsAggregate;
 }
-
 /// Converts a tuple of values into a tuple of Diesel expressions.
 ///
 /// This trait is similar to [`AsExpression`], but it operates on tuples.
@@ -834,10 +755,7 @@ impl<'a, QS, ST, DB, GB, IsAggregate> ValidGrouping<GB>
 pub trait AsExpressionList<ST> {
     /// The final output expression
     type Expression;
-
     /// Perform the conversion
-    // That's public API, we cannot change
-    // that to appease clippy
     #[allow(clippy::wrong_self_convention)]
     fn as_expression_list(self) -> Self::Expression;
 }

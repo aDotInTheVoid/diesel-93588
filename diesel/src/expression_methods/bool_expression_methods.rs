@@ -3,7 +3,6 @@ use crate::expression::grouped::Grouped;
 use crate::expression::operators::{And, Or};
 use crate::expression::{AsExpression, Expression, TypedExpressionType};
 use crate::sql_types::{BoolOrNullableBool, SqlType};
-
 /// Methods present on boolean expressions
 pub trait BoolExpressionMethods: Expression + Sized {
     /// Creates a SQL `AND` expression
@@ -47,7 +46,6 @@ pub trait BoolExpressionMethods: Expression + Sized {
     {
         Grouped(And::new(self, other.as_expression()))
     }
-
     /// Creates a SQL `OR` expression
     ///
     /// The result will be wrapped in parenthesis, so that precedence matches
@@ -96,10 +94,8 @@ pub trait BoolExpressionMethods: Expression + Sized {
         Grouped(Or::new(self, other.as_expression()))
     }
 }
-
 impl<T> BoolExpressionMethods for T
 where
     T: Expression,
     T::SqlType: BoolOrNullableBool,
-{
-}
+{}

@@ -10,14 +10,12 @@ use crate::query_dsl::InternalJoinDsl;
 use crate::result::QueryResult;
 use crate::sql_types::BoolOrNullableBool;
 use crate::util::TupleAppend;
-
 /// A query source representing the join between two tables
 pub struct Join<Left: QuerySource, Right: QuerySource, Kind> {
     left: FromClause<Left>,
     right: FromClause<Right>,
     kind: Kind,
 }
-
 impl<Left, Right, Kind> Clone for Join<Left, Right, Kind>
 where
     Left: QuerySource,
@@ -27,14 +25,9 @@ where
     Kind: Clone,
 {
     fn clone(&self) -> Self {
-        Self {
-            left: self.left.clone(),
-            right: self.right.clone(),
-            kind: self.kind.clone(),
-        }
+        loop {}
     }
 }
-
 impl<Left, Right, Kind> Copy for Join<Left, Right, Kind>
 where
     Left: QuerySource,
@@ -42,9 +35,7 @@ where
     Right: QuerySource,
     FromClause<Right>: Copy,
     Kind: Copy,
-{
-}
-
+{}
 impl<Left, Right, Kind> std::fmt::Debug for Join<Left, Right, Kind>
 where
     Left: QuerySource,
@@ -54,14 +45,9 @@ where
     Kind: std::fmt::Debug,
 {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.debug_struct("Join")
-            .field("left", &self.left)
-            .field("right", &self.right)
-            .field("kind", &self.kind)
-            .finish()
+        loop {}
     }
 }
-
 impl<Left, Right, Kind> QueryId for Join<Left, Right, Kind>
 where
     Left: QueryId + QuerySource + 'static,
@@ -69,11 +55,9 @@ where
     Kind: QueryId,
 {
     type QueryId = Join<Left, Right, Kind::QueryId>;
-
-    const HAS_STATIC_QUERY_ID: bool =
-        Left::HAS_STATIC_QUERY_ID && Right::HAS_STATIC_QUERY_ID && Kind::HAS_STATIC_QUERY_ID;
+    const HAS_STATIC_QUERY_ID: bool = Left::HAS_STATIC_QUERY_ID
+        && Right::HAS_STATIC_QUERY_ID && Kind::HAS_STATIC_QUERY_ID;
 }
-
 #[derive(Debug, Clone, Copy, QueryId)]
 #[doc(hidden)]
 /// A query source representing the join between two tables with an explicit
@@ -83,25 +67,18 @@ pub struct JoinOn<Join, On> {
     join: Join,
     on: On,
 }
-
 impl<Left, Right, Kind> Join<Left, Right, Kind>
 where
     Left: QuerySource,
     Right: QuerySource,
 {
     pub(crate) fn new(left: Left, right: Right, kind: Kind) -> Self {
-        Join {
-            left: FromClause::new(left),
-            right: FromClause::new(right),
-            kind,
-        }
+        loop {}
     }
-
     pub(crate) fn on<On>(self, on: On) -> JoinOn<Self, On> {
-        JoinOn { join: self, on: on }
+        loop {}
     }
 }
-
 impl<Left, Right> QuerySource for Join<Left, Right, Inner>
 where
     Left: QuerySource + AppendSelection<Right::DefaultSelection>,
@@ -111,18 +88,13 @@ where
 {
     type FromClause = Self;
     type DefaultSelection = Left::Output;
-
     fn from_clause(&self) -> Self::FromClause {
-        self.clone()
+        loop {}
     }
-
     fn default_selection(&self) -> Self::DefaultSelection {
-        self.left
-            .source
-            .append_selection(self.right.source.default_selection())
+        loop {}
     }
 }
-
 impl<Left, Right> QuerySource for Join<Left, Right, LeftOuter>
 where
     Left: QuerySource + AppendSelection<Nullable<Right::DefaultSelection>>,
@@ -132,27 +104,20 @@ where
 {
     type FromClause = Self;
     type DefaultSelection = Left::Output;
-
     fn from_clause(&self) -> Self::FromClause {
-        self.clone()
+        loop {}
     }
-
     fn default_selection(&self) -> Self::DefaultSelection {
-        self.left
-            .source
-            .append_selection(self.right.source.default_selection().nullable())
+        loop {}
     }
 }
-
 #[derive(Debug, Clone, Copy)]
 pub struct OnKeyword;
-
 impl<DB: Backend> nodes::MiddleFragment<DB> for OnKeyword {
     fn push_sql(&self, mut pass: AstPass<'_, '_, DB>) {
-        pass.push_sql(" ON ");
+        loop {}
     }
 }
-
 impl<Join, On> QuerySource for JoinOn<Join, On>
 where
     Join: QuerySource,
@@ -162,20 +127,13 @@ where
 {
     type FromClause = Grouped<nodes::InfixNode<Join::FromClause, On, OnKeyword>>;
     type DefaultSelection = Join::DefaultSelection;
-
     fn from_clause(&self) -> Self::FromClause {
-        Grouped(nodes::InfixNode::new(
-            self.join.from_clause(),
-            self.on.clone(),
-            OnKeyword,
-        ))
+        loop {}
     }
-
     fn default_selection(&self) -> Self::DefaultSelection {
-        self.join.default_selection()
+        loop {}
     }
 }
-
 impl<Left, Right, Kind, DB> QueryFragment<DB> for Join<Left, Right, Kind>
 where
     DB: Backend + DieselReserveSpecialization,
@@ -186,14 +144,9 @@ where
     Kind: QueryFragment<DB>,
 {
     fn walk_ast<'b>(&'b self, mut out: AstPass<'_, 'b, DB>) -> QueryResult<()> {
-        self.left.from_clause.walk_ast(out.reborrow())?;
-        self.kind.walk_ast(out.reborrow())?;
-        out.push_sql(" JOIN ");
-        self.right.from_clause.walk_ast(out.reborrow())?;
-        Ok(())
+        loop {}
     }
 }
-
 /// Indicates that two tables can be joined without an explicit `ON` clause.
 ///
 /// Implementations of this trait are generated by invoking [`joinable!`].
@@ -215,7 +168,6 @@ pub trait JoinTo<T> {
     #[doc(hidden)]
     fn join_target(rhs: T) -> (Self::FromClause, Self::OnClause);
 }
-
 #[doc(hidden)]
 /// Used to ensure the sql type of `left.join(mid).join(right)` is
 /// `(Left, Mid, Right)` and not `((Left, Mid), Right)`. This needs
@@ -223,18 +175,14 @@ pub trait JoinTo<T> {
 /// the column lists (which are tuples) separate.
 pub trait AppendSelection<Selection> {
     type Output;
-
     fn append_selection(&self, selection: Selection) -> Self::Output;
 }
-
 impl<T: Table, Selection> AppendSelection<Selection> for T {
     type Output = (T::AllColumns, Selection);
-
     fn append_selection(&self, selection: Selection) -> Self::Output {
-        (T::all_columns(), selection)
+        loop {}
     }
 }
-
 impl<Left, Mid, Selection, Kind> AppendSelection<Selection> for Join<Left, Mid, Kind>
 where
     Left: QuerySource,
@@ -242,52 +190,44 @@ where
     Self: QuerySource,
     <Self as QuerySource>::DefaultSelection: TupleAppend<Selection>,
 {
-    type Output = <<Self as QuerySource>::DefaultSelection as TupleAppend<Selection>>::Output;
-
+    type Output = <<Self as QuerySource>::DefaultSelection as TupleAppend<
+        Selection,
+    >>::Output;
     fn append_selection(&self, selection: Selection) -> Self::Output {
-        self.default_selection().tuple_append(selection)
+        loop {}
     }
 }
-
 impl<Join, On, Selection> AppendSelection<Selection> for JoinOn<Join, On>
 where
     Join: AppendSelection<Selection>,
 {
     type Output = Join::Output;
-
     fn append_selection(&self, selection: Selection) -> Self::Output {
-        self.join.append_selection(selection)
+        loop {}
     }
 }
-
 #[doc(hidden)]
 #[derive(Debug, Clone, Copy, Default, QueryId)]
 pub struct Inner;
-
 impl<DB> QueryFragment<DB> for Inner
 where
     DB: Backend + DieselReserveSpecialization,
 {
     fn walk_ast<'b>(&'b self, mut out: AstPass<'_, 'b, DB>) -> QueryResult<()> {
-        out.push_sql(" INNER");
-        Ok(())
+        loop {}
     }
 }
-
 #[doc(hidden)]
 #[derive(Debug, Clone, Copy, Default, QueryId)]
 pub struct LeftOuter;
-
 impl<DB> QueryFragment<DB> for LeftOuter
 where
     DB: Backend + DieselReserveSpecialization,
 {
     fn walk_ast<'b>(&'b self, mut out: AstPass<'_, 'b, DB>) -> QueryResult<()> {
-        out.push_sql(" LEFT OUTER");
-        Ok(())
+        loop {}
     }
 }
-
 impl<Left, Mid, Right, Kind> JoinTo<Right> for Join<Left, Mid, Kind>
 where
     Left: JoinTo<Right> + QuerySource,
@@ -295,24 +235,20 @@ where
 {
     type FromClause = <Left as JoinTo<Right>>::FromClause;
     type OnClause = Left::OnClause;
-
     fn join_target(rhs: Right) -> (Self::FromClause, Self::OnClause) {
-        Left::join_target(rhs)
+        loop {}
     }
 }
-
 impl<Join, On, Right> JoinTo<Right> for JoinOn<Join, On>
 where
     Join: JoinTo<Right>,
 {
     type FromClause = Join::FromClause;
     type OnClause = Join::OnClause;
-
     fn join_target(rhs: Right) -> (Self::FromClause, Self::OnClause) {
-        Join::join_target(rhs)
+        loop {}
     }
 }
-
 impl<T, Left, Right, Kind> AppearsInFromClause<T> for Join<Left, Right, Kind>
 where
     Left: AppearsInFromClause<T> + QuerySource,
@@ -321,67 +257,54 @@ where
 {
     type Count = <Left::Count as Plus<Right::Count>>::Output;
 }
-
 impl<T, Join, On> AppearsInFromClause<T> for JoinOn<Join, On>
 where
     Join: AppearsInFromClause<T>,
 {
     type Count = Join::Count;
 }
-
 #[doc(hidden)]
 #[derive(Debug, Clone, Copy)]
 pub struct OnClauseWrapper<Source, On> {
     pub(crate) source: Source,
     pub(crate) on: On,
 }
-
 impl<Source, On> OnClauseWrapper<Source, On> {
     pub fn new(source: Source, on: On) -> Self {
-        OnClauseWrapper { source, on }
+        loop {}
     }
 }
-
 impl<Lhs, Rhs, On> JoinTo<OnClauseWrapper<Rhs, On>> for Lhs
 where
     Lhs: Table,
 {
     type FromClause = Rhs;
     type OnClause = On;
-
     fn join_target(rhs: OnClauseWrapper<Rhs, On>) -> (Self::FromClause, Self::OnClause) {
-        (rhs.source, rhs.on)
+        loop {}
     }
 }
-
 impl<Lhs, Rhs, On> JoinTo<Rhs> for OnClauseWrapper<Lhs, On>
 where
     Lhs: JoinTo<Rhs>,
 {
     type FromClause = <Lhs as JoinTo<Rhs>>::FromClause;
     type OnClause = <Lhs as JoinTo<Rhs>>::OnClause;
-
     fn join_target(rhs: Rhs) -> (Self::FromClause, Self::OnClause) {
-        <Lhs as JoinTo<Rhs>>::join_target(rhs)
+        loop {}
     }
 }
-
-impl<Rhs, Kind, On1, On2, Lhs> InternalJoinDsl<Rhs, Kind, On1> for OnClauseWrapper<Lhs, On2>
+impl<Rhs, Kind, On1, On2, Lhs> InternalJoinDsl<Rhs, Kind, On1>
+for OnClauseWrapper<Lhs, On2>
 where
     Lhs: InternalJoinDsl<Rhs, Kind, On1>,
 {
     type Output = OnClauseWrapper<<Lhs as InternalJoinDsl<Rhs, Kind, On1>>::Output, On2>;
-
     fn join(self, rhs: Rhs, kind: Kind, on: On1) -> Self::Output {
-        OnClauseWrapper {
-            source: self.source.join(rhs, kind, on),
-            on: self.on,
-        }
+        loop {}
     }
 }
-
 impl<Qs, On> QueryDsl for OnClauseWrapper<Qs, On> {}
-
 #[doc(hidden)]
 /// Convert any joins in a `FROM` clause into an inner join.
 ///
@@ -393,7 +316,6 @@ impl<Qs, On> QueryDsl for OnClauseWrapper<Qs, On> {}
 pub trait ToInnerJoin {
     type InnerJoin;
 }
-
 impl<Left, Right, Kind> ToInnerJoin for Join<Left, Right, Kind>
 where
     Left: ToInnerJoin + QuerySource,
@@ -403,14 +325,12 @@ where
 {
     type InnerJoin = Join<Left::InnerJoin, Right::InnerJoin, Inner>;
 }
-
 impl<Join, On> ToInnerJoin for JoinOn<Join, On>
 where
     Join: ToInnerJoin,
 {
     type InnerJoin = JoinOn<Join::InnerJoin, On>;
 }
-
 impl<From> ToInnerJoin for SelectStatement<FromClause<From>>
 where
     From: ToInnerJoin + QuerySource,
@@ -418,7 +338,6 @@ where
 {
     type InnerJoin = SelectStatement<FromClause<From::InnerJoin>>;
 }
-
 impl<T: Table> ToInnerJoin for T {
     type InnerJoin = T;
 }

@@ -10,11 +10,9 @@
 //! G: Group By Clause
 //! H: Having clause
 //! LC: For Update Clause
-
 pub(crate) mod boxed;
 mod dsl_impls;
 pub(crate) use self::boxed::BoxedSelectStatement;
-
 use super::distinct_clause::NoDistinctClause;
 use super::from_clause::AsQuerySource;
 use super::from_clause::FromClause;
@@ -38,7 +36,6 @@ use crate::query_dsl::order_dsl::ValidOrderingForDistinct;
 use crate::query_source::joins::{AppendSelection, Inner, Join};
 use crate::query_source::*;
 use crate::result::QueryResult;
-
 #[derive(Debug, Clone, Copy, QueryId)]
 #[doc(hidden)]
 #[must_use = "Queries are only executed when calling `load`, `get_result` or similar."]
@@ -63,7 +60,6 @@ pub struct SelectStatement<
     pub(crate) having: Having,
     pub(crate) locking: Locking,
 }
-
 impl<F, S, D, W, O, LOf, G, H, LC> SelectStatement<F, S, D, W, O, LOf, G, H, LC> {
     #[allow(clippy::too_many_arguments)]
     pub(crate) fn new(
@@ -77,43 +73,17 @@ impl<F, S, D, W, O, LOf, G, H, LC> SelectStatement<F, S, D, W, O, LOf, G, H, LC>
         having: H,
         locking: LC,
     ) -> Self {
-        SelectStatement {
-            select,
-            from,
-            distinct,
-            where_clause,
-            order,
-            limit_offset,
-            group_by,
-            having,
-            locking,
-        }
+        loop {}
     }
 }
-
 impl<F: QuerySource> SelectStatement<FromClause<F>> {
-    // This is used by the `table!` macro
     #[doc(hidden)]
     pub fn simple(from: F) -> Self {
-        let from = FromClause::new(from);
-        SelectStatement::new(
-            DefaultSelectClause::new(&from),
-            from,
-            NoDistinctClause,
-            NoWhereClause,
-            NoOrderClause,
-            LimitOffsetClause {
-                limit_clause: NoLimitClause,
-                offset_clause: NoOffsetClause,
-            },
-            NoGroupByClause,
-            NoHavingClause,
-            NoLockingClause,
-        )
+        loop {}
     }
 }
-
-impl<F, S, D, W, O, LOf, G, H, LC> Query for SelectStatement<F, S, D, W, O, LOf, G, H, LC>
+impl<F, S, D, W, O, LOf, G, H, LC> Query
+for SelectStatement<F, S, D, W, O, LOf, G, H, LC>
 where
     G: ValidGroupByClause,
     S: SelectClauseExpression<F>,
@@ -122,17 +92,16 @@ where
 {
     type SqlType = S::SelectClauseSqlType;
 }
-
-impl<F, S, D, W, O, LOf, G, H, LC> SelectQuery for SelectStatement<F, S, D, W, O, LOf, G, H, LC>
+impl<F, S, D, W, O, LOf, G, H, LC> SelectQuery
+for SelectStatement<F, S, D, W, O, LOf, G, H, LC>
 where
     S: SelectClauseExpression<F>,
     O: ValidOrderingForDistinct<D>,
 {
     type SqlType = S::SelectClauseSqlType;
 }
-
 impl<F, S, D, W, O, LOf, G, H, LC, DB> QueryFragment<DB>
-    for SelectStatement<F, S, D, W, O, LOf, G, H, LC>
+for SelectStatement<F, S, D, W, O, LOf, G, H, LC>
 where
     DB: Backend + DieselReserveSpecialization,
     S: QueryFragment<DB>,
@@ -146,57 +115,38 @@ where
     LC: QueryFragment<DB>,
 {
     fn walk_ast<'b>(&'b self, mut out: AstPass<'_, 'b, DB>) -> QueryResult<()> {
-        out.push_sql("SELECT ");
-        self.distinct.walk_ast(out.reborrow())?;
-        self.select.walk_ast(out.reborrow())?;
-        self.from.walk_ast(out.reborrow())?;
-        self.where_clause.walk_ast(out.reborrow())?;
-        self.group_by.walk_ast(out.reborrow())?;
-        self.having.walk_ast(out.reborrow())?;
-        self.order.walk_ast(out.reborrow())?;
-        self.limit_offset.walk_ast(out.reborrow())?;
-        self.locking.walk_ast(out.reborrow())?;
-        Ok(())
+        loop {}
     }
 }
-
 impl<S, F, D, W, O, LOf, G, H, LC, QS> ValidSubselect<QS>
-    for SelectStatement<FromClause<F>, S, D, W, O, LOf, G, H, LC>
+for SelectStatement<FromClause<F>, S, D, W, O, LOf, G, H, LC>
 where
     Self: SelectQuery,
     F: QuerySource,
     QS: QuerySource,
     Join<F, QS, Inner>: QuerySource,
     W: ValidWhereClause<FromClause<Join<F, QS, Inner>>>,
-{
-}
-
+{}
 impl<S, D, W, O, LOf, G, H, LC> ValidSubselect<NoFromClause>
-    for SelectStatement<NoFromClause, S, D, W, O, LOf, G, H, LC>
+for SelectStatement<NoFromClause, S, D, W, O, LOf, G, H, LC>
 where
     Self: SelectQuery,
     W: ValidWhereClause<NoFromClause>,
-{
-}
-
+{}
 impl<S, F, D, W, O, LOf, G, H, LC> ValidSubselect<NoFromClause>
-    for SelectStatement<FromClause<F>, S, D, W, O, LOf, G, H, LC>
+for SelectStatement<FromClause<F>, S, D, W, O, LOf, G, H, LC>
 where
     Self: SelectQuery,
     F: QuerySource,
     W: ValidWhereClause<FromClause<F>>,
-{
-}
-
+{}
 impl<S, D, W, O, LOf, G, H, LC, QS> ValidSubselect<QS>
-    for SelectStatement<NoFromClause, S, D, W, O, LOf, G, H, LC>
+for SelectStatement<NoFromClause, S, D, W, O, LOf, G, H, LC>
 where
     Self: SelectQuery,
     QS: QuerySource,
     W: ValidWhereClause<NoFromClause>,
-{
-}
-
+{}
 /// Allow `SelectStatement<From>` to act as if it were `From` as long as
 /// no other query methods have been called on it
 impl<From, T> AppearsInFromClause<T> for SelectStatement<From>
@@ -206,7 +156,6 @@ where
 {
     type Count = <From::QuerySource as AppearsInFromClause<T>>::Count;
 }
-
 impl<From> QuerySource for SelectStatement<From>
 where
     From: AsQuerySource,
@@ -214,24 +163,20 @@ where
 {
     type FromClause = <From::QuerySource as QuerySource>::FromClause;
     type DefaultSelection = <From::QuerySource as QuerySource>::DefaultSelection;
-
     fn from_clause(&self) -> <From::QuerySource as QuerySource>::FromClause {
-        self.from.as_query_source().from_clause()
+        loop {}
     }
-
     fn default_selection(&self) -> Self::DefaultSelection {
-        self.from.as_query_source().default_selection()
+        loop {}
     }
 }
-
 impl<From, Selection> AppendSelection<Selection> for SelectStatement<From>
 where
     From: AsQuerySource,
     From::QuerySource: AppendSelection<Selection>,
 {
     type Output = <From::QuerySource as AppendSelection<Selection>>::Output;
-
     fn append_selection(&self, selection: Selection) -> Self::Output {
-        self.from.as_query_source().append_selection(selection)
+        loop {}
     }
 }

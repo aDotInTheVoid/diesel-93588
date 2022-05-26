@@ -1,8 +1,8 @@
 //! PostgreSQL specific expression methods
-
 pub(in crate::pg) use self::private::{
-    ArrayOrNullableArray, InetOrCidr, JsonIndex, JsonOrNullableJsonOrJsonbOrNullableJsonb,
-    JsonRemoveIndex, JsonbOrNullableJsonb, RangeHelper, RangeOrNullableRange, TextOrNullableText,
+    ArrayOrNullableArray, InetOrCidr, JsonIndex,
+    JsonOrNullableJsonOrJsonbOrNullableJsonb, JsonRemoveIndex, JsonbOrNullableJsonb,
+    RangeHelper, RangeOrNullableRange, TextOrNullableText,
 };
 use super::date_and_time::{AtTimeZone, DateTimeLike};
 use super::operators::*;
@@ -13,7 +13,6 @@ use crate::expression::{AsExpression, Expression, IntoSql, TypedExpressionType};
 use crate::pg::expression::expression_methods::private::BinaryOrNullableBinary;
 use crate::sql_types::{Array, Binary, Inet, Integer, Jsonb, SqlType, Text, VarChar};
 use crate::EscapeExpressionMethods;
-
 /// PostgreSQL specific methods which are present on all expressions.
 #[cfg(feature = "postgres_backend")]
 pub trait PgExpressionMethods: Expression + Sized {
@@ -36,7 +35,7 @@ pub trait PgExpressionMethods: Expression + Sized {
     /// assert_eq!(Ok(1), not_distinct.first(connection));
     /// # }
     /// ```
-    #[allow(clippy::wrong_self_convention)] // This is named after the sql operator
+    #[allow(clippy::wrong_self_convention)]
     fn is_not_distinct_from<T>(self, other: T) -> dsl::IsNotDistinctFrom<Self, T>
     where
         Self::SqlType: SqlType,
@@ -44,7 +43,6 @@ pub trait PgExpressionMethods: Expression + Sized {
     {
         Grouped(IsNotDistinctFrom::new(self, other.as_expression()))
     }
-
     /// Creates a PostgreSQL `IS DISTINCT FROM` expression.
     ///
     /// This behaves identically to the `!=` operator, except that `NULL` is
@@ -64,7 +62,7 @@ pub trait PgExpressionMethods: Expression + Sized {
     /// assert_eq!(Ok(1), not_distinct.first(connection));
     /// # }
     /// ```
-    #[allow(clippy::wrong_self_convention)] // This is named after the sql operator
+    #[allow(clippy::wrong_self_convention)]
     fn is_distinct_from<T>(self, other: T) -> dsl::IsDistinctFrom<Self, T>
     where
         Self::SqlType: SqlType,
@@ -73,9 +71,7 @@ pub trait PgExpressionMethods: Expression + Sized {
         Grouped(IsDistinctFrom::new(self, other.as_expression()))
     }
 }
-
 impl<T: Expression> PgExpressionMethods for T {}
-
 /// PostgreSQL specific methods present on timestamp expressions.
 #[cfg(feature = "postgres_backend")]
 pub trait PgTimestampExpressionMethods: Expression + Sized {
@@ -142,9 +138,10 @@ pub trait PgTimestampExpressionMethods: Expression + Sized {
         Grouped(AtTimeZone::new(self, timezone.as_expression()))
     }
 }
-
-impl<T: Expression> PgTimestampExpressionMethods for T where T::SqlType: DateTimeLike {}
-
+impl<T: Expression> PgTimestampExpressionMethods for T
+where
+    T::SqlType: DateTimeLike,
+{}
 /// PostgreSQL specific methods present on array expressions.
 #[cfg(feature = "postgres_backend")]
 pub trait PgArrayExpressionMethods: Expression + Sized {
@@ -208,7 +205,6 @@ pub trait PgArrayExpressionMethods: Expression + Sized {
     {
         Grouped(OverlapsWith::new(self, other.as_expression()))
     }
-
     /// Creates a PostgreSQL `@>` expression.
     ///
     /// This operator returns whether an array contains another array.
@@ -260,7 +256,6 @@ pub trait PgArrayExpressionMethods: Expression + Sized {
     {
         Grouped(Contains::new(self, other.as_expression()))
     }
-
     /// Creates a PostgreSQL `<@` expression.
     ///
     /// This operator returns whether an array is contained by another array.
@@ -306,7 +301,7 @@ pub trait PgArrayExpressionMethods: Expression + Sized {
     /// #     Ok(())
     /// # }
     /// ```
-    #[allow(clippy::wrong_self_convention)] // This is named after the sql operator
+    #[allow(clippy::wrong_self_convention)]
     fn is_contained_by<T>(self, other: T) -> dsl::IsContainedBy<Self, T>
     where
         Self::SqlType: SqlType,
@@ -371,14 +366,11 @@ pub trait PgArrayExpressionMethods: Expression + Sized {
         ArrayIndex::new(self, other.as_expression())
     }
 }
-
 impl<T> PgArrayExpressionMethods for T
 where
     T: Expression,
     T::SqlType: ArrayOrNullableArray,
-{
-}
-
+{}
 /// PostgreSQL expression methods related to sorting.
 ///
 /// This trait is only implemented for `Asc` and `Desc`. Although `.asc` is
@@ -433,7 +425,6 @@ pub trait PgSortExpressionMethods: Sized {
     fn nulls_first(self) -> dsl::NullsFirst<Self> {
         NullsFirst::new(self)
     }
-
     /// Specify that nulls should come after other values in this ordering.
     ///
     /// Normally, nulls come last when sorting in ascending order and first
@@ -482,10 +473,8 @@ pub trait PgSortExpressionMethods: Sized {
         NullsLast::new(self)
     }
 }
-
 impl<T> PgSortExpressionMethods for Asc<T> {}
 impl<T> PgSortExpressionMethods for Desc<T> {}
-
 /// PostgreSQL specific methods present on text expressions.
 #[cfg(feature = "postgres_backend")]
 pub trait PgTextExpressionMethods: Expression + Sized {
@@ -517,7 +506,6 @@ pub trait PgTextExpressionMethods: Expression + Sized {
     {
         Grouped(ILike::new(self, other.as_expression()))
     }
-
     /// Creates a PostgreSQL `NOT ILIKE` expression
     ///
     /// # Example
@@ -546,7 +534,6 @@ pub trait PgTextExpressionMethods: Expression + Sized {
     {
         Grouped(NotILike::new(self, other.as_expression()))
     }
-
     /// Creates a PostgreSQL `SIMILAR TO` expression
     ///
     /// # Example
@@ -574,7 +561,6 @@ pub trait PgTextExpressionMethods: Expression + Sized {
     {
         Grouped(SimilarTo::new(self, other.as_expression()))
     }
-
     /// Creates a PostgreSQL `NOT SIMILAR TO` expression
     ///
     /// # Example
@@ -603,58 +589,35 @@ pub trait PgTextExpressionMethods: Expression + Sized {
         Grouped(NotSimilarTo::new(self, other.as_expression()))
     }
 }
-
 impl<T> PgTextExpressionMethods for T
 where
     T: Expression,
     T::SqlType: TextOrNullableText,
-{
-}
-
+{}
 impl<T, U> EscapeExpressionMethods for Grouped<ILike<T, U>> {
     type TextExpression = ILike<T, U>;
-
     fn escape(self, character: char) -> dsl::Escape<Self> {
-        Grouped(crate::expression::operators::Escape::new(
-            self.0,
-            character.to_string().into_sql::<VarChar>(),
-        ))
+        loop {}
     }
 }
-
 impl<T, U> EscapeExpressionMethods for Grouped<NotILike<T, U>> {
     type TextExpression = NotILike<T, U>;
-
     fn escape(self, character: char) -> dsl::Escape<Self> {
-        Grouped(crate::expression::operators::Escape::new(
-            self.0,
-            character.to_string().into_sql::<VarChar>(),
-        ))
+        loop {}
     }
 }
-
 impl<T, U> EscapeExpressionMethods for Grouped<SimilarTo<T, U>> {
     type TextExpression = SimilarTo<T, U>;
-
     fn escape(self, character: char) -> dsl::Escape<Self> {
-        Grouped(crate::expression::operators::Escape::new(
-            self.0,
-            character.to_string().into_sql::<VarChar>(),
-        ))
+        loop {}
     }
 }
-
 impl<T, U> EscapeExpressionMethods for Grouped<NotSimilarTo<T, U>> {
     type TextExpression = NotSimilarTo<T, U>;
-
     fn escape(self, character: char) -> dsl::Escape<Self> {
-        Grouped(crate::expression::operators::Escape::new(
-            self.0,
-            character.to_string().into_sql::<VarChar>(),
-        ))
+        loop {}
     }
 }
-
 /// PostgreSQL specific methods present on range expressions.
 #[cfg(feature = "postgres_backend")]
 pub trait PgRangeExpressionMethods: Expression + Sized {
@@ -710,14 +673,11 @@ pub trait PgRangeExpressionMethods: Expression + Sized {
         Grouped(Contains::new(self, other.as_expression()))
     }
 }
-
 impl<T> PgRangeExpressionMethods for T
 where
     T: Expression,
     T::SqlType: RangeOrNullableRange,
-{
-}
-
+{}
 /// PostgreSQL specific methods present between CIDR/INET expressions
 #[cfg(feature = "postgres_backend")]
 pub trait PgNetExpressionMethods: Expression + Sized {
@@ -782,7 +742,6 @@ pub trait PgNetExpressionMethods: Expression + Sized {
     {
         Grouped(ContainsNet::new(self, other.as_expression()))
     }
-
     /// Creates a PostgreSQL `>>=` expression.
     ///
     /// This operator returns whether a subnet contains or is equal to another subnet.
@@ -844,7 +803,6 @@ pub trait PgNetExpressionMethods: Expression + Sized {
     {
         Grouped(ContainsNetLoose::new(self, other.as_expression()))
     }
-
     /// Creates a PostgreSQL `<<` expression.
     ///
     /// This operator returns whether a subnet or address is strictly contained by another subnet.
@@ -900,14 +858,13 @@ pub trait PgNetExpressionMethods: Expression + Sized {
     /// #     Ok(())
     /// # }
     /// ```
-    #[allow(clippy::wrong_self_convention)] // This is named after the sql operator
+    #[allow(clippy::wrong_self_convention)]
     fn is_contained_by<T>(self, other: T) -> dsl::IsContainedByNet<Self, T>
     where
         T: AsExpression<Inet>,
     {
         Grouped(IsContainedByNet::new(self, other.as_expression()))
     }
-
     /// Creates a PostgreSQL `>>=` expression.
     ///
     /// This operator returns whether a subnet is contained by or equal to another subnet.
@@ -958,14 +915,13 @@ pub trait PgNetExpressionMethods: Expression + Sized {
     /// #     Ok(())
     /// # }
     /// ```
-    #[allow(clippy::wrong_self_convention)] // This is named after the sql operator
+    #[allow(clippy::wrong_self_convention)]
     fn is_contained_by_or_eq<T>(self, other: T) -> dsl::IsContainedByNetLoose<Self, T>
     where
         T: AsExpression<Inet>,
     {
         Grouped(IsContainedByNetLoose::new(self, other.as_expression()))
     }
-
     /// Creates a PostgreSQL `&&` expression.
     ///
     /// This operator returns whether a subnet contains or is contained by another subnet.
@@ -1027,7 +983,6 @@ pub trait PgNetExpressionMethods: Expression + Sized {
     {
         Grouped(OverlapsWith::new(self, other.as_expression()))
     }
-
     /// Creates a PostgreSQL `&` expression.
     ///
     /// This operator computes the bitwise AND between two network addresses.
@@ -1078,7 +1033,6 @@ pub trait PgNetExpressionMethods: Expression + Sized {
     {
         Grouped(AndNet::new(self, other.as_expression()))
     }
-
     /// Creates a PostgreSQL `|` expression.
     ///
     /// This operator computes the bitwise OR between two network addresses.
@@ -1129,7 +1083,6 @@ pub trait PgNetExpressionMethods: Expression + Sized {
     {
         Grouped(OrNet::new(self, other.as_expression()))
     }
-
     /// Creates a PostgreSQL `-` expression.
     ///
     /// This operator substracts an address from an address to compute the distance between the two
@@ -1181,14 +1134,11 @@ pub trait PgNetExpressionMethods: Expression + Sized {
         Grouped(DifferenceNet::new(self, other.as_expression()))
     }
 }
-
 impl<T> PgNetExpressionMethods for T
 where
     T: Expression,
     T::SqlType: InetOrCidr,
-{
-}
-
+{}
 /// PostgreSQL specific methods present on JSONB expressions.
 #[cfg(feature = "postgres_backend")]
 pub trait PgJsonbExpressionMethods: Expression + Sized {
@@ -1263,7 +1213,6 @@ pub trait PgJsonbExpressionMethods: Expression + Sized {
     {
         Grouped(ConcatJsonb::new(self, other.as_expression()))
     }
-
     /// Creates a PostgreSQL `?` expression.
     ///
     /// This operator checks if the right hand side string exists as a top-level key within the JSONB
@@ -1324,7 +1273,6 @@ pub trait PgJsonbExpressionMethods: Expression + Sized {
     {
         Grouped(HasKeyJsonb::new(self, other.as_expression()))
     }
-
     /// Creates a PostgreSQL `?|` expression.
     ///
     /// This operator checks if any of the strings in the right hand side array exists as top level key in the given JSONB
@@ -1385,7 +1333,6 @@ pub trait PgJsonbExpressionMethods: Expression + Sized {
     {
         Grouped(HasAnyKeyJsonb::new(self, other.as_expression()))
     }
-
     /// Creates a PostgreSQL `?&` expression.
     ///
     /// This operator checks if all the strings in the right hand side array exist as top level keys in the given JSONB
@@ -1446,7 +1393,6 @@ pub trait PgJsonbExpressionMethods: Expression + Sized {
     {
         Grouped(HasAllKeysJsonb::new(self, other.as_expression()))
     }
-
     /// Creates a PostgreSQL `@>` expression.
     ///
     /// This operator checks whether left hand side JSONB value contains right hand side JSONB value
@@ -1506,7 +1452,6 @@ pub trait PgJsonbExpressionMethods: Expression + Sized {
     {
         Grouped(ContainsJsonb::new(self, other.as_expression()))
     }
-
     /// Creates a PostgreSQL `<@` expression.
     ///
     /// This operator checks whether left hand side JSONB value is contained by right hand side JSON value.
@@ -1564,14 +1509,13 @@ pub trait PgJsonbExpressionMethods: Expression + Sized {
     /// #     Ok(())
     /// # }
     /// ```
-    #[allow(clippy::wrong_self_convention)] // This is named after the sql operator
+    #[allow(clippy::wrong_self_convention)]
     fn is_contained_by<T>(self, other: T) -> dsl::IsContainedByJsonb<Self, T>
     where
         T: AsExpression<Jsonb>,
     {
         Grouped(IsContainedByJsonb::new(self, other.as_expression()))
     }
-
     /// Creates a PostgreSQL `-` expression.
     ///
     /// This operator removes the value associated with the given key, that is provided on the
@@ -1673,17 +1617,17 @@ pub trait PgJsonbExpressionMethods: Expression + Sized {
     fn remove<T>(
         self,
         other: T,
-    ) -> dsl::RemoveFromJsonb<Self, T::Expression, <T::Expression as Expression>::SqlType>
+    ) -> dsl::RemoveFromJsonb<
+            Self,
+            T::Expression,
+            <T::Expression as Expression>::SqlType,
+        >
     where
         T: JsonRemoveIndex,
         <T::Expression as Expression>::SqlType: SqlType,
     {
-        Grouped(RemoveFromJsonb::new(
-            self,
-            other.into_json_index_expression(),
-        ))
+        Grouped(RemoveFromJsonb::new(self, other.into_json_index_expression()))
     }
-
     /// Creates a PostgreSQL `#-` expression.
     ///
     /// This operator removes the value associated with the given json path, that is provided on the
@@ -1790,21 +1734,21 @@ pub trait PgJsonbExpressionMethods: Expression + Sized {
     /// #     Ok(())
     /// # }
     ///
-    fn remove_by_path<T>(self, other: T) -> dsl::RemoveByPathFromJsonb<Self, T::Expression>
+    fn remove_by_path<T>(
+        self,
+        other: T,
+    ) -> dsl::RemoveByPathFromJsonb<Self, T::Expression>
     where
         T: AsExpression<Array<Text>>,
     {
         Grouped(RemoveByPathFromJsonb::new(self, other.as_expression()))
     }
 }
-
 impl<T> PgJsonbExpressionMethods for T
 where
     T: Expression,
     T::SqlType: JsonbOrNullableJsonb,
-{
-}
-
+{}
 /// PostgreSQL specific methods present on JSON and JSONB expressions.
 #[cfg(feature = "postgres_backend")]
 pub trait PgAnyJsonExpressionMethods: Expression + Sized {
@@ -1899,17 +1843,17 @@ pub trait PgAnyJsonExpressionMethods: Expression + Sized {
     fn retrieve_as_object<T>(
         self,
         other: T,
-    ) -> dsl::RetrieveAsObjectJson<Self, T::Expression, <T::Expression as Expression>::SqlType>
+    ) -> dsl::RetrieveAsObjectJson<
+            Self,
+            T::Expression,
+            <T::Expression as Expression>::SqlType,
+        >
     where
         T: JsonIndex,
         <T::Expression as Expression>::SqlType: SqlType,
     {
-        Grouped(RetrieveAsObjectJson::new(
-            self,
-            other.into_json_index_expression(),
-        ))
+        Grouped(RetrieveAsObjectJson::new(self, other.into_json_index_expression()))
     }
-
     /// Creates a PostgreSQL `->>` expression.
     ///
     /// This operator extracts the value associated with the given key, that is provided on the
@@ -2001,17 +1945,17 @@ pub trait PgAnyJsonExpressionMethods: Expression + Sized {
     fn retrieve_as_text<T>(
         self,
         other: T,
-    ) -> dsl::RetrieveAsTextJson<Self, T::Expression, <T::Expression as Expression>::SqlType>
+    ) -> dsl::RetrieveAsTextJson<
+            Self,
+            T::Expression,
+            <T::Expression as Expression>::SqlType,
+        >
     where
         T: JsonIndex,
         <T::Expression as Expression>::SqlType: SqlType,
     {
-        Grouped(RetrieveAsTextJson::new(
-            self,
-            other.into_json_index_expression(),
-        ))
+        Grouped(RetrieveAsTextJson::new(self, other.into_json_index_expression()))
     }
-
     /// Creates a PostgreSQL `#>` expression.
     ///
     /// This operator extracts the value associated with the given key, that is provided on the
@@ -2089,7 +2033,6 @@ pub trait PgAnyJsonExpressionMethods: Expression + Sized {
     {
         Grouped(RetrieveByPathAsObjectJson::new(self, other.as_expression()))
     }
-
     /// Creates a PostgreSQL `#>>` expression.
     ///
     /// This operator extracts the value associated with the given key, that is provided on the
@@ -2169,15 +2112,12 @@ pub trait PgAnyJsonExpressionMethods: Expression + Sized {
         Grouped(RetrieveByPathAsTextJson::new(self, other.as_expression()))
     }
 }
-
 #[doc(hidden)]
 impl<T> PgAnyJsonExpressionMethods for T
 where
     T: Expression,
     T::SqlType: JsonOrNullableJsonOrJsonbOrNullableJsonb,
-{
-}
-
+{}
 /// PostgreSQL specific methods present on Binary expressions.
 #[cfg(feature = "postgres_backend")]
 pub trait PgBinaryExpressionMethods: Expression + Sized {
@@ -2238,7 +2178,6 @@ pub trait PgBinaryExpressionMethods: Expression + Sized {
     {
         Grouped(ConcatBinary::new(self, other.as_expression()))
     }
-
     /// Creates a PostgreSQL binary `LIKE` expression.
     ///
     /// This method is case sensitive. There is no case-insensitive
@@ -2288,7 +2227,6 @@ pub trait PgBinaryExpressionMethods: Expression + Sized {
     {
         Grouped(LikeBinary::new(self, other.as_expression()))
     }
-
     /// Creates a PostgreSQL binary `LIKE` expression.
     ///
     /// This method is case sensitive. There is no case-insensitive
@@ -2339,202 +2277,155 @@ pub trait PgBinaryExpressionMethods: Expression + Sized {
         Grouped(NotLikeBinary::new(self, other.as_expression()))
     }
 }
-
 #[doc(hidden)]
 impl<T> PgBinaryExpressionMethods for T
 where
     T: Expression,
     T::SqlType: BinaryOrNullableBinary,
-{
-}
-
+{}
 mod private {
     use crate::sql_types::{
         Array, Binary, Cidr, Inet, Integer, Json, Jsonb, Nullable, Range, SqlType, Text,
     };
     use crate::{Expression, IntoSql};
-
     /// Marker trait used to implement `ArrayExpressionMethods` on the appropriate
     /// types. Once coherence takes associated types into account, we can remove
     /// this trait.
     pub trait ArrayOrNullableArray {}
-
     impl<T> ArrayOrNullableArray for Array<T> {}
     impl<T> ArrayOrNullableArray for Nullable<Array<T>> {}
-
     /// Marker trait used to implement `PgNetExpressionMethods` on the appropriate types.
     pub trait InetOrCidr {}
-
     impl InetOrCidr for Inet {}
     impl InetOrCidr for Cidr {}
     impl InetOrCidr for Nullable<Inet> {}
     impl InetOrCidr for Nullable<Cidr> {}
-
     /// Marker trait used to implement `PgTextExpressionMethods` on the appropriate
     /// types. Once coherence takes associated types into account, we can remove
     /// this trait.
     pub trait TextOrNullableText {}
-
     impl TextOrNullableText for Text {}
     impl TextOrNullableText for Nullable<Text> {}
-
     /// Marker trait used to extract the inner type
     /// of our `Range<T>` sql type, used to implement `PgRangeExpressionMethods`
     pub trait RangeHelper: SqlType {
         type Inner;
     }
-
     impl<ST> RangeHelper for Range<ST>
     where
         Self: 'static,
     {
         type Inner = ST;
     }
-
     /// Marker trait used to implement `PgRangeExpressionMethods` on the appropriate
     /// types. Once coherence takes associated types into account, we can remove
     /// this trait.
     pub trait RangeOrNullableRange {}
-
     impl<ST> RangeOrNullableRange for Range<ST> {}
     impl<ST> RangeOrNullableRange for Nullable<Range<ST>> {}
-
     /// Marker trait used to implement `PgJsonbExpressionMethods` on the appropriate types.
     pub trait JsonbOrNullableJsonb {}
-
     impl JsonbOrNullableJsonb for Jsonb {}
     impl JsonbOrNullableJsonb for Nullable<Jsonb> {}
-
     /// A trait that describes valid json indices used by postgresql
     pub trait JsonRemoveIndex {
         /// The Expression node created by this index type
         type Expression: Expression;
-
         /// Convert a index value into the corresponding index expression
         fn into_json_index_expression(self) -> Self::Expression;
     }
-
     impl<'a> JsonRemoveIndex for &'a str {
         type Expression = crate::dsl::AsExprOf<&'a str, crate::sql_types::Text>;
-
         fn into_json_index_expression(self) -> Self::Expression {
-            self.into_sql::<Text>()
+            loop {}
         }
     }
-
     impl JsonRemoveIndex for String {
         type Expression = crate::dsl::AsExprOf<String, crate::sql_types::Text>;
-
         fn into_json_index_expression(self) -> Self::Expression {
-            self.into_sql::<Text>()
+            loop {}
         }
     }
-
     impl JsonRemoveIndex for Vec<String> {
         type Expression = crate::dsl::AsExprOf<Self, Array<Text>>;
-
         fn into_json_index_expression(self) -> Self::Expression {
-            self.into_sql::<Array<Text>>()
+            loop {}
         }
     }
-
     impl<'a> JsonRemoveIndex for Vec<&'a str> {
         type Expression = crate::dsl::AsExprOf<Self, Array<Text>>;
-
         fn into_json_index_expression(self) -> Self::Expression {
-            self.into_sql::<Array<Text>>()
+            loop {}
         }
     }
-
     impl<'a> JsonRemoveIndex for &'a [&'a str] {
         type Expression = crate::dsl::AsExprOf<Self, Array<Text>>;
-
         fn into_json_index_expression(self) -> Self::Expression {
-            self.into_sql::<Array<Text>>()
+            loop {}
         }
     }
-
     impl JsonRemoveIndex for i32 {
         type Expression = crate::dsl::AsExprOf<i32, crate::sql_types::Int4>;
-
         fn into_json_index_expression(self) -> Self::Expression {
-            self.into_sql::<crate::sql_types::Int4>()
+            loop {}
         }
     }
-
     impl<T> JsonRemoveIndex for T
     where
         T: Expression,
         T::SqlType: TextArrayOrTextOrInteger,
     {
         type Expression = Self;
-
         fn into_json_index_expression(self) -> Self::Expression {
-            self
+            loop {}
         }
     }
-
     pub trait TextArrayOrTextOrInteger {}
-
     impl TextArrayOrTextOrInteger for Array<Text> {}
     impl TextArrayOrTextOrInteger for Text {}
     impl TextArrayOrTextOrInteger for Integer {}
-
     /// Marker trait used to implement `PgAnyJsonExpressionMethods` on the appropriate types.
     pub trait JsonOrNullableJsonOrJsonbOrNullableJsonb {}
     impl JsonOrNullableJsonOrJsonbOrNullableJsonb for Json {}
     impl JsonOrNullableJsonOrJsonbOrNullableJsonb for Nullable<Json> {}
     impl JsonOrNullableJsonOrJsonbOrNullableJsonb for Jsonb {}
     impl JsonOrNullableJsonOrJsonbOrNullableJsonb for Nullable<Jsonb> {}
-
     pub trait JsonIndex {
         type Expression: Expression;
-
         fn into_json_index_expression(self) -> Self::Expression;
     }
-
     impl<'a> JsonIndex for &'a str {
         type Expression = crate::dsl::AsExprOf<&'a str, crate::sql_types::Text>;
-
         fn into_json_index_expression(self) -> Self::Expression {
-            self.into_sql::<Text>()
+            loop {}
         }
     }
-
     impl JsonIndex for String {
         type Expression = crate::dsl::AsExprOf<String, crate::sql_types::Text>;
-
         fn into_json_index_expression(self) -> Self::Expression {
-            self.into_sql::<Text>()
+            loop {}
         }
     }
-
     impl JsonIndex for i32 {
         type Expression = crate::dsl::AsExprOf<i32, crate::sql_types::Int4>;
-
         fn into_json_index_expression(self) -> Self::Expression {
-            self.into_sql::<crate::sql_types::Int4>()
+            loop {}
         }
     }
-
     impl<T> JsonIndex for T
     where
         T: Expression,
         T::SqlType: TextOrInteger,
     {
         type Expression = Self;
-
         fn into_json_index_expression(self) -> Self::Expression {
-            self
+            loop {}
         }
     }
-
     pub trait TextOrInteger {}
     impl TextOrInteger for Text {}
     impl TextOrInteger for Integer {}
-
     pub trait BinaryOrNullableBinary {}
-
     impl BinaryOrNullableBinary for Binary {}
     impl BinaryOrNullableBinary for Nullable<Binary> {}
 }

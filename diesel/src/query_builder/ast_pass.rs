@@ -1,11 +1,9 @@
 use std::fmt;
-
 use crate::backend::{Backend, HasBindCollector};
 use crate::query_builder::{BindCollector, QueryBuilder};
 use crate::result::QueryResult;
 use crate::serialize::ToSql;
 use crate::sql_types::HasSqlType;
-
 #[allow(missing_debug_implementations)]
 /// The primary type used when walking a Diesel AST during query execution.
 ///
@@ -32,58 +30,43 @@ where
     internals: AstPassInternals<'a, 'b, DB>,
     backend: &'b DB,
 }
-
 impl<'a, 'b, DB> AstPass<'a, 'b, DB>
 where
     DB: Backend,
     'b: 'a,
 {
-    pub(crate) fn to_sql(query_builder: &'a mut DB::QueryBuilder, backend: &'b DB) -> Self {
-        AstPass {
-            internals: AstPassInternals::ToSql(query_builder),
-            backend,
-        }
+    pub(crate) fn to_sql(
+        query_builder: &'a mut DB::QueryBuilder,
+        backend: &'b DB,
+    ) -> Self {
+        loop {}
     }
-
     pub(crate) fn collect_binds(
         collector: &'a mut <DB as HasBindCollector<'b>>::BindCollector,
         metadata_lookup: &'a mut DB::MetadataLookup,
         backend: &'b DB,
     ) -> Self {
-        AstPass {
-            internals: AstPassInternals::CollectBinds {
-                collector,
-                metadata_lookup,
-            },
-            backend,
-        }
+        loop {}
     }
-
-    pub(crate) fn is_safe_to_cache_prepared(result: &'a mut bool, backend: &'b DB) -> Self {
-        AstPass {
-            internals: AstPassInternals::IsSafeToCachePrepared(result),
-            backend,
-        }
+    pub(crate) fn is_safe_to_cache_prepared(
+        result: &'a mut bool,
+        backend: &'b DB,
+    ) -> Self {
+        loop {}
     }
-
-    pub(crate) fn debug_binds(formatter: &'a mut Vec<&'b dyn fmt::Debug>, backend: &'b DB) -> Self {
-        AstPass {
-            internals: AstPassInternals::DebugBinds(formatter),
-            backend,
-        }
+    pub(crate) fn debug_binds(
+        formatter: &'a mut Vec<&'b dyn fmt::Debug>,
+        backend: &'b DB,
+    ) -> Self {
+        loop {}
     }
-
     /// Does running this AST pass have any effect?
     ///
     /// The result will be set to `false` if any method that generates SQL
     /// is called.
     pub(crate) fn is_noop(result: &'a mut bool, backend: &'b DB) -> Self {
-        AstPass {
-            internals: AstPassInternals::IsNoop(result),
-            backend,
-        }
+        loop {}
     }
-
     /// Call this method whenever you pass an instance of `AstPass` by value.
     ///
     /// Effectively copies `self`, with a narrower lifetime. When passing a
@@ -94,27 +77,8 @@ where
     /// done explicitly. This method matches the semantics of what Rust would do
     /// implicitly if you were passing a mutable reference
     pub fn reborrow(&'_ mut self) -> AstPass<'_, 'b, DB> {
-        let internals = match self.internals {
-            AstPassInternals::ToSql(ref mut builder) => AstPassInternals::ToSql(&mut **builder),
-            AstPassInternals::CollectBinds {
-                ref mut collector,
-                ref mut metadata_lookup,
-            } => AstPassInternals::CollectBinds {
-                collector: &mut **collector,
-                metadata_lookup: &mut **metadata_lookup,
-            },
-            AstPassInternals::IsSafeToCachePrepared(ref mut result) => {
-                AstPassInternals::IsSafeToCachePrepared(&mut **result)
-            }
-            AstPassInternals::DebugBinds(ref mut f) => AstPassInternals::DebugBinds(&mut **f),
-            AstPassInternals::IsNoop(ref mut result) => AstPassInternals::IsNoop(&mut **result),
-        };
-        AstPass {
-            internals,
-            backend: self.backend,
-        }
+        loop {}
     }
-
     /// Mark the current query being constructed as unsafe to store in the
     /// prepared statement cache.
     ///
@@ -136,11 +100,8 @@ where
     ///   technically bounded, but the upper bound is the number of columns on
     ///   the table factorial which is too large to be safe.
     pub fn unsafe_to_cache_prepared(&mut self) {
-        if let AstPassInternals::IsSafeToCachePrepared(ref mut result) = self.internals {
-            **result = false
-        }
+        loop {}
     }
-
     /// Push the given SQL string on the end of the query being constructed.
     ///
     /// # Example
@@ -166,26 +127,15 @@ where
     /// # fn main() {}
     /// ```
     pub fn push_sql(&mut self, sql: &str) {
-        match self.internals {
-            AstPassInternals::ToSql(ref mut builder) => builder.push_sql(sql),
-            AstPassInternals::IsNoop(ref mut result) => **result = false,
-            _ => {}
-        }
+        loop {}
     }
-
     /// Push the given SQL identifier on the end of the query being constructed.
     ///
     /// The identifier will be quoted using the rules specific to the backend
     /// the query is being constructed for.
     pub fn push_identifier(&mut self, identifier: &str) -> QueryResult<()> {
-        match self.internals {
-            AstPassInternals::ToSql(ref mut builder) => builder.push_identifier(identifier)?,
-            AstPassInternals::IsNoop(ref mut result) => **result = false,
-            _ => {}
-        }
-        Ok(())
+        loop {}
     }
-
     /// Push a value onto the given query to be sent separate from the SQL
     ///
     /// This method affects multiple AST passes. It should be called at the
@@ -196,52 +146,35 @@ where
         DB: HasSqlType<T>,
         U: ToSql<T, DB>,
     {
-        match self.internals {
-            AstPassInternals::ToSql(ref mut out) => out.push_bind_param(),
-            AstPassInternals::CollectBinds {
-                ref mut collector,
-                ref mut metadata_lookup,
-            } => collector.push_bound_value(bind, metadata_lookup)?,
-            AstPassInternals::DebugBinds(ref mut f) => {
-                f.push(bind);
-            }
-            AstPassInternals::IsNoop(ref mut result) => **result = false,
-            _ => {}
-        }
-        Ok(())
+        loop {}
     }
-
-    pub(crate) fn push_bind_param_value_only<T, U>(&mut self, bind: &'b U) -> QueryResult<()>
+    pub(crate) fn push_bind_param_value_only<T, U>(
+        &mut self,
+        bind: &'b U,
+    ) -> QueryResult<()>
     where
         DB: HasSqlType<T>,
         U: ToSql<T, DB>,
     {
-        match self.internals {
-            AstPassInternals::CollectBinds { .. } | AstPassInternals::DebugBinds(..) => {
-                self.push_bind_param(bind)?
-            }
-            AstPassInternals::ToSql(ref mut out) => {
-                out.push_bind_param_value_only();
-            }
-            _ => {}
-        }
-        Ok(())
+        loop {}
     }
-
     /// Get information about the backend that will consume this query
     #[cfg_attr(
         not(feature = "i-implement-a-third-party-backend-and-opt-into-breaking-changes"),
         doc(hidden)
-    )] // This is used by the `sql_function` macro
+    )]
     #[cfg_attr(
         doc_cfg,
-        doc(cfg(feature = "i-implement-a-third-party-backend-and-opt-into-breaking-changes"))
+        doc(
+            cfg(
+                feature = "i-implement-a-third-party-backend-and-opt-into-breaking-changes"
+            )
+        )
     )]
     pub fn backend(&self) -> &DB {
-        self.backend
+        loop {}
     }
 }
-
 #[allow(missing_debug_implementations)]
 /// This is separate from the struct to cause the enum to be opaque, forcing
 /// usage of the methods provided rather than matching on the enum directly.

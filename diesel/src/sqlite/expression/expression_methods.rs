@@ -1,11 +1,9 @@
 //! Sqlite specific expression methods.
-
 use super::operators::*;
 use crate::dsl;
 use crate::expression::grouped::Grouped;
 use crate::expression::{AsExpression, Expression};
 use crate::sql_types::SqlType;
-
 /// Sqlite specific methods which are present on all expressions.
 #[cfg(feature = "sqlite")]
 pub trait SqliteExpressionMethods: Expression + Sized {
@@ -43,7 +41,6 @@ pub trait SqliteExpressionMethods: Expression + Sized {
     {
         Grouped(Is::new(self, other.as_expression()))
     }
-
     /// Creates a Sqlite `IS NOT` expression.
     ///
     /// The `IS NOT` operator work like != except when one or both of the operands are NULL.
@@ -71,7 +68,7 @@ pub trait SqliteExpressionMethods: Expression + Sized {
     /// #     Ok(())
     /// # }
     /// ```
-    #[allow(clippy::wrong_self_convention)] // This is named after the sql operator
+    #[allow(clippy::wrong_self_convention)]
     fn is_not<T>(self, other: T) -> dsl::IsNot<Self, T>
     where
         Self::SqlType: SqlType,
@@ -80,5 +77,4 @@ pub trait SqliteExpressionMethods: Expression + Sized {
         Grouped(IsNot::new(self, other.as_expression()))
     }
 }
-
 impl<T: Expression> SqliteExpressionMethods for T {}

@@ -3,12 +3,10 @@
 //! The types in this module are part of Diesel's public API, but are generally
 //! only useful for implementing Diesel plugins. Applications should generally
 //! not need to care about the types inside of this module.
-
 #[macro_use]
 mod query_id;
 #[macro_use]
 mod clause_macro;
-
 mod ast_pass;
 pub mod bind_collector;
 pub(crate) mod combination_clause;
@@ -33,7 +31,6 @@ mod sql_query;
 pub(crate) mod update_statement;
 pub(crate) mod upsert;
 mod where_clause;
-
 #[doc(inline)]
 pub use self::ast_pass::AstPass;
 #[doc(inline)]
@@ -44,8 +41,9 @@ pub use self::debug_query::DebugQuery;
 pub use self::delete_statement::{BoxedDeleteStatement, DeleteStatement};
 #[doc(inline)]
 pub use self::insert_statement::{
-    IncompleteInsertOrIgnoreStatement, IncompleteInsertStatement, IncompleteReplaceStatement,
-    InsertOrIgnoreStatement, InsertStatement, ReplaceStatement,
+    IncompleteInsertOrIgnoreStatement, IncompleteInsertStatement,
+    IncompleteReplaceStatement, InsertOrIgnoreStatement, InsertStatement,
+    ReplaceStatement,
 };
 #[doc(inline)]
 pub use self::query_id::QueryId;
@@ -53,21 +51,18 @@ pub use self::query_id::QueryId;
 pub use self::sql_query::{BoxedSqlQuery, SqlQuery};
 #[doc(inline)]
 pub use self::upsert::on_conflict_target_decorations::DecoratableTarget;
-
 #[doc(inline)]
 pub use self::update_statement::changeset::AsChangeset;
 #[doc(inline)]
 pub use self::update_statement::target::{IntoUpdateTarget, UpdateTarget};
 #[doc(inline)]
 pub use self::update_statement::{BoxedUpdateStatement, UpdateStatement};
-
 #[cfg(feature = "i-implement-a-third-party-backend-and-opt-into-breaking-changes")]
 pub use self::limit_clause::{LimitClause, NoLimitClause};
 #[cfg(feature = "i-implement-a-third-party-backend-and-opt-into-breaking-changes")]
 pub use self::limit_offset_clause::{BoxedLimitOffsetClause, LimitOffsetClause};
 #[cfg(feature = "i-implement-a-third-party-backend-and-opt-into-breaking-changes")]
 pub use self::offset_clause::{NoOffsetClause, OffsetClause};
-
 #[diesel_derives::__diesel_public_if(
     feature = "i-implement-a-third-party-backend-and-opt-into-breaking-changes"
 )]
@@ -77,43 +72,34 @@ pub(crate) use self::insert_statement::batch_insert::BatchInsert;
     feature = "i-implement-a-third-party-backend-and-opt-into-breaking-changes"
 )]
 pub(crate) use self::insert_statement::{UndecoratedInsertRecord, ValuesClause};
-
 #[cfg(feature = "i-implement-a-third-party-backend-and-opt-into-breaking-changes")]
 #[doc(inline)]
 pub use self::insert_statement::DefaultValues;
-
 #[cfg(feature = "i-implement-a-third-party-backend-and-opt-into-breaking-changes")]
 #[doc(inline)]
 pub use self::returning_clause::ReturningClause;
-
 #[doc(inline)]
 #[diesel_derives::__diesel_public_if(
     feature = "i-implement-a-third-party-backend-and-opt-into-breaking-changes"
 )]
 pub(crate) use self::select_clause::SelectClauseExpression;
-
 #[doc(inline)]
 #[diesel_derives::__diesel_public_if(
     feature = "i-implement-a-third-party-backend-and-opt-into-breaking-changes"
 )]
 pub(crate) use self::from_clause::{FromClause, NoFromClause};
-
 pub(crate) use self::insert_statement::ColumnList;
 pub(crate) use self::select_statement::BoxedSelectStatement;
 pub(crate) use self::select_statement::SelectStatement;
-
 #[cfg(feature = "postgres_backend")]
 pub use crate::pg::query_builder::only::Only;
-
 use crate::backend::{Backend, HasBindCollector};
 use crate::result::QueryResult;
 use std::error::Error;
-
 #[doc(hidden)]
 pub type Binds = Vec<Option<Vec<u8>>>;
 /// A specialized Result type used with the query builder.
 pub type BuildQueryResult = Result<(), Box<dyn Error + Send + Sync>>;
-
 /// Constructs a SQL query from a Diesel AST.
 ///
 /// The only reason you should ever need to interact with this trait is if you
@@ -124,23 +110,18 @@ pub type BuildQueryResult = Result<(), Box<dyn Error + Send + Sync>>;
 pub trait QueryBuilder<DB: Backend> {
     /// Add `sql` to the end of the query being constructed.
     fn push_sql(&mut self, sql: &str);
-
     /// Quote `identifier`, and add it to the end of the query being
     /// constructed.
     fn push_identifier(&mut self, identifier: &str) -> QueryResult<()>;
-
     /// Add a placeholder for a bind parameter to the end of the query being
     /// constructed.
     fn push_bind_param(&mut self);
-
     /// Increases the internal counter for bind parameters without adding the
     /// bind parameter itself to the query
     fn push_bind_param_value_only(&mut self) {}
-
     /// Returns the constructed SQL query.
     fn finish(self) -> String;
 }
-
 /// A complete SQL query with a return type.
 ///
 /// This can be a select statement, or a command such as `update` or `insert`
@@ -160,11 +141,9 @@ pub trait Query {
     /// statements.
     type SqlType;
 }
-
 impl<'a, T: Query> Query for &'a T {
     type SqlType = T::SqlType;
 }
-
 /// Indicates that a type is a `SELECT` statement.
 ///
 /// This trait differs from `Query` in two ways:
@@ -177,7 +156,6 @@ pub trait SelectQuery {
     /// The SQL type of the `SELECT` clause
     type SqlType;
 }
-
 /// An untyped fragment of SQL.
 ///
 /// This may be a complete SQL command (such as an update statement without a
@@ -195,7 +173,6 @@ pub trait QueryFragment<DB: Backend, SP = self::private::NotSpecialized> {
     /// passes. See [`AstPass`] for more details.
     ///
     fn walk_ast<'b>(&'b self, pass: AstPass<'_, 'b, DB>) -> QueryResult<()>;
-
     /// Converts this `QueryFragment` to its SQL representation.
     ///
     /// This method should only be called by implementations of `Connection`.
@@ -205,7 +182,6 @@ pub trait QueryFragment<DB: Backend, SP = self::private::NotSpecialized> {
     fn to_sql(&self, out: &mut DB::QueryBuilder, backend: &DB) -> QueryResult<()> {
         self.walk_ast(AstPass::to_sql(out, backend))
     }
-
     /// Serializes all bind parameters in this query.
     ///
     /// A bind parameter is a value which is sent separately from the query
@@ -223,7 +199,6 @@ pub trait QueryFragment<DB: Backend, SP = self::private::NotSpecialized> {
     ) -> QueryResult<()> {
         self.walk_ast(AstPass::collect_binds(out, metadata_lookup, backend))
     }
-
     /// Is this query safe to store in the prepared statement cache?
     ///
     /// In order to keep our prepared statement cache at a reasonable size, we
@@ -247,7 +222,6 @@ pub trait QueryFragment<DB: Backend, SP = self::private::NotSpecialized> {
         self.walk_ast(AstPass::is_safe_to_cache_prepared(&mut result, backend))?;
         Ok(result)
     }
-
     /// Does walking this AST have any effect?
     #[diesel_derives::__diesel_public_if(
         feature = "i-implement-a-third-party-backend-and-opt-into-breaking-changes"
@@ -258,57 +232,47 @@ pub trait QueryFragment<DB: Backend, SP = self::private::NotSpecialized> {
         Ok(result)
     }
 }
-
 impl<T: ?Sized, DB> QueryFragment<DB> for Box<T>
 where
     DB: Backend,
     T: QueryFragment<DB>,
 {
     fn walk_ast<'b>(&'b self, pass: AstPass<'_, 'b, DB>) -> QueryResult<()> {
-        QueryFragment::walk_ast(&**self, pass)
+        loop {}
     }
 }
-
 impl<'a, T: ?Sized, DB> QueryFragment<DB> for &'a T
 where
     DB: Backend,
     T: QueryFragment<DB>,
 {
     fn walk_ast<'b>(&'b self, pass: AstPass<'_, 'b, DB>) -> QueryResult<()> {
-        QueryFragment::walk_ast(&**self, pass)
+        loop {}
     }
 }
-
 impl<DB: Backend> QueryFragment<DB> for () {
     fn walk_ast<'b>(&'b self, _: AstPass<'_, 'b, DB>) -> QueryResult<()> {
-        Ok(())
+        loop {}
     }
 }
-
 impl<T, DB> QueryFragment<DB> for Option<T>
 where
     DB: Backend,
     T: QueryFragment<DB>,
 {
     fn walk_ast<'b>(&'b self, out: AstPass<'_, 'b, DB>) -> QueryResult<()> {
-        match *self {
-            Some(ref c) => c.walk_ast(out),
-            None => Ok(()),
-        }
+        loop {}
     }
 }
-
 /// A trait used to construct type erased boxed variant of the current query node
 ///
 /// Mainly useful for implementing third party backends
 pub trait IntoBoxedClause<'a, DB> {
     /// Resulting type
     type BoxedClause;
-
     /// Convert the given query node in it's boxed representation
     fn into_boxed(self) -> Self::BoxedClause;
 }
-
 /// Types that can be converted into a complete, typed SQL query.
 ///
 /// This is used internally to automatically add the right select clause when
@@ -318,29 +282,20 @@ pub trait IntoBoxedClause<'a, DB> {
 pub trait AsQuery {
     /// The SQL type of `Self::Query`
     type SqlType;
-
     /// What kind of query does this type represent?
     type Query: Query<SqlType = Self::SqlType>;
-
     /// Converts a type which semantically represents a SQL query into the
     /// actual query being executed. See the trait level docs for more.
-    // This method is part of our public API,
-    // so we won't change the name to just appease clippy
-    // (Also the trait is literally named `AsQuery` so
-    // naming the method similary is fine)
     #[allow(clippy::wrong_self_convention)]
     fn as_query(self) -> Self::Query;
 }
-
 impl<T: Query> AsQuery for T {
     type SqlType = <Self as Query>::SqlType;
     type Query = Self;
-
     fn as_query(self) -> Self::Query {
-        self
+        loop {}
     }
 }
-
 /// Takes a query `QueryFragment` expression as an argument and returns a type
 /// that implements `fmt::Display` and `fmt::Debug` to show the query.
 ///
@@ -390,9 +345,8 @@ impl<T: Query> AsQuery for T {
 /// # }
 /// ```
 pub fn debug_query<DB, T>(query: &T) -> DebugQuery<'_, T, DB> {
-    DebugQuery::new(query)
+    loop {}
 }
-
 mod private {
     #[allow(missing_debug_implementations, missing_copy_implementations)]
     pub struct NotSpecialized;

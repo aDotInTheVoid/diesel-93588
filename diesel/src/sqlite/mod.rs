@@ -3,21 +3,16 @@
 //! Much of this module is re-exported from database agnostic locations.
 //! However, if you are writing code specifically to extend Diesel on
 //! SQLite, you may need to work with this module directly.
-
 pub(crate) mod backend;
 mod connection;
 pub(crate) mod expression;
-
 pub mod query_builder;
-
 mod types;
-
 pub use self::backend::{Sqlite, SqliteType};
 pub use self::connection::SqliteBindValue;
 pub use self::connection::SqliteConnection;
 pub use self::connection::SqliteValue;
 pub use self::query_builder::SqliteQueryBuilder;
-
 /// Trait for the implementation of a SQLite aggregate function
 ///
 /// This trait is to be used in conjunction with the `sql_function!`
@@ -26,14 +21,12 @@ pub use self::query_builder::SqliteQueryBuilder;
 pub trait SqliteAggregateFunction<Args>: Default {
     /// The result type of the SQLite aggregate function
     type Output;
-
     /// The `step()` method is called once for every record of the query.
     ///
     /// This is called through a C FFI, as such panics do not propagate to the caller. Panics are
     /// caught and cause a return with an error value. The implementation must still ensure that
     /// state remains in a valid state (refer to [`std::panic::UnwindSafe`] for a bit more detail).
     fn step(&mut self, args: Args);
-
     /// After the last row has been processed, the `finalize()` method is
     /// called to compute the result of the aggregate function. If no rows
     /// were processed `aggregator` will be `None` and `finalize()` can be
@@ -43,7 +36,6 @@ pub trait SqliteAggregateFunction<Args>: Default {
     /// caught and cause a return with an error value.
     fn finalize(aggregator: Option<Self>) -> Self::Output;
 }
-
 /// SQLite specific sql types
 pub mod sql_types {
     #[doc(inline)]

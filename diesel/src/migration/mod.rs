@@ -1,5 +1,4 @@
 //! Representation of migrations
-
 use crate::backend::Backend;
 use crate::connection::{BoxableConnection, Connection};
 use crate::deserialize::{FromSql, FromSqlRow};
@@ -10,11 +9,9 @@ use crate::sql_types::Text;
 use std::borrow::Cow;
 use std::error::Error;
 use std::fmt::Display;
-
 /// A specialized result type representing the result of
 /// a migration operation
 pub type Result<T> = std::result::Result<T, Box<dyn Error + Send + Sync>>;
-
 /// A migration version identifier
 ///
 /// This is used by the migration harness to place migrations
@@ -23,26 +20,24 @@ pub type Result<T> = std::result::Result<T, Box<dyn Error + Send + Sync>>;
 #[derive(Debug, Hash, PartialEq, Eq, PartialOrd, Ord, FromSqlRow, AsExpression)]
 #[diesel(sql_type = Text)]
 pub struct MigrationVersion<'a>(Cow<'a, str>);
-
 impl<'a> MigrationVersion<'a> {
     /// Convert the current migration version into
     /// an owned variant with static life time
     pub fn as_owned(&self) -> MigrationVersion<'static> {
-        MigrationVersion(Cow::Owned(self.0.as_ref().to_owned()))
+        loop {}
     }
 }
-
 impl<'a, DB> FromSql<Text, DB> for MigrationVersion<'a>
 where
     String: FromSql<Text, DB>,
     DB: Backend,
 {
-    fn from_sql(bytes: crate::backend::RawValue<'_, DB>) -> crate::deserialize::Result<Self> {
-        let s = String::from_sql(bytes)?;
-        Ok(Self(Cow::Owned(s)))
+    fn from_sql(
+        bytes: crate::backend::RawValue<'_, DB>,
+    ) -> crate::deserialize::Result<Self> {
+        loop {}
     }
 }
-
 impl<'a, DB> ToSql<Text, DB> for MigrationVersion<'a>
 where
     Cow<'a, str>: ToSql<Text, DB>,
@@ -52,34 +47,29 @@ where
         &'b self,
         out: &mut crate::serialize::Output<'b, '_, DB>,
     ) -> crate::serialize::Result {
-        self.0.to_sql(out)
+        loop {}
     }
 }
-
 impl<'a> From<String> for MigrationVersion<'a> {
     fn from(s: String) -> Self {
-        MigrationVersion(Cow::Owned(s))
+        loop {}
     }
 }
-
 impl<'a> From<&'a str> for MigrationVersion<'a> {
     fn from(s: &'a str) -> Self {
-        MigrationVersion(Cow::Borrowed(s))
+        loop {}
     }
 }
-
 impl<'a> From<&'a String> for MigrationVersion<'a> {
     fn from(s: &'a String) -> Self {
-        MigrationVersion(Cow::Borrowed(s))
+        loop {}
     }
 }
-
 impl<'a> Display for MigrationVersion<'a> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.write_str(self.0.as_ref())
+        loop {}
     }
 }
-
 /// Represents the name of a migration
 ///
 /// Users should threat this as `impl Display` type,
@@ -90,18 +80,14 @@ pub trait MigrationName: Display {
     /// The version corresponding to the current migration name
     fn version(&self) -> MigrationVersion<'_>;
 }
-
 /// Represents a migration that interacts with diesel
 pub trait Migration<DB: Backend> {
     /// Apply this migration
     fn run(&self, conn: &mut dyn BoxableConnection<DB>) -> Result<()>;
-
     /// Revert this migration
     fn revert(&self, conn: &mut dyn BoxableConnection<DB>) -> Result<()>;
-
     /// Get a the attached metadata for this migration
     fn metadata(&self) -> &dyn MigrationMetadata;
-
     /// Get the name of the current migration
     ///
     /// The provided name is used by migration harness
@@ -110,7 +96,6 @@ pub trait Migration<DB: Backend> {
     /// user to identify a specific migration
     fn name(&self) -> &dyn MigrationName;
 }
-
 /// This trait is designed to customize the behaviour
 /// of the default migration harness of diesel
 ///
@@ -131,7 +116,6 @@ pub trait MigrationMetadata {
         true
     }
 }
-
 /// A migration source is an entity that can be used
 /// to receive a number of migrations from.
 pub trait MigrationSource<DB: Backend> {
@@ -139,47 +123,37 @@ pub trait MigrationSource<DB: Backend> {
     /// migration soucre.
     fn migrations(&self) -> Result<Vec<Box<dyn Migration<DB>>>>;
 }
-
 impl<'a, DB: Backend> Migration<DB> for Box<dyn Migration<DB> + 'a> {
     fn run(&self, conn: &mut dyn BoxableConnection<DB>) -> Result<()> {
-        (&**self).run(conn)
+        loop {}
     }
-
     fn revert(&self, conn: &mut dyn BoxableConnection<DB>) -> Result<()> {
-        (&**self).revert(conn)
+        loop {}
     }
-
     fn metadata(&self) -> &dyn MigrationMetadata {
-        (&**self).metadata()
+        loop {}
     }
-
     fn name(&self) -> &dyn MigrationName {
-        (&**self).name()
+        loop {}
     }
 }
-
 impl<'a, DB: Backend> Migration<DB> for &'a dyn Migration<DB> {
     fn run(&self, conn: &mut dyn BoxableConnection<DB>) -> Result<()> {
-        (&**self).run(conn)
+        loop {}
     }
-
     fn revert(&self, conn: &mut dyn BoxableConnection<DB>) -> Result<()> {
-        (&**self).revert(conn)
+        loop {}
     }
-
     fn metadata(&self) -> &dyn MigrationMetadata {
-        (&**self).metadata()
+        loop {}
     }
-
     fn name(&self) -> &dyn MigrationName {
-        (&**self).name()
+        loop {}
     }
 }
-
 /// Create table statement for the `__diesel_schema_migrations` used
 /// used by the postgresql, sqlite and mysql backend
 pub const CREATE_MIGRATIONS_TABLE: &str = include_str!("setup_migration_table.sql");
-
 /// A trait indicating that a connection could be used to manage migrations
 ///
 /// Only custom backend implementations need to think about this trait
@@ -197,27 +171,21 @@ pub trait MigrationConnection: Connection {
     /// ```
     fn setup(&mut self) -> QueryResult<usize>;
 }
-
 #[cfg(feature = "postgres")]
 impl MigrationConnection for crate::pg::PgConnection {
     fn setup(&mut self) -> QueryResult<usize> {
-        use crate::RunQueryDsl;
-        crate::sql_query(CREATE_MIGRATIONS_TABLE).execute(self)
+        loop {}
     }
 }
-
 #[cfg(feature = "mysql")]
 impl MigrationConnection for crate::mysql::MysqlConnection {
     fn setup(&mut self) -> QueryResult<usize> {
-        use crate::RunQueryDsl;
-        crate::sql_query(CREATE_MIGRATIONS_TABLE).execute(self)
+        loop {}
     }
 }
-
 #[cfg(feature = "sqlite")]
 impl MigrationConnection for crate::sqlite::SqliteConnection {
     fn setup(&mut self) -> QueryResult<usize> {
-        use crate::RunQueryDsl;
-        crate::sql_query(CREATE_MIGRATIONS_TABLE).execute(self)
+        loop {}
     }
 }

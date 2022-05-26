@@ -1,10 +1,8 @@
 //! Errors, type aliases, and functions related to working with `Result`.
-
 use std::convert::From;
 use std::error::Error as StdError;
 use std::ffi::NulError;
 use std::fmt::{self, Display};
-
 #[derive(Debug)]
 #[allow(clippy::enum_variant_names)]
 /// Represents all the ways that a query can fail.
@@ -17,18 +15,13 @@ pub enum Error {
     ///
     /// This should never occur in normal usage.
     InvalidCString(NulError),
-
     /// The database returned an error.
     ///
     /// While Diesel prevents almost all sources of runtime errors at compile
     /// time, it does not attempt to prevent 100% of them. Typically this error
     /// will occur from insert or update statements due to a constraint
     /// violation.
-    DatabaseError(
-        DatabaseErrorKind,
-        Box<dyn DatabaseErrorInformation + Send + Sync>,
-    ),
-
+    DatabaseError(DatabaseErrorKind, Box<dyn DatabaseErrorInformation + Send + Sync>),
     /// No rows were returned by a query expected to return at least one row.
     ///
     /// This variant is only returned by [`get_result`] and [`first`]. [`load`]
@@ -40,34 +33,29 @@ pub enum Error {
     /// [`load`]: crate::query_dsl::RunQueryDsl::load()
     /// [`optional`]: OptionalExtension::optional
     NotFound,
-
     /// The query could not be constructed
     ///
     /// An example of when this error could occur is if you are attempting to
     /// construct an update statement with no changes (e.g. all fields on the
     /// struct are `None`).
     QueryBuilderError(Box<dyn StdError + Send + Sync>),
-
     /// An error occurred deserializing the data being sent to the database.
     ///
     /// Typically this error means that the stated type of the query is
     /// incorrect. An example of when this error might occur in normal usage is
     /// attempting to deserialize an infinite date into chrono.
     DeserializationError(Box<dyn StdError + Send + Sync>),
-
     /// An error occurred serializing the data being sent to the database.
     ///
     /// An example of when this error would be returned is if you attempted to
     /// serialize a `chrono::NaiveDate` earlier than the earliest date supported
     /// by PostgreSQL.
     SerializationError(Box<dyn StdError + Send + Sync>),
-
     /// An error occurred during the rollback of a transaction.
     ///
     /// An example of when this error would be returned is if a rollback has
     /// already be called on the current transaction.
     RollbackError(Box<Error>),
-
     /// Roll back the current transaction.
     ///
     /// You can return this variant inside of a transaction when you want to
@@ -75,18 +63,14 @@ pub enum Error {
     /// return this variant unless you gave it to us, and it can be safely
     /// ignored in error handling.
     RollbackTransaction,
-
     /// Attempted to perform an operation that cannot be done inside a transaction
     /// when a transaction was already open.
     AlreadyInTransaction,
-
     /// Attempted to perform an operation that can only be done inside a transaction
     /// when no transaction was open
     NotInTransaction,
-
     /// Transaction broken, likely due to a broken connection. No other operations are possible.
     BrokenTransaction,
-
     /// Commiting a transaction failed
     ///
     /// The transaction manager will try to perform
@@ -99,7 +83,6 @@ pub enum Error {
         rollback_result: Box<QueryResult<()>>,
     },
 }
-
 #[derive(Debug, Clone, Copy)]
 /// The kind of database error that occurred.
 ///
@@ -111,16 +94,13 @@ pub enum Error {
 pub enum DatabaseErrorKind {
     /// A unique constraint was violated.
     UniqueViolation,
-
     /// A foreign key constraint was violated.
     ForeignKeyViolation,
-
     /// The query could not be sent to the database due to a protocol violation.
     ///
     /// An example of a case where this would occur is if you attempted to send
     /// a query with more than 65000 bind parameters using PostgreSQL.
     UnableToSendCommand,
-
     /// A serializable transaction failed to commit due to a read/write
     /// dependency on a concurrent transaction.
     ///
@@ -129,43 +109,34 @@ pub enum DatabaseErrorKind {
     /// This error is only detected for PostgreSQL, as we do not yet support
     /// transaction isolation levels for other backends.
     SerializationFailure,
-
     /// The command could not be completed because the transaction was read
     /// only.
     ///
     /// This error will also be returned for `SELECT` statements which attempted
     /// to lock the rows.
     ReadOnlyTransaction,
-
     /// A not null constraint was violated.
     NotNullViolation,
-
     /// A check constraint was violated.
     CheckViolation,
-
     /// The connection to the server was unexpectedly closed.
     ///
     /// This error is only detected for PostgreSQL and is emitted on a best-effort basis
     /// and may be missed.
     ClosedConnection,
-
     #[doc(hidden)]
-    Unknown, // Match against _ instead, more variants may be added in the future
+    Unknown,
 }
-
 /// Information about an error that was returned by the database.
 pub trait DatabaseErrorInformation {
     /// The primary human-readable error message. Typically one line.
     fn message(&self) -> &str;
-
     /// An optional secondary error message providing more details about the
     /// problem, if it was provided by the database. Might span multiple lines.
     fn details(&self) -> Option<&str>;
-
     /// An optional suggestion of what to do about the problem, if one was
     /// provided by the database.
     fn hint(&self) -> Option<&str>;
-
     /// The name of the table the error was associated with, if the error was
     /// associated with a specific table and the backend supports retrieving
     /// that information.
@@ -173,7 +144,6 @@ pub trait DatabaseErrorInformation {
     /// Currently this method will return `None` for all backends other than
     /// PostgreSQL.
     fn table_name(&self) -> Option<&str>;
-
     /// The name of the column the error was associated with, if the error was
     /// associated with a specific column and the backend supports retrieving
     /// that information.
@@ -181,49 +151,44 @@ pub trait DatabaseErrorInformation {
     /// Currently this method will return `None` for all backends other than
     /// PostgreSQL.
     fn column_name(&self) -> Option<&str>;
-
     /// The constraint that was violated if this error is a constraint violation
     /// and the backend supports retrieving that information.
     ///
     /// Currently this method will return `None` for all backends other than
     /// PostgreSQL.
     fn constraint_name(&self) -> Option<&str>;
-
     /// An optional integer indicating an error cursor position as an index into
     /// the original statement string.
     fn statement_position(&self) -> Option<i32>;
 }
-
 impl fmt::Debug for dyn DatabaseErrorInformation + Send + Sync {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        fmt::Debug::fmt(&self.message(), f)
+        loop {}
     }
 }
-
 impl DatabaseErrorInformation for String {
     fn message(&self) -> &str {
-        self
+        loop {}
     }
     fn details(&self) -> Option<&str> {
-        None
+        loop {}
     }
     fn hint(&self) -> Option<&str> {
-        None
+        loop {}
     }
     fn table_name(&self) -> Option<&str> {
-        None
+        loop {}
     }
     fn column_name(&self) -> Option<&str> {
-        None
+        loop {}
     }
     fn constraint_name(&self) -> Option<&str> {
-        None
+        loop {}
     }
     fn statement_position(&self) -> Option<i32> {
-        None
+        loop {}
     }
 }
-
 /// Errors which can occur during [`Connection::establish`]
 ///
 /// [`Connection::establish`]: crate::connection::Connection::establish
@@ -244,20 +209,17 @@ pub enum ConnectionError {
     /// those options. Diesel will never affect global configuration.
     CouldntSetupConfiguration(Error),
 }
-
 /// A specialized result type for queries.
 ///
 /// This type is exported by `diesel::prelude`, and is generally used by any
 /// code which is interacting with Diesel. This type exists to avoid writing out
 /// `diesel::result::Error`, and is otherwise a direct mapping to `Result`.
 pub type QueryResult<T> = Result<T, Error>;
-
 /// A specialized result type for establishing connections.
 ///
 /// This type exists to avoid writing out `diesel::result::ConnectionError`, and
 /// is otherwise a direct mapping to `Result`.
 pub type ConnectionResult<T> = Result<T, ConnectionError>;
-
 /// See the [method documentation](OptionalExtension::optional).
 pub trait OptionalExtension<T> {
     /// Converts a `QueryResult<T>` into a `QueryResult<Option<T>>`.
@@ -282,141 +244,66 @@ pub trait OptionalExtension<T> {
     /// ```
     fn optional(self) -> Result<Option<T>, Error>;
 }
-
 impl<T> OptionalExtension<T> for QueryResult<T> {
     fn optional(self) -> Result<Option<T>, Error> {
-        match self {
-            Ok(value) => Ok(Some(value)),
-            Err(Error::NotFound) => Ok(None),
-            Err(e) => Err(e),
-        }
+        loop {}
     }
 }
-
 impl From<NulError> for ConnectionError {
     fn from(e: NulError) -> Self {
-        ConnectionError::InvalidCString(e)
+        loop {}
     }
 }
-
 impl From<NulError> for Error {
     fn from(e: NulError) -> Self {
-        Error::InvalidCString(e)
+        loop {}
     }
 }
-
 impl Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match *self {
-            Error::InvalidCString(ref nul_err) => write!(f, "{}", nul_err),
-            Error::DatabaseError(_, ref e) => write!(f, "{}", e.message()),
-            Error::NotFound => f.write_str("Record not found"),
-            Error::QueryBuilderError(ref e) => e.fmt(f),
-            Error::DeserializationError(ref e) => e.fmt(f),
-            Error::SerializationError(ref e) => e.fmt(f),
-            Error::RollbackError(ref e) => e.fmt(f),
-            Error::RollbackTransaction => write!(f, "The current transaction was aborted"),
-            Error::BrokenTransaction => write!(f, "The current transaction is broken"),
-            Error::AlreadyInTransaction => write!(
-                f,
-                "Cannot perform this operation while a transaction is open",
-            ),
-            Error::NotInTransaction => {
-                write!(f, "Cannot perform this operation outside of a transaction",)
-            }
-            Error::CommitTransactionFailed {
-                ref commit_error,
-                ref rollback_result,
-            } => {
-                write!(
-                    f,
-                    "Commiting the current transaction failed: {}",
-                    commit_error
-                )?;
-                match &**rollback_result {
-                    Ok(()) => write!(f, " Rollback attempt was succesful"),
-                    Err(e) => write!(f, " Rollback attempt failed with {}", e),
-                }
-            }
-        }
+        loop {}
     }
 }
-
 impl StdError for Error {
     fn cause(&self) -> Option<&dyn StdError> {
-        match *self {
-            Error::InvalidCString(ref e) => Some(e),
-            Error::QueryBuilderError(ref e) => Some(&**e),
-            Error::DeserializationError(ref e) => Some(&**e),
-            Error::SerializationError(ref e) => Some(&**e),
-            _ => None,
-        }
+        loop {}
     }
 }
-
 impl Display for ConnectionError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match *self {
-            ConnectionError::InvalidCString(ref nul_err) => nul_err.fmt(f),
-            ConnectionError::BadConnection(ref s) => write!(f, "{}", s),
-            ConnectionError::InvalidConnectionUrl(ref s) => write!(f, "{}", s),
-            ConnectionError::CouldntSetupConfiguration(ref e) => e.fmt(f),
-        }
+        loop {}
     }
 }
-
 impl StdError for ConnectionError {
     fn cause(&self) -> Option<&dyn StdError> {
-        match *self {
-            ConnectionError::InvalidCString(ref e) => Some(e),
-            ConnectionError::CouldntSetupConfiguration(ref e) => Some(e),
-            _ => None,
-        }
+        loop {}
     }
 }
-
 impl PartialEq for Error {
     fn eq(&self, other: &Error) -> bool {
-        match (self, other) {
-            (&Error::InvalidCString(ref a), &Error::InvalidCString(ref b)) => a == b,
-            (&Error::DatabaseError(_, ref a), &Error::DatabaseError(_, ref b)) => {
-                a.message() == b.message()
-            }
-            (&Error::NotFound, &Error::NotFound) => true,
-            (&Error::RollbackTransaction, &Error::RollbackTransaction) => true,
-            (&Error::AlreadyInTransaction, &Error::AlreadyInTransaction) => true,
-            _ => false,
-        }
+        loop {}
     }
 }
-
 #[cfg(test)]
 #[allow(warnings)]
 fn error_impls_send() {
-    let err: Error = unimplemented!();
-    let x: &Send = &err;
+    loop {}
 }
-
 /// An unexpected `NULL` was encountered during deserialization
 #[derive(Debug, Clone, Copy)]
 pub struct UnexpectedNullError;
-
 impl fmt::Display for UnexpectedNullError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "Unexpected null for non-null column")
+        loop {}
     }
 }
-
 impl StdError for UnexpectedNullError {}
-
 /// Expected more fields then present in the current row while deserialising results
 #[derive(Debug, Clone, Copy)]
 pub struct UnexpectedEndOfRow;
-
 impl fmt::Display for UnexpectedEndOfRow {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "Unexpected end of row")
+        loop {}
     }
 }
-
 impl StdError for UnexpectedEndOfRow {}

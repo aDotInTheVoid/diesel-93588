@@ -7,7 +7,6 @@ pub use crate::query_builder::upsert::on_conflict_target_decorations::Decoratabl
 use crate::query_builder::{AsChangeset, InsertStatement, UndecoratedInsertRecord};
 use crate::query_source::QuerySource;
 use crate::sql_types::BoolOrNullableBool;
-
 impl<T, U, Op, Ret> InsertStatement<T, U, Op, Ret>
 where
     T: QuerySource,
@@ -76,11 +75,14 @@ where
     /// ```
     pub fn on_conflict_do_nothing(
         self,
-    ) -> InsertStatement<T, OnConflictValues<U::ValueClause, NoConflictTarget, DoNothing>, Op, Ret>
-    {
-        self.replace_values(|values| OnConflictValues::do_nothing(values.into_value_clause()))
+    ) -> InsertStatement<
+            T,
+            OnConflictValues<U::ValueClause, NoConflictTarget, DoNothing>,
+            Op,
+            Ret,
+        > {
+        loop {}
     }
-
     /// Adds an `ON CONFLICT` to the insert statement, if a conflict occurs
     /// for the given unique constraint.
     ///
@@ -192,42 +194,43 @@ where
     pub fn on_conflict<Target>(
         self,
         target: Target,
-    ) -> IncompleteOnConflict<InsertStatement<T, U::ValueClause, Op, Ret>, ConflictTarget<Target>>
+    ) -> IncompleteOnConflict<
+            InsertStatement<T, U::ValueClause, Op, Ret>,
+            ConflictTarget<Target>,
+        >
     where
         ConflictTarget<Target>: OnConflictTarget<T>,
     {
-        IncompleteOnConflict {
-            stmt: self.replace_values(IntoConflictValueClause::into_value_clause),
-            target: ConflictTarget(target),
-        }
+        loop {}
     }
 }
-
 impl<Stmt, T, P> DecoratableTarget<P> for IncompleteOnConflict<Stmt, T>
 where
     P: Expression,
     P::SqlType: BoolOrNullableBool,
     T: DecoratableTarget<P>,
 {
-    type FilterOutput = IncompleteOnConflict<Stmt, <T as DecoratableTarget<P>>::FilterOutput>;
+    type FilterOutput = IncompleteOnConflict<
+        Stmt,
+        <T as DecoratableTarget<P>>::FilterOutput,
+    >;
     fn filter_target(self, predicate: P) -> Self::FilterOutput {
-        IncompleteOnConflict {
-            stmt: self.stmt,
-            target: self.target.filter_target(predicate),
-        }
+        loop {}
     }
 }
-
 /// A partially constructed `ON CONFLICT` clause.
 #[derive(Debug, Clone, Copy)]
 pub struct IncompleteOnConflict<Stmt, Target> {
     stmt: Stmt,
     target: Target,
 }
-
-impl<T: QuerySource, U, Op, Ret, Target>
-    IncompleteOnConflict<InsertStatement<T, U, Op, Ret>, Target>
-{
+impl<
+    T: QuerySource,
+    U,
+    Op,
+    Ret,
+    Target,
+> IncompleteOnConflict<InsertStatement<T, U, Op, Ret>, Target> {
     /// Creates a query with `ON CONFLICT (target) DO NOTHING`
     ///
     /// If you want to do nothing when *any* constraint conflicts, use
@@ -236,13 +239,12 @@ impl<T: QuerySource, U, Op, Ret, Target>
     ///
     /// [`on_conflict_do_nothing`]: crate::query_builder::InsertStatement::on_conflict_do_nothing()
     /// [`on_conflict`]: crate::query_builder::InsertStatement::on_conflict()
-    pub fn do_nothing(self) -> InsertStatement<T, OnConflictValues<U, Target, DoNothing>, Op, Ret> {
-        let target = self.target;
-        self.stmt
-            .replace_values(|values| OnConflictValues::new(values, target, DoNothing))
+    pub fn do_nothing(
+        self,
+    ) -> InsertStatement<T, OnConflictValues<U, Target, DoNothing>, Op, Ret> {
+        loop {}
     }
 }
-
 impl<Stmt, Target> IncompleteOnConflict<Stmt, Target> {
     /// Used to create a query in the form `ON CONFLICT (...) DO UPDATE ...`
     ///
@@ -360,37 +362,38 @@ impl<Stmt, Target> IncompleteOnConflict<Stmt, Target> {
     /// # fn main() {}
     /// ```
     pub fn do_update(self) -> IncompleteDoUpdate<Stmt, Target> {
-        IncompleteDoUpdate {
-            stmt: self.stmt,
-            target: self.target,
-        }
+        loop {}
     }
 }
-
 /// A partially constructed `ON CONFLICT DO UPDATE` clause.
 #[derive(Debug, Clone, Copy)]
 pub struct IncompleteDoUpdate<Stmt, Target> {
     stmt: Stmt,
     target: Target,
 }
-
-impl<T: QuerySource, U, Op, Ret, Target>
-    IncompleteDoUpdate<InsertStatement<T, U, Op, Ret>, Target>
-{
+impl<
+    T: QuerySource,
+    U,
+    Op,
+    Ret,
+    Target,
+> IncompleteDoUpdate<InsertStatement<T, U, Op, Ret>, Target> {
     /// See [`do_update`] for usage examples.
     ///
     /// [`do_update`]: IncompleteOnConflict::do_update()
     pub fn set<Changes>(
         self,
         changes: Changes,
-    ) -> InsertStatement<T, OnConflictValues<U, Target, DoUpdate<Changes::Changeset>>, Op, Ret>
+    ) -> InsertStatement<
+            T,
+            OnConflictValues<U, Target, DoUpdate<Changes::Changeset>>,
+            Op,
+            Ret,
+        >
     where
         T: QuerySource,
         Changes: AsChangeset<Target = T>,
     {
-        let target = self.target;
-        self.stmt.replace_values(|values| {
-            OnConflictValues::new(values, target, DoUpdate::new(changes.as_changeset()))
-        })
+        loop {}
     }
 }

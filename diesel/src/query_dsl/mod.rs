@@ -10,7 +10,6 @@
 //!
 //! [expression_methods]: super::expression_methods
 //! [dsl]: super::dsl
-
 use crate::backend::Backend;
 use crate::connection::Connection;
 use crate::expression::count::CountStar;
@@ -19,7 +18,6 @@ use crate::helper_types::*;
 use crate::query_builder::locking_clause as lock;
 use crate::query_source::{joins, Table};
 use crate::result::QueryResult;
-
 mod belonging_to_dsl;
 #[doc(hidden)]
 pub mod boxed_dsl;
@@ -44,7 +42,6 @@ mod save_changes_dsl;
 #[doc(hidden)]
 pub mod select_dsl;
 mod single_value_dsl;
-
 pub use self::belonging_to_dsl::BelongingToDsl;
 pub use self::combine_dsl::CombineDsl;
 pub use self::join_dsl::{InternalJoinDsl, JoinOnDsl, JoinWithImplicitOnClause};
@@ -53,7 +50,6 @@ pub use self::load_dsl::CompatibleType;
 #[doc(hidden)]
 pub use self::load_dsl::{LoadQuery, LoadRet};
 pub use self::save_changes_dsl::{SaveChangesDsl, UpdateAndFetchResults};
-
 /// The traits used by `QueryDsl`.
 ///
 /// Each trait in this module represents exactly one method from `QueryDsl`.
@@ -76,7 +72,6 @@ pub mod methods {
     pub use super::select_dsl::SelectDsl;
     pub use super::single_value_dsl::SingleValueDsl;
 }
-
 /// Methods used to construct select statements.
 pub trait QueryDsl: Sized {
     /// Adds the `DISTINCT` keyword to a query.
@@ -115,7 +110,6 @@ pub trait QueryDsl: Sized {
     {
         methods::DistinctDsl::distinct(self)
     }
-
     /// Adds the `DISTINCT ON` clause to a query.
     ///
     /// # Example
@@ -174,8 +168,6 @@ pub trait QueryDsl: Sized {
     {
         methods::DistinctOnDsl::distinct_on(self, expr)
     }
-
-    // FIXME: Needs usage example and doc rewrite
     /// Adds a `SELECT` clause to the query.
     ///
     /// If there was already a select clause present, it will be overridden.
@@ -297,7 +289,6 @@ pub trait QueryDsl: Sized {
     {
         methods::SelectDsl::select(self, selection)
     }
-
     /// Get the count of a query. This is equivalent to `.select(count_star())`
     ///
     /// # Example
@@ -317,10 +308,8 @@ pub trait QueryDsl: Sized {
         Self: methods::SelectDsl<CountStar>,
     {
         use crate::dsl::count_star;
-
         QueryDsl::select(self, count_star())
     }
-
     /// Join two tables using a SQL `INNER JOIN`.
     ///
     /// If you have invoked [`joinable!`] for the two tables, you can pass that
@@ -490,7 +479,6 @@ pub trait QueryDsl: Sized {
     {
         self.join_with_implicit_on_clause(rhs, joins::Inner)
     }
-
     /// Join two tables using a SQL `LEFT OUTER JOIN`.
     ///
     /// Behaves similarly to [`inner_join`], but will produce a left join
@@ -572,7 +560,6 @@ pub trait QueryDsl: Sized {
     {
         self.join_with_implicit_on_clause(rhs, joins::LeftOuter)
     }
-
     /// Alias for [`left_outer_join`].
     ///
     /// [`left_outer_join`]: QueryDsl::left_outer_join()
@@ -582,7 +569,6 @@ pub trait QueryDsl: Sized {
     {
         self.left_outer_join(rhs)
     }
-
     /// Adds to the `WHERE` clause of a query.
     ///
     /// If there is already a `WHERE` clause, the result will be `old AND new`.
@@ -610,7 +596,6 @@ pub trait QueryDsl: Sized {
     {
         methods::FilterDsl::filter(self, predicate)
     }
-
     /// Adds to the `WHERE` clause of a query using `OR`
     ///
     /// If there is already a `WHERE` clause, the result will be `(old OR new)`.
@@ -659,7 +644,6 @@ pub trait QueryDsl: Sized {
     {
         methods::OrFilterDsl::or_filter(self, predicate)
     }
-
     /// Attempts to find a single record from the given table by primary key.
     ///
     /// # Example
@@ -684,7 +668,6 @@ pub trait QueryDsl: Sized {
     {
         methods::FindDsl::find(self, id)
     }
-
     /// Sets the order clause of a query.
     ///
     /// If there was already an order clause, it will be overridden. See
@@ -746,7 +729,6 @@ pub trait QueryDsl: Sized {
     {
         methods::OrderDsl::order(self, expr)
     }
-
     /// Alias for `order`
     fn order_by<Expr>(self, expr: Expr) -> Order<Self, Expr>
     where
@@ -755,7 +737,6 @@ pub trait QueryDsl: Sized {
     {
         QueryDsl::order(self, expr)
     }
-
     /// Appends to the `ORDER BY` clause of this SQL query.
     ///
     /// Unlike `.order`, this method will append rather than replace.
@@ -807,7 +788,6 @@ pub trait QueryDsl: Sized {
     {
         methods::ThenOrderDsl::then_order_by(self, order)
     }
-
     /// Sets the limit clause of the query.
     ///
     /// If there was already a limit clause, it will be overridden.
@@ -856,7 +836,6 @@ pub trait QueryDsl: Sized {
     {
         methods::LimitDsl::limit(self, limit)
     }
-
     /// Sets the offset clause of the query.
     ///
     /// If there was already a offset clause, it will be overridden.
@@ -907,7 +886,6 @@ pub trait QueryDsl: Sized {
     {
         methods::OffsetDsl::offset(self, offset)
     }
-
     /// Sets the `group by` clause of a query.
     ///
     /// **Note:** Queries having a `group by` clause require a custom select clause.
@@ -956,7 +934,6 @@ pub trait QueryDsl: Sized {
     {
         methods::GroupByDsl::group_by(self, group_by)
     }
-
     /// Adds to the `HAVING` clause of a query.
     ///
     /// # Examples
@@ -986,7 +963,6 @@ pub trait QueryDsl: Sized {
     {
         methods::HavingDsl::having(self, predicate)
     }
-
     /// Adds `FOR UPDATE` to the end of the select statement.
     ///
     /// This method is only available for MySQL and PostgreSQL. SQLite does not
@@ -1022,7 +998,6 @@ pub trait QueryDsl: Sized {
     {
         methods::LockingDsl::with_lock(self, lock::ForUpdate)
     }
-
     /// Adds `FOR NO KEY UPDATE` to the end of the select statement.
     ///
     /// This method is only available for PostgreSQL. SQLite does not
@@ -1059,7 +1034,6 @@ pub trait QueryDsl: Sized {
     {
         methods::LockingDsl::with_lock(self, lock::ForNoKeyUpdate)
     }
-
     /// Adds `FOR SHARE` to the end of the select statement.
     ///
     /// This method is only available for MySQL and PostgreSQL. SQLite does not
@@ -1095,7 +1069,6 @@ pub trait QueryDsl: Sized {
     {
         methods::LockingDsl::with_lock(self, lock::ForShare)
     }
-
     /// Adds `FOR KEY SHARE` to the end of the select statement.
     ///
     /// This method is only available for PostgreSQL. SQLite does not
@@ -1132,7 +1105,6 @@ pub trait QueryDsl: Sized {
     {
         methods::LockingDsl::with_lock(self, lock::ForKeyShare)
     }
-
     /// Adds `SKIP LOCKED` to the end of a `FOR UPDATE` clause.
     ///
     /// This modifier is only supported in PostgreSQL 9.5+ and MySQL 8+.
@@ -1163,7 +1135,6 @@ pub trait QueryDsl: Sized {
     {
         methods::ModifyLockDsl::modify_lock(self, lock::SkipLocked)
     }
-
     /// Adds `NOWAIT` to the end of a `FOR UPDATE` clause.
     ///
     /// This modifier is only supported in PostgreSQL 9.5+ and MySQL 8+.
@@ -1194,7 +1165,6 @@ pub trait QueryDsl: Sized {
     {
         methods::ModifyLockDsl::modify_lock(self, lock::NoWait)
     }
-
     /// Boxes the pieces of a query into a single type.
     ///
     /// This is useful for cases where you want to conditionally modify a query,
@@ -1259,7 +1229,6 @@ pub trait QueryDsl: Sized {
     {
         methods::BoxedDsl::internal_into_boxed(self)
     }
-
     /// Wraps this select statement in parenthesis, allowing it to be used
     /// as an expression.
     ///
@@ -1303,7 +1272,6 @@ pub trait QueryDsl: Sized {
     {
         methods::SingleValueDsl::single_value(self)
     }
-
     /// Coerce the SQL type of the select clause to it's nullable equivalent.
     ///
     /// This is use full for writing queries that contain subselects on non null
@@ -1346,9 +1314,7 @@ pub trait QueryDsl: Sized {
         methods::SelectNullableDsl::nullable(self)
     }
 }
-
 impl<T: Table> QueryDsl for T {}
-
 /// Methods used to execute queries.
 pub trait RunQueryDsl<Conn>: Sized {
     /// Executes the given command, returning the number of rows affected.
@@ -1392,7 +1358,6 @@ pub trait RunQueryDsl<Conn>: Sized {
     {
         methods::ExecuteDsl::execute(self, conn)
     }
-
     /// Executes the given query, returning a [`Vec`] with the returned rows.
     ///
     /// When using the query builder, the return type can be
@@ -1490,7 +1455,6 @@ pub trait RunQueryDsl<Conn>: Sized {
     {
         self.internal_load(conn)?.collect()
     }
-
     /// Executes the given query, returning an [`Iterator`] with the returned rows.
     ///
     /// The iterator's item is [`QueryResult<U>`](crate::result::QueryResult).
@@ -1601,7 +1565,6 @@ pub trait RunQueryDsl<Conn>: Sized {
     {
         self.internal_load(conn)
     }
-
     /// Runs the command, and returns the affected row.
     ///
     /// `Err(NotFound)` will be returned if the query affected 0 rows. You can
@@ -1656,7 +1619,6 @@ pub trait RunQueryDsl<Conn>: Sized {
             None => Err(crate::result::Error::NotFound),
         }
     }
-
     /// Runs the command, returning an `Vec` with the affected rows.
     ///
     /// This method is an alias for [`load`], but with a name that makes more
@@ -1669,7 +1631,6 @@ pub trait RunQueryDsl<Conn>: Sized {
     {
         self.load(conn)
     }
-
     /// Attempts to load a single record.
     ///
     /// This method is equivalent to `.limit(1).get_result()`
@@ -1711,11 +1672,7 @@ pub trait RunQueryDsl<Conn>: Sized {
         methods::LimitDsl::limit(self, 1).get_result(conn)
     }
 }
-
-// Note: We could have a blanket `AsQuery` impl here, which would apply to
-// everything we want it to. However, when a query is invalid, we specifically
-// want the error to happen on the where clause of the method instead of trait
-// resolution. Otherwise our users will get an error saying `<3 page long type>:
-// ExecuteDsl is not satisfied` instead of a specific error telling them what
-// part of their query is wrong.
-impl<T, Conn> RunQueryDsl<Conn> for T where T: Table {}
+impl<T, Conn> RunQueryDsl<Conn> for T
+where
+    T: Table,
+{}

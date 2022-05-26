@@ -8,9 +8,7 @@ use crate::query_dsl::methods::{BoxedDsl, FilterDsl, OrFilterDsl};
 use crate::query_dsl::RunQueryDsl;
 use crate::query_source::{QuerySource, Table};
 use crate::result::QueryResult;
-
 use super::from_clause::FromClause;
-
 #[must_use = "Queries are only executed when calling `load`, `get_result` or similar."]
 /// Represents a SQL `DELETE` statement.
 ///
@@ -27,7 +25,6 @@ pub struct DeleteStatement<T: QuerySource, U, Ret = NoReturningClause> {
     where_clause: U,
     returning: Ret,
 }
-
 impl<T, U, Ret> Clone for DeleteStatement<T, U, Ret>
 where
     T: QuerySource,
@@ -36,14 +33,9 @@ where
     Ret: Clone,
 {
     fn clone(&self) -> Self {
-        Self {
-            from_clause: self.from_clause.clone(),
-            where_clause: self.where_clause.clone(),
-            returning: self.returning.clone(),
-        }
+        loop {}
     }
 }
-
 impl<T, U, Ret> std::fmt::Debug for DeleteStatement<T, U, Ret>
 where
     T: QuerySource,
@@ -52,14 +44,9 @@ where
     Ret: std::fmt::Debug,
 {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.debug_struct("DeleteStatement")
-            .field("from_clause", &self.from_clause)
-            .field("where_clause", &self.where_clause)
-            .field("returning", &self.returning)
-            .finish()
+        loop {}
     }
 }
-
 impl<T, U, Ret> QueryId for DeleteStatement<T, U, Ret>
 where
     T: QuerySource + QueryId + 'static,
@@ -67,24 +54,19 @@ where
     Ret: QueryId,
 {
     type QueryId = DeleteStatement<T, U::QueryId, Ret::QueryId>;
-
-    const HAS_STATIC_QUERY_ID: bool =
-        T::HAS_STATIC_QUERY_ID && U::HAS_STATIC_QUERY_ID && Ret::HAS_STATIC_QUERY_ID;
+    const HAS_STATIC_QUERY_ID: bool = T::HAS_STATIC_QUERY_ID && U::HAS_STATIC_QUERY_ID
+        && Ret::HAS_STATIC_QUERY_ID;
 }
-
 /// A `DELETE` statement with a boxed `WHERE` clause
-pub type BoxedDeleteStatement<'a, DB, T, Ret = NoReturningClause> =
-    DeleteStatement<T, BoxedWhereClause<'a, DB>, Ret>;
-
+pub type BoxedDeleteStatement<'a, DB, T, Ret = NoReturningClause> = DeleteStatement<
+    T,
+    BoxedWhereClause<'a, DB>,
+    Ret,
+>;
 impl<T: QuerySource, U> DeleteStatement<T, U, NoReturningClause> {
     pub(crate) fn new(table: T, where_clause: U) -> Self {
-        DeleteStatement {
-            from_clause: FromClause::new(table),
-            where_clause,
-            returning: NoReturningClause,
-        }
+        loop {}
     }
-
     /// Adds the given predicate to the `WHERE` clause of the statement being
     /// constructed.
     ///
@@ -115,9 +97,8 @@ impl<T: QuerySource, U> DeleteStatement<T, U, NoReturningClause> {
     where
         Self: FilterDsl<Predicate>,
     {
-        FilterDsl::filter(self, predicate)
+        loop {}
     }
-
     /// Adds to the `WHERE` clause of a query using `OR`
     ///
     /// If there is already a `WHERE` clause, the result will be `(old OR new)`.
@@ -148,9 +129,8 @@ impl<T: QuerySource, U> DeleteStatement<T, U, NoReturningClause> {
     where
         Self: OrFilterDsl<Predicate>,
     {
-        OrFilterDsl::or_filter(self, predicate)
+        loop {}
     }
-
     /// Boxes the `WHERE` clause of this delete statement.
     ///
     /// This is useful for cases where you want to conditionally modify a query,
@@ -199,10 +179,9 @@ impl<T: QuerySource, U> DeleteStatement<T, U, NoReturningClause> {
         DB: Backend,
         Self: BoxedDsl<'a, DB>,
     {
-        BoxedDsl::internal_into_boxed(self)
+        loop {}
     }
 }
-
 impl<T, U, Ret, Predicate> FilterDsl<Predicate> for DeleteStatement<T, U, Ret>
 where
     U: WhereAnd<Predicate>,
@@ -210,16 +189,10 @@ where
     T: QuerySource,
 {
     type Output = DeleteStatement<T, U::Output, Ret>;
-
     fn filter(self, predicate: Predicate) -> Self::Output {
-        DeleteStatement {
-            from_clause: self.from_clause,
-            where_clause: self.where_clause.and(predicate),
-            returning: self.returning,
-        }
+        loop {}
     }
 }
-
 impl<T, U, Ret, Predicate> OrFilterDsl<Predicate> for DeleteStatement<T, U, Ret>
 where
     T: QuerySource,
@@ -227,32 +200,20 @@ where
     Predicate: AppearsOnTable<T>,
 {
     type Output = DeleteStatement<T, U::Output, Ret>;
-
     fn or_filter(self, predicate: Predicate) -> Self::Output {
-        DeleteStatement {
-            from_clause: self.from_clause,
-            where_clause: self.where_clause.or(predicate),
-            returning: self.returning,
-        }
+        loop {}
     }
 }
-
 impl<'a, T, U, Ret, DB> BoxedDsl<'a, DB> for DeleteStatement<T, U, Ret>
 where
     U: Into<BoxedWhereClause<'a, DB>>,
     T: QuerySource,
 {
     type Output = BoxedDeleteStatement<'a, DB, T, Ret>;
-
     fn internal_into_boxed(self) -> Self::Output {
-        DeleteStatement {
-            where_clause: self.where_clause.into(),
-            returning: self.returning,
-            from_clause: self.from_clause,
-        }
+        loop {}
     }
 }
-
 impl<T, U, Ret, DB> QueryFragment<DB> for DeleteStatement<T, U, Ret>
 where
     DB: Backend + DieselReserveSpecialization,
@@ -262,14 +223,9 @@ where
     Ret: QueryFragment<DB>,
 {
     fn walk_ast<'b>(&'b self, mut out: AstPass<'_, 'b, DB>) -> QueryResult<()> {
-        out.push_sql("DELETE ");
-        self.from_clause.walk_ast(out.reborrow())?;
-        self.where_clause.walk_ast(out.reborrow())?;
-        self.returning.walk_ast(out.reborrow())?;
-        Ok(())
+        loop {}
     }
 }
-
 impl<T, U> AsQuery for DeleteStatement<T, U, NoReturningClause>
 where
     T: Table,
@@ -278,12 +234,10 @@ where
 {
     type SqlType = <Self::Query as Query>::SqlType;
     type Query = DeleteStatement<T, U, ReturningClause<T::AllColumns>>;
-
     fn as_query(self) -> Self::Query {
-        self.returning(T::all_columns())
+        loop {}
     }
 }
-
 impl<T, U, Ret> Query for DeleteStatement<T, U, ReturningClause<Ret>>
 where
     T: Table,
@@ -291,9 +245,10 @@ where
 {
     type SqlType = Ret::SqlType;
 }
-
-impl<T, U, Ret, Conn> RunQueryDsl<Conn> for DeleteStatement<T, U, Ret> where T: QuerySource {}
-
+impl<T, U, Ret, Conn> RunQueryDsl<Conn> for DeleteStatement<T, U, Ret>
+where
+    T: QuerySource,
+{}
 impl<T: QuerySource, U> DeleteStatement<T, U, NoReturningClause> {
     /// Specify what expression is returned after execution of the `delete`.
     ///
@@ -321,10 +276,6 @@ impl<T: QuerySource, U> DeleteStatement<T, U, NoReturningClause> {
         E: SelectableExpression<T>,
         DeleteStatement<T, U, ReturningClause<E>>: Query,
     {
-        DeleteStatement {
-            where_clause: self.where_clause,
-            from_clause: self.from_clause,
-            returning: ReturningClause(returns),
-        }
+        loop {}
     }
 }

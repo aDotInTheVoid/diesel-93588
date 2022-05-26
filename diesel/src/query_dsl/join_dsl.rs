@@ -2,49 +2,43 @@ use crate::helper_types;
 use crate::query_builder::AsQuery;
 use crate::query_source::joins::OnClauseWrapper;
 use crate::query_source::{JoinTo, QuerySource, Table};
-
 #[doc(hidden)]
 /// `JoinDsl` support trait to emulate associated type constructors
 pub trait InternalJoinDsl<Rhs, Kind, On> {
     type Output;
-
     fn join(self, rhs: Rhs, kind: Kind, on: On) -> Self::Output;
 }
-
 impl<T, Rhs, Kind, On> InternalJoinDsl<Rhs, Kind, On> for T
 where
     T: Table + AsQuery,
     T::Query: InternalJoinDsl<Rhs, Kind, On>,
 {
     type Output = <T::Query as InternalJoinDsl<Rhs, Kind, On>>::Output;
-
     fn join(self, rhs: Rhs, kind: Kind, on: On) -> Self::Output {
-        self.as_query().join(rhs, kind, on)
+        loop {}
     }
 }
-
 #[doc(hidden)]
 /// `JoinDsl` support trait to emulate associated type constructors and grab
 /// the known on clause from the associations API
 pub trait JoinWithImplicitOnClause<Rhs, Kind> {
     type Output;
-
     fn join_with_implicit_on_clause(self, rhs: Rhs, kind: Kind) -> Self::Output;
 }
-
 impl<Lhs, Rhs, Kind> JoinWithImplicitOnClause<Rhs, Kind> for Lhs
 where
     Lhs: JoinTo<Rhs>,
-    Lhs: InternalJoinDsl<<Lhs as JoinTo<Rhs>>::FromClause, Kind, <Lhs as JoinTo<Rhs>>::OnClause>,
+    Lhs: InternalJoinDsl<
+        <Lhs as JoinTo<Rhs>>::FromClause,
+        Kind,
+        <Lhs as JoinTo<Rhs>>::OnClause,
+    >,
 {
     type Output = <Lhs as InternalJoinDsl<Lhs::FromClause, Kind, Lhs::OnClause>>::Output;
-
     fn join_with_implicit_on_clause(self, rhs: Rhs, kind: Kind) -> Self::Output {
-        let (from, on) = Lhs::join_target(rhs);
-        self.join(from, kind, on)
+        loop {}
     }
 }
-
 /// Specify the `ON` clause for a join statement. This will override
 /// any implicit `ON` clause that would come from [`joinable!`]
 ///
@@ -77,5 +71,4 @@ pub trait JoinOnDsl: Sized {
         OnClauseWrapper::new(self, on)
     }
 }
-
 impl<T: QuerySource> JoinOnDsl for T {}

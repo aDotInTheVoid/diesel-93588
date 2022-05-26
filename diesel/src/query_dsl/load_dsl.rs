@@ -6,13 +6,10 @@ use crate::deserialize::FromSqlRow;
 use crate::expression::QueryMetadata;
 use crate::query_builder::{AsQuery, QueryFragment, QueryId};
 use crate::result::QueryResult;
-
 #[cfg(feature = "i-implement-a-third-party-backend-and-opt-into-breaking-changes")]
 pub use self::private::{CompatibleType, LoadQueryGatWorkaround};
-
 #[cfg(not(feature = "i-implement-a-third-party-backend-and-opt-into-breaking-changes"))]
 pub(crate) use self::private::{CompatibleType, LoadQueryGatWorkaround};
-
 /// The `load` method
 ///
 /// This trait should not be relied on directly by most apps. Its behavior is
@@ -30,12 +27,15 @@ where
         conn: &'conn mut Conn,
     ) -> QueryResult<<Self as LoadQueryGatWorkaround<'conn, 'query, Conn, U>>::Ret>;
 }
-
 /// The return type of [`LoadQuery<C, U>::internal_load()`]
 ///
 /// Users should thread this type as `impl Iterator<Item = QueryResult<U>>`
-pub type LoadRet<'conn, 'query, Q, C, U> = <Q as LoadQueryGatWorkaround<'conn, 'query, C, U>>::Ret;
-
+pub type LoadRet<'conn, 'query, Q, C, U> = <Q as LoadQueryGatWorkaround<
+    'conn,
+    'query,
+    C,
+    U,
+>>::Ret;
 impl<'conn, 'query, Conn, T, U, DB> LoadQueryGatWorkaround<'conn, 'query, Conn, U> for T
 where
     Conn: Connection<Backend = DB>,
@@ -54,7 +54,6 @@ where
         DB,
     >;
 }
-
 impl<'query, Conn, T, U, DB> LoadQuery<'query, Conn, U> for T
 where
     Conn: Connection<Backend = DB>,
@@ -69,13 +68,9 @@ where
         self,
         conn: &'conn mut Conn,
     ) -> QueryResult<<Self as LoadQueryGatWorkaround<'conn, 'query, Conn, U>>::Ret> {
-        Ok(LoadIter {
-            cursor: conn.load(self.as_query())?,
-            _marker: Default::default(),
-        })
+        loop {}
     }
 }
-
 /// The `execute` method
 ///
 /// This trait should not be relied on directly by most apps. Its behavior is
@@ -83,13 +78,13 @@ where
 /// to call `execute` from generic code.
 ///
 /// [`RunQueryDsl`]: crate::RunQueryDsl
-pub trait ExecuteDsl<Conn: Connection<Backend = DB>, DB: Backend = <Conn as Connection>::Backend>:
-    Sized
-{
+pub trait ExecuteDsl<
+    Conn: Connection<Backend = DB>,
+    DB: Backend = <Conn as Connection>::Backend,
+>: Sized {
     /// Execute this command
     fn execute(query: Self, conn: &mut Conn) -> QueryResult<usize>;
 }
-
 impl<Conn, DB, T> ExecuteDsl<Conn, DB> for T
 where
     Conn: Connection<Backend = DB>,
@@ -97,16 +92,9 @@ where
     T: QueryFragment<DB> + QueryId,
 {
     fn execute(query: Self, conn: &mut Conn) -> QueryResult<usize> {
-        conn.execute_returning_count(&query)
+        loop {}
     }
 }
-
-// These types and traits are not part of the public API.
-//
-// * LoadQueryGatWorkaround to allow us replacing it with real GAT later on
-// * CompatibleType as we consider this as "sealed" trait. It shouldn't
-// be implemented by a third party
-// * LoadIter as it's an implementation detail
 mod private {
     use crate::backend::Backend;
     use crate::deserialize::FromSqlRow;
@@ -114,7 +102,6 @@ mod private {
     use crate::expression::{Expression, TypedExpressionType};
     use crate::sql_types::{SqlType, Untyped};
     use crate::{QueryResult, Selectable};
-
     #[cfg_attr(
         feature = "i-implement-a-third-party-backend-and-opt-into-breaking-changes",
         cfg(feature = "i-implement-a-third-party-backend-and-opt-into-breaking-changes")
@@ -122,13 +109,11 @@ mod private {
     pub trait LoadQueryGatWorkaround<'conn, 'query, Conn, U> {
         type Ret: Iterator<Item = QueryResult<U>>;
     }
-
     #[allow(missing_debug_implementations)]
     pub struct LoadIter<'a, U, C, ST, DB> {
         pub(super) cursor: C,
         pub(super) _marker: std::marker::PhantomData<&'a (ST, U, DB)>,
     }
-
     impl<'a, C, U, ST, DB, R> LoadIter<'a, U, C, ST, DB>
     where
         DB: Backend,
@@ -137,15 +122,9 @@ mod private {
         U: FromSqlRow<ST, DB>,
     {
         pub(super) fn map_row(row: Option<QueryResult<R>>) -> Option<QueryResult<U>> {
-            match row? {
-                Ok(row) => Some(
-                    U::build_from_row(&row).map_err(crate::result::Error::DeserializationError),
-                ),
-                Err(e) => Some(Err(e)),
-            }
+            loop {}
         }
     }
-
     impl<'a, C, U, ST, DB, R> Iterator for LoadIter<'a, U, C, ST, DB>
     where
         DB: Backend,
@@ -154,34 +133,28 @@ mod private {
         U: FromSqlRow<ST, DB>,
     {
         type Item = QueryResult<U>;
-
         fn next(&mut self) -> Option<Self::Item> {
-            Self::map_row(self.cursor.next())
+            loop {}
         }
-
         fn size_hint(&self) -> (usize, Option<usize>) {
-            self.cursor.size_hint()
+            loop {}
         }
-
         fn count(self) -> usize
         where
             Self: Sized,
         {
-            self.cursor.count()
+            loop {}
         }
-
         fn last(self) -> Option<Self::Item>
         where
             Self: Sized,
         {
-            Self::map_row(self.cursor.last())
+            loop {}
         }
-
         fn nth(&mut self, n: usize) -> Option<Self::Item> {
-            Self::map_row(self.cursor.nth(n))
+            loop {}
         }
     }
-
     impl<'a, C, U, ST, DB, R> ExactSizeIterator for LoadIter<'a, U, C, ST, DB>
     where
         DB: Backend,
@@ -190,18 +163,20 @@ mod private {
         U: FromSqlRow<ST, DB>,
     {
         fn len(&self) -> usize {
-            self.cursor.len()
+            loop {}
         }
     }
-
     #[cfg_attr(
         doc_cfg,
-        doc(cfg(feature = "i-implement-a-third-party-backend-and-opt-into-breaking-changes"))
+        doc(
+            cfg(
+                feature = "i-implement-a-third-party-backend-and-opt-into-breaking-changes"
+            )
+        )
     )]
     pub trait CompatibleType<U, DB> {
         type SqlType;
     }
-
     impl<ST, U, DB> CompatibleType<U, DB> for ST
     where
         DB: Backend,
@@ -210,7 +185,6 @@ mod private {
     {
         type SqlType = ST;
     }
-
     impl<U, DB> CompatibleType<U, DB> for Untyped
     where
         U: FromSqlRow<Untyped, DB>,
@@ -218,7 +192,6 @@ mod private {
     {
         type SqlType = Untyped;
     }
-
     impl<U, DB, E, ST> CompatibleType<U, DB> for SelectBy<U, DB>
     where
         DB: Backend,

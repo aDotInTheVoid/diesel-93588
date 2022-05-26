@@ -19,7 +19,6 @@ pub use crate::query_source::aliasing::{
 pub use crate::query_source::joins::{Inner, Join, JoinOn, LeftOuter};
 #[doc(hidden)]
 pub use crate::query_source::private::Pick;
-
 #[doc(hidden)]
 pub mod ops {
     #[doc(hidden)]

@@ -3,7 +3,6 @@ use crate::pg::Pg;
 use crate::query_builder::upsert::on_conflict_target::{ConflictTarget, OnConflictTarget};
 use crate::query_builder::*;
 use crate::result::QueryResult;
-
 /// Used to specify the constraint name for an upsert statement in the form `ON
 /// CONFLICT ON CONSTRAINT`. Note that `constraint_name` must be the name of a
 /// unique constraint, not the name of an index.
@@ -45,28 +44,20 @@ use crate::result::QueryResult;
 /// # }
 /// ```
 pub fn on_constraint(constraint_name: &str) -> OnConstraint<'_> {
-    OnConstraint { constraint_name }
+    loop {}
 }
-
 #[doc(hidden)]
 #[derive(Debug, Clone, Copy)]
 pub struct OnConstraint<'a> {
     constraint_name: &'a str,
 }
-
 impl<'a> QueryId for OnConstraint<'a> {
     type QueryId = ();
-
     const HAS_STATIC_QUERY_ID: bool = false;
 }
-
 impl<'a> QueryFragment<Pg, PgOnConflictClaues> for ConflictTarget<OnConstraint<'a>> {
     fn walk_ast<'b>(&'b self, mut out: AstPass<'_, 'b, Pg>) -> QueryResult<()> {
-        out.unsafe_to_cache_prepared();
-        out.push_sql(" ON CONSTRAINT ");
-        out.push_identifier(self.0.constraint_name)?;
-        Ok(())
+        loop {}
     }
 }
-
 impl<'a, Table> OnConflictTarget<Table> for ConflictTarget<OnConstraint<'a>> {}

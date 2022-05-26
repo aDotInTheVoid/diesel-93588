@@ -347,16 +347,11 @@
 //! However, the goal is to provide simple building blocks which can
 //! be used to construct the complex behavior applications need.
 mod belongs_to;
-
 use std::hash::Hash;
-
 use crate::query_source::Table;
-
 pub use self::belongs_to::{BelongsTo, GroupedBy};
-
 #[doc(inline)]
 pub use diesel_derives::Associations;
-
 /// This trait indicates that a struct is associated with a single database table.
 ///
 /// This trait is implemented by structs which implement `Identifiable`,
@@ -364,19 +359,15 @@ pub use diesel_derives::Associations;
 pub trait HasTable {
     /// The table this type is associated with.
     type Table: Table;
-
     /// Returns the table this type is associated with.
     fn table() -> Self::Table;
 }
-
 impl<'a, T: HasTable> HasTable for &'a T {
     type Table = T::Table;
-
     fn table() -> Self::Table {
-        T::table()
+        loop {}
     }
 }
-
 /// This trait indicates that a struct represents a single row in a database table.
 ///
 /// This must be implemented to use associations.
@@ -394,7 +385,6 @@ pub trait Identifiable: HasTable {
     /// For composite primary keys, this is typically `(&'a i32, &'a i32)`
     /// or `(&'a String, &'a String)`, etc.
     type Id: Hash + Eq;
-
     /// Returns the identifier for this record.
     ///
     /// This takes `self` by value, not reference.
@@ -407,6 +397,5 @@ pub trait Identifiable: HasTable {
     /// so that we have a lifetime to use for `Id`.
     fn id(self) -> Self::Id;
 }
-
 #[doc(inline)]
 pub use diesel_derives::Identifiable;

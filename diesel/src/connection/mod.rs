@@ -1,36 +1,31 @@
 //! Types related to database connections
-
 #[cfg(feature = "i-implement-a-third-party-backend-and-opt-into-breaking-changes")]
 pub mod commit_error_processor;
-
 #[cfg(not(feature = "i-implement-a-third-party-backend-and-opt-into-breaking-changes"))]
 pub(crate) mod commit_error_processor;
-
-#[cfg(all(
-    not(feature = "i-implement-a-third-party-backend-and-opt-into-breaking-changes"),
-    any(feature = "sqlite", feature = "postgres", feature = "mysql")
-))]
+#[cfg(
+    all(
+        not(feature = "i-implement-a-third-party-backend-and-opt-into-breaking-changes"),
+        any(feature = "sqlite", feature = "postgres", feature = "mysql")
+    )
+)]
 pub(crate) mod statement_cache;
 #[cfg(feature = "i-implement-a-third-party-backend-and-opt-into-breaking-changes")]
 pub mod statement_cache;
 mod transaction_manager;
-
 use crate::backend::Backend;
 use crate::expression::QueryMetadata;
 use crate::query_builder::{Query, QueryFragment, QueryId};
 use crate::result::*;
 use std::fmt::Debug;
-
 pub use self::transaction_manager::{
-    AnsiTransactionManager, TransactionDepthChange, TransactionManager, TransactionManagerStatus,
-    ValidTransactionManagerStatus,
+    AnsiTransactionManager, TransactionDepthChange, TransactionManager,
+    TransactionManagerStatus, ValidTransactionManagerStatus,
 };
-
 #[diesel_derives::__diesel_public_if(
     feature = "i-implement-a-third-party-backend-and-opt-into-breaking-changes"
 )]
 pub(crate) use self::private::ConnectionGatWorkaround;
-
 /// Perform simple operations on a backend.
 ///
 /// You should likely use [`Connection`] instead.
@@ -41,13 +36,14 @@ pub trait SimpleConnection {
     /// which may contain more than one SQL statement.
     fn batch_execute(&mut self, query: &str) -> QueryResult<()>;
 }
-
 /// Return type of [`Connection::load`].
 ///
 /// Users should threat this type as `impl Iterator<Item = QueryResult<impl Row<DB>>>`
-pub type LoadRowIter<'conn, 'query, C, DB> =
-    <C as ConnectionGatWorkaround<'conn, 'query, DB>>::Cursor;
-
+pub type LoadRowIter<'conn, 'query, C, DB> = <C as ConnectionGatWorkaround<
+    'conn,
+    'query,
+    DB,
+>>::Cursor;
 /// A connection to a database
 ///
 /// This trait represents a database connection. It can be used to query the database through
@@ -200,20 +196,17 @@ where
 {
     /// The backend this type connects to
     type Backend: Backend;
-
     /// The transaction manager implementation used by this connection
     #[diesel_derives::__diesel_public_if(
         feature = "i-implement-a-third-party-backend-and-opt-into-breaking-changes"
     )]
     type TransactionManager: TransactionManager<Self>;
-
     /// Establishes a new connection to the database
     ///
     /// The argument to this method and the method's behavior varies by backend.
     /// See the documentation for that backend's connection class
     /// for details about what it accepts and how it behaves.
     fn establish(database_url: &str) -> ConnectionResult<Self>;
-
     /// Executes the given function inside of a database transaction
     ///
     /// This function executes the provided closure `f` inside a database
@@ -293,7 +286,6 @@ where
     {
         Self::TransactionManager::transaction(self, f)
     }
-
     /// Creates a transaction that will never be committed. This is useful for
     /// tests. Panics if called while inside of a transaction or
     /// if called with a connection containing a broken transaction
@@ -306,7 +298,6 @@ where
         };
         Self::TransactionManager::begin_transaction(self)
     }
-
     /// Executes the given function inside a transaction, but does not commit
     /// it. Panics if the given function returns an error.
     ///
@@ -346,13 +337,17 @@ where
         E: Debug,
     {
         let mut user_result = None;
-        let _ = self.transaction::<(), _, _>(|conn| {
-            user_result = f(conn).ok();
-            Err(Error::RollbackTransaction)
-        });
+        let _ = self
+            .transaction::<
+            (),
+            _,
+            _,
+        >(|conn| {
+                user_result = f(conn).ok();
+                Err(Error::RollbackTransaction)
+            });
         user_result.expect("Transaction did not succeed")
     }
-
     /// Executes a given query and returns any requested values
     ///
     /// This function executes a given query and returns the
@@ -374,7 +369,6 @@ where
     where
         T: Query + QueryFragment<Self::Backend> + QueryId + 'query,
         Self::Backend: QueryMetadata<T::SqlType>;
-
     /// Execute a single SQL statements given by a query and return
     /// number of affected rows
     #[diesel_derives::__diesel_public_if(
@@ -383,7 +377,6 @@ where
     fn execute_returning_count<T>(&mut self, source: &T) -> QueryResult<usize>
     where
         T: QueryFragment<Self::Backend> + QueryId;
-
     /// Get access to the current transaction state of this connection
     ///
     /// This function should be used from [`TransactionManager`] to access
@@ -393,9 +386,10 @@ where
     )]
     fn transaction_state(
         &mut self,
-    ) -> &mut <Self::TransactionManager as TransactionManager<Self>>::TransactionStateData;
+    ) -> &mut <Self::TransactionManager as TransactionManager<
+            Self,
+        >>::TransactionStateData;
 }
-
 /// A variant of the [`Connection`](trait.Connection.html) trait that is
 /// usable with dynamic dispatch
 ///
@@ -410,24 +404,20 @@ pub trait BoxableConnection<DB: Backend>: SimpleConnection + std::any::Any {
         feature = "i-implement-a-third-party-backend-and-opt-into-breaking-changes"
     )]
     fn as_any(&self) -> &dyn std::any::Any;
-
     #[doc(hidden)]
     fn as_any_mut(&mut self) -> &mut dyn std::any::Any;
 }
-
 impl<C> BoxableConnection<C::Backend> for C
 where
     C: Connection + std::any::Any,
 {
     fn as_any(&self) -> &dyn std::any::Any {
-        self
+        loop {}
     }
-
     fn as_any_mut(&mut self) -> &mut dyn std::any::Any {
-        self
+        loop {}
     }
 }
-
 impl<DB: Backend + 'static> dyn BoxableConnection<DB> {
     /// Downcast the current connection to a specific connection
     /// type.
@@ -439,9 +429,8 @@ impl<DB: Backend + 'static> dyn BoxableConnection<DB> {
     where
         T: Connection<Backend = DB> + 'static,
     {
-        self.as_any().downcast_ref::<T>()
+        loop {}
     }
-
     /// Downcast the current connection to a specific mutable connection
     /// type.
     ///
@@ -452,26 +441,20 @@ impl<DB: Backend + 'static> dyn BoxableConnection<DB> {
     where
         T: Connection<Backend = DB> + 'static,
     {
-        self.as_any_mut().downcast_mut::<T>()
+        loop {}
     }
-
     /// Check if the current connection is
     /// a specific connection type
     pub fn is<T>(&self) -> bool
     where
         T: Connection<Backend = DB> + 'static,
     {
-        self.as_any().is::<T>()
+        loop {}
     }
 }
-
-// These traits are not part of the public API
-// because we want to replace them by with an associated type
-// in the child trait later if GAT's are finally stable
 mod private {
     use crate::backend::Backend;
     use crate::QueryResult;
-
     /// This trait describes which cursor type is used by a given connection
     /// implementation. This trait is only useful in combination with [`Connection`].
     ///
@@ -480,7 +463,11 @@ mod private {
     /// [`Connection`]: super::Connection
     #[cfg_attr(
         doc_cfg,
-        doc(cfg(feature = "i-implement-a-third-party-backend-and-opt-into-breaking-changes"))
+        doc(
+            cfg(
+                feature = "i-implement-a-third-party-backend-and-opt-into-breaking-changes"
+            )
+        )
     )]
     pub trait ConnectionGatWorkaround<'conn, 'query, DB: Backend> {
         /// The cursor type returned by [`Connection::load`]

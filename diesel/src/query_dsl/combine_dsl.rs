@@ -4,13 +4,11 @@ use crate::query_builder::combination_clause::{
 };
 use crate::query_builder::{AsQuery, Query};
 use crate::Table;
-
 /// Extension trait to combine queries using a combinator like `UNION`, `INTERSECT` or `EXPECT`
 /// with or without `ALL` rule for duplicates
 pub trait CombineDsl {
     /// What kind of query does this type represent?
     type Query: Query;
-
     /// Combine two queries using a SQL `UNION`
     ///
     /// # Examples
@@ -40,75 +38,63 @@ pub trait CombineDsl {
     fn union<Rhs>(self, rhs: Rhs) -> dsl::Union<Self, Rhs>
     where
         Rhs: AsQuery<SqlType = <Self::Query as Query>::SqlType>;
-
     /// Combine two queries using a SQL `UNION ALL`
     fn union_all<Rhs>(self, rhs: Rhs) -> dsl::UnionAll<Self, Rhs>
     where
         Rhs: AsQuery<SqlType = <Self::Query as Query>::SqlType>;
-
     /// Combine two queries using a SQL `INTERSECT`
     fn intersect<Rhs>(self, rhs: Rhs) -> dsl::Intersect<Self, Rhs>
     where
         Rhs: AsQuery<SqlType = <Self::Query as Query>::SqlType>;
-
     /// Combine two queries using a SQL `INTERSECT ALL`
     fn intersect_all<Rhs>(self, rhs: Rhs) -> dsl::IntersectAll<Self, Rhs>
     where
         Rhs: AsQuery<SqlType = <Self::Query as Query>::SqlType>;
-
     /// Combine two queries using a SQL `EXCEPT`
     fn except<Rhs>(self, rhs: Rhs) -> dsl::Except<Self, Rhs>
     where
         Rhs: AsQuery<SqlType = <Self::Query as Query>::SqlType>;
-
     /// Combine two queries using a SQL `EXCEPT ALL`
     fn except_all<Rhs>(self, rhs: Rhs) -> dsl::ExceptAll<Self, Rhs>
     where
         Rhs: AsQuery<SqlType = <Self::Query as Query>::SqlType>;
 }
-
 impl<T: Table> CombineDsl for T {
     type Query = T::Query;
-
     fn union<Rhs>(self, rhs: Rhs) -> dsl::Union<Self, Rhs>
     where
         Rhs: AsQuery<SqlType = <Self::Query as Query>::SqlType>,
     {
-        CombinationClause::new(Union, Distinct, self.as_query(), rhs.as_query())
+        loop {}
     }
-
     fn union_all<Rhs>(self, rhs: Rhs) -> dsl::UnionAll<Self, Rhs>
     where
         Rhs: AsQuery<SqlType = <Self::Query as Query>::SqlType>,
     {
-        CombinationClause::new(Union, All, self.as_query(), rhs.as_query())
+        loop {}
     }
-
     fn intersect<Rhs>(self, rhs: Rhs) -> dsl::Intersect<Self, Rhs>
     where
         Rhs: AsQuery<SqlType = <Self::Query as Query>::SqlType>,
     {
-        CombinationClause::new(Intersect, Distinct, self.as_query(), rhs.as_query())
+        loop {}
     }
-
     fn intersect_all<Rhs>(self, rhs: Rhs) -> dsl::IntersectAll<Self, Rhs>
     where
         Rhs: AsQuery<SqlType = <Self::Query as Query>::SqlType>,
     {
-        CombinationClause::new(Intersect, All, self.as_query(), rhs.as_query())
+        loop {}
     }
-
     fn except<Rhs>(self, rhs: Rhs) -> dsl::Except<Self, Rhs>
     where
         Rhs: AsQuery<SqlType = <Self::Query as Query>::SqlType>,
     {
-        CombinationClause::new(Except, Distinct, self.as_query(), rhs.as_query())
+        loop {}
     }
-
     fn except_all<Rhs>(self, rhs: Rhs) -> dsl::ExceptAll<Self, Rhs>
     where
         Rhs: AsQuery<SqlType = <Self::Query as Query>::SqlType>,
     {
-        CombinationClause::new(Except, All, self.as_query(), rhs.as_query())
+        loop {}
     }
 }

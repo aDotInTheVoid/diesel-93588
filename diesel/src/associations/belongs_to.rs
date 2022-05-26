@@ -5,10 +5,8 @@ use crate::expression::AsExpression;
 use crate::prelude::*;
 use crate::query_dsl::methods::FilterDsl;
 use crate::sql_types::SqlType;
-
 use std::borrow::Borrow;
 use std::hash::Hash;
-
 /// Indicates that a type belongs to `Parent`
 ///
 /// Specifically, this means that this struct has fields
@@ -22,13 +20,11 @@ pub trait BelongsTo<Parent> {
     /// The database column representing the foreign key
     /// of the table this struct represents
     type ForeignKeyColumn: Column;
-
     /// Returns the foreign key for `self`
     fn foreign_key(&self) -> Option<&Self::ForeignKey>;
     /// Returns the foreign key column of this struct's table
     fn foreign_key_column() -> Self::ForeignKeyColumn;
 }
-
 /// The `grouped_by` function groups records by their parent.
 ///
 /// `grouped_by` is called on a `Vec<Child>` with a `&[Parent]`.
@@ -105,9 +101,7 @@ pub trait GroupedBy<'a, Parent>: IntoIterator + Sized {
     /// See the trait documentation.
     fn grouped_by(self, parents: &'a [Parent]) -> Vec<Vec<Self::Item>>;
 }
-
 type Id<T> = <T as Identifiable>::Id;
-
 impl<'a, Parent: 'a, Child, Iter> GroupedBy<'a, Parent> for Iter
 where
     Iter: IntoIterator<Item = Child>,
@@ -116,23 +110,9 @@ where
     Id<&'a Parent>: Borrow<Child::ForeignKey>,
 {
     fn grouped_by(self, parents: &'a [Parent]) -> Vec<Vec<Child>> {
-        use std::collections::HashMap;
-
-        let id_indices: HashMap<_, _> = parents
-            .iter()
-            .enumerate()
-            .map(|(i, u)| (u.id(), i))
-            .collect();
-        let mut result = parents.iter().map(|_| Vec::new()).collect::<Vec<_>>();
-        for child in self {
-            if let Some(index) = child.foreign_key().map(|i| id_indices[i]) {
-                result[index].push(child);
-            }
-        }
-        result
+        loop {}
     }
 }
-
 impl<'a, Parent, Child> BelongingToDsl<&'a Parent> for Child
 where
     &'a Parent: Identifiable,
@@ -143,36 +123,37 @@ where
     <Child::ForeignKeyColumn as Expression>::SqlType: SqlType,
 {
     type Output = FindBy<Child::Table, Child::ForeignKeyColumn, Id<&'a Parent>>;
-
     fn belonging_to(parent: &'a Parent) -> Self::Output {
-        FilterDsl::filter(Child::table(), Child::foreign_key_column().eq(parent.id()))
+        loop {}
     }
 }
-
 impl<'a, Parent, Child> BelongingToDsl<&'a [Parent]> for Child
 where
     &'a Parent: Identifiable,
     Child: HasTable + BelongsTo<Parent>,
-    Vec<Id<&'a Parent>>: AsInExpression<<Child::ForeignKeyColumn as Expression>::SqlType>,
-    <Child as HasTable>::Table: FilterDsl<EqAny<Child::ForeignKeyColumn, Vec<Id<&'a Parent>>>>,
+    Vec<
+        Id<&'a Parent>,
+    >: AsInExpression<<Child::ForeignKeyColumn as Expression>::SqlType>,
+    <Child as HasTable>::Table: FilterDsl<
+        EqAny<Child::ForeignKeyColumn, Vec<Id<&'a Parent>>>,
+    >,
     Child::ForeignKeyColumn: ExpressionMethods,
     <Child::ForeignKeyColumn as Expression>::SqlType: SqlType,
 {
-    type Output = Filter<Child::Table, EqAny<Child::ForeignKeyColumn, Vec<Id<&'a Parent>>>>;
-
+    type Output = Filter<
+        Child::Table,
+        EqAny<Child::ForeignKeyColumn, Vec<Id<&'a Parent>>>,
+    >;
     fn belonging_to(parents: &'a [Parent]) -> Self::Output {
-        let ids = parents.iter().map(Identifiable::id).collect::<Vec<_>>();
-        FilterDsl::filter(Child::table(), Child::foreign_key_column().eq_any(ids))
+        loop {}
     }
 }
-
 impl<'a, Parent, Child> BelongingToDsl<&'a Vec<Parent>> for Child
 where
     Child: BelongingToDsl<&'a [Parent]>,
 {
     type Output = Child::Output;
-
     fn belonging_to(parents: &'a Vec<Parent>) -> Self::Output {
-        Self::belonging_to(&**parents)
+        loop {}
     }
 }

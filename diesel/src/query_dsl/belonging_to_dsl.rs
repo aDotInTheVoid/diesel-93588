@@ -48,7 +48,6 @@
 pub trait BelongingToDsl<T> {
     /// The query returned by `belonging_to`
     type Output;
-
     /// Get the record(s) belonging to record(s) `other`
     fn belonging_to(other: T) -> Self::Output;
 }

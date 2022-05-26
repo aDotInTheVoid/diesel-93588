@@ -3,7 +3,6 @@ use crate::expression::grouped::Grouped;
 use crate::expression::operators::{Escape, Like, NotLike};
 use crate::expression::IntoSql;
 use crate::sql_types::VarChar;
-
 /// Adds the `escape` method to `LIKE` and `NOT LIKE`. This is used to specify
 /// the escape character for the pattern.
 ///
@@ -34,29 +33,18 @@ use crate::sql_types::VarChar;
 pub trait EscapeExpressionMethods: Sized {
     #[doc(hidden)]
     type TextExpression;
-
     /// See the trait documentation.
     fn escape(self, _character: char) -> dsl::Escape<Self>;
 }
-
 impl<T, U> EscapeExpressionMethods for Grouped<Like<T, U>> {
     type TextExpression = Like<T, U>;
-
     fn escape(self, character: char) -> dsl::Escape<Self> {
-        Grouped(Escape::new(
-            self.0,
-            character.to_string().into_sql::<VarChar>(),
-        ))
+        loop {}
     }
 }
-
 impl<T, U> EscapeExpressionMethods for Grouped<NotLike<T, U>> {
     type TextExpression = NotLike<T, U>;
-
     fn escape(self, character: char) -> dsl::Escape<Self> {
-        Grouped(Escape::new(
-            self.0,
-            character.to_string().into_sql::<VarChar>(),
-        ))
+        loop {}
     }
 }

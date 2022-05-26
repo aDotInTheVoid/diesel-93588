@@ -1,5 +1,4 @@
 use crate::dsl;
-
 /// The `having` method
 ///
 /// This trait should not be relied on directly by most apps. Its behavior is
@@ -10,7 +9,6 @@ use crate::dsl;
 pub trait HavingDsl<Predicate> {
     /// The type returned by `.having`.
     type Output;
-
     /// See the trait documentation.
     fn having(self, predicate: Predicate) -> dsl::Having<Self, Predicate>;
 }

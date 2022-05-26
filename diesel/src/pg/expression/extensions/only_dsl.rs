@@ -1,6 +1,5 @@
 use crate::query_builder::Only;
 use crate::Table;
-
 /// The `only` method
 ///
 /// This is only implemented for the Postgres backend.
@@ -50,5 +49,4 @@ pub trait OnlyDsl: Table {
         Only { source: self }
     }
 }
-
 impl<T: Table> OnlyDsl for T {}

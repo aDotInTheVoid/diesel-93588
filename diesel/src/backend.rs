@@ -1,15 +1,15 @@
 //! Types which represent various database backends
-
 use crate::query_builder::QueryBuilder;
 use crate::sql_types::{self, HasSqlType, TypeMetadata};
-
 #[cfg_attr(
-    not(any(
-        feature = "postgres_backend",
-        feature = "mysql_backend",
-        feature = "sqlite",
-        feature = "i-implement-a-third-party-backend-and-opt-into-breaking-changes"
-    )),
+    not(
+        any(
+            feature = "postgres_backend",
+            feature = "mysql_backend",
+            feature = "sqlite",
+            feature = "i-implement-a-third-party-backend-and-opt-into-breaking-changes"
+        )
+    ),
     allow(unused_imports)
 )]
 #[doc(inline)]
@@ -19,7 +19,6 @@ use crate::sql_types::{self, HasSqlType, TypeMetadata};
 pub(crate) use self::private::{
     DieselReserveSpecialization, HasBindCollector, HasRawValue, TrustedBackend,
 };
-
 /// A database backend
 ///
 /// This trait represents the concept of a backend (e.g. "MySQL" vs "SQLite").
@@ -117,17 +116,14 @@ where
     /// The concrete [`QueryBuilder`] implementation for this backend.
     type QueryBuilder: QueryBuilder<Self>;
 }
-
 /// A helper type to get the raw representation of a database type given to
 /// [`FromSql`]. Equivalent to `<DB as Backend>::RawValue<'a>`.
 ///
 /// [`FromSql`]: crate::deserialize::FromSql
 pub type RawValue<'a, DB> = <DB as HasRawValue<'a>>::RawValue;
-
 /// A helper type to get the bind collector for a database backend.
 /// Equivalent to `<DB as HasBindCollector<'a>>::BindCollector<'a>`j
 pub type BindCollector<'a, DB> = <DB as HasBindCollector<'a>>::BindCollector;
-
 /// This trait provides various options to configure the
 /// generated SQL for a specific backend.
 ///
@@ -230,7 +226,6 @@ pub trait SqlDialect: self::private::TrustedBackend {
     ///
     /// See [`sql_dialect::exists_syntax`] for provided default implementations
     type ExistsSyntax;
-
     /// Configures how this backend handles `IN()` and `NOT IN()` expressions.
     ///
     /// This allows backends to provide custom [`QueryFragment`](crate::query_builder::QueryFragment)
@@ -248,12 +243,10 @@ pub trait SqlDialect: self::private::TrustedBackend {
     /// See `[sql_dialect::array_comparison`] for provided default implementations
     type ArrayComparision;
 }
-
 /// This module contains all options provided by diesel to configure the [`SqlDialect`] trait.
 pub mod sql_dialect {
     #[cfg(doc)]
     use super::SqlDialect;
-
     /// This module contains all diesel provided reusable options to
     /// configure [`SqlDialect::OnConflictClause`]
     pub mod on_conflict_clause {
@@ -263,12 +256,10 @@ pub mod sql_dialect {
         /// implementing this trait opts into reusing diesels existing `ON CONFLICT`
         /// `QueryFragment` implementations
         pub trait SupportsOnConflictClause {}
-
         /// This marker type indicates that `ON CONFLICT` clauses are not supported for this backend
         #[derive(Debug, Copy, Clone)]
         pub struct DoesNotSupportOnConflictClause;
     }
-
     /// This module contains all reusable options to configure
     /// [`SqlDialect::ReturningClause`]
     pub mod returning_clause {
@@ -277,19 +268,15 @@ pub mod sql_dialect {
         /// If you use custom type to specify specialized support for `RETURNING` clauses
         /// implementing this trait opts in supporting `RETURNING` clause syntax
         pub trait SupportsReturningClause {}
-
         /// Indicates that a backend provides support for `RETURNING` clauses
         /// using the postgresql `RETURNING` syntax
         #[derive(Debug, Copy, Clone)]
         pub struct PgLikeReturningClause;
-
         /// Indicates that a backend does not support `RETURNING` clauses
         #[derive(Debug, Copy, Clone)]
         pub struct DoesNotSupportReturningClause;
-
         impl SupportsReturningClause for PgLikeReturningClause {}
     }
-
     /// This module contains all reusable options to configure
     /// [`SqlDialect::InsertWithDefaultKeyword`]
     pub mod default_keyword_for_insert {
@@ -302,47 +289,38 @@ pub mod sql_dialect {
         /// value expressions for inserts. Otherwise diesel will emulate this
         /// behaviour.
         pub trait SupportsDefaultKeyword {}
-
         /// Indicates that a backend support `DEFAULT` value expressions
         /// for `INSERT INTO` statements based on the ISO SQL standard
         #[derive(Debug, Copy, Clone)]
         pub struct IsoSqlDefaultKeyword;
-
         /// Indicates that a backend does not support `DEFAULT` value
         /// expressions0for `INSERT INTO` statements
         #[derive(Debug, Copy, Clone)]
         pub struct DoesNotSupportDefaultKeyword;
-
         impl SupportsDefaultKeyword for IsoSqlDefaultKeyword {}
     }
-
     /// This module contains all reusable options to configure
     /// [`SqlDialect::BatchInsertSupport`]
     pub mod batch_insert_support {
         /// A marker trait indicating if batch insert statements
         /// are supported for this backend or not
         pub trait SupportsBatchInsert {}
-
         /// Indicates that this backend does not support batch
         /// insert statements.
         /// In this case diesel will emulate batch insert support
         /// by inserting each row on it's own
         #[derive(Debug, Copy, Clone)]
         pub struct DoesNotSupportBatchInsert;
-
         /// Indicates that this backend supports postgres style
         /// batch insert statements to insert multiple rows using one
         /// insert statement
         #[derive(Debug, Copy, Clone)]
         pub struct PostgresLikeBatchInsertSupport;
-
         impl SupportsBatchInsert for PostgresLikeBatchInsertSupport {}
     }
-
     /// This module contains all reusable options to configure
     /// [`SqlDialect::DefaultValueClauseForInsert`]
     pub mod default_value_clause {
-
         /// Indicates that this backend uses the
         /// `DEFAULT VALUES` syntax to specify
         /// that a row consisting only of default
@@ -350,46 +328,35 @@ pub mod sql_dialect {
         #[derive(Debug, Clone, Copy)]
         pub struct AnsiDefaultValueClause;
     }
-
     /// This module contains all reusable options to configure
     /// [`SqlDialect::EmptyFromClauseSyntax`]
     pub mod from_clause_syntax {
-
         /// Indicates that this backend skips
         /// the `FROM` clause in `SELECT` statements
         /// if no table/view is queried
         #[derive(Debug, Copy, Clone)]
         pub struct AnsiSqlFromClauseSyntax;
     }
-
     /// This module contains all reusable options to configure
     /// [`SqlDialect::ExistsSyntax`]
     pub mod exists_syntax {
-
         /// Indicates that this backend
         /// treats `EXIST()` as function
         /// like expression
         #[derive(Debug, Copy, Clone)]
         pub struct AnsiSqlExistsSyntax;
     }
-
     /// This module contains all reusable options to configure
     /// [`SqlDialect::ArrayComparision`]
     pub mod array_comparision {
-
         /// Indicates that this backend requires a single bind
         /// per array element in `IN()` and `NOT IN()` expression
         #[derive(Debug, Copy, Clone)]
         pub struct AnsiSqlArrayComparison;
     }
 }
-
-// These traits are not part of the public API
-// because we want to replace them by with an associated type
-// in the child trait later if GAT's are finally stable
 mod private {
     use super::TypeMetadata;
-
     /// The raw representation of a database value given to `FromSql`.
     ///
     /// This trait is separate from [`Backend`](super::Backend) to imitate `type RawValue<'a>`. It
@@ -397,7 +364,11 @@ mod private {
     /// should instead use the [`RawValue`](super::RawValue) helper type instead.
     #[cfg_attr(
         doc_cfg,
-        doc(cfg(feature = "i-implement-a-third-party-backend-and-opt-into-breaking-changes"))
+        doc(
+            cfg(
+                feature = "i-implement-a-third-party-backend-and-opt-into-breaking-changes"
+            )
+        )
     )]
     pub trait HasRawValue<'a> {
         /// The actual type given to [`FromSql`], with lifetimes applied. This type
@@ -407,7 +378,6 @@ mod private {
         /// [`FromSql`]: crate::deserialize::FromSql
         type RawValue;
     }
-
     /// This is a marker trait which indicates that
     /// diesel may specialize a certain [`QueryFragment`]
     /// impl in a later version. If you as a user encounter, where rustc
@@ -425,10 +395,13 @@ mod private {
     /// [`QueryFragment`]: crate::query_builder::QueryFragment
     #[cfg_attr(
         doc_cfg,
-        doc(cfg(feature = "i-implement-a-third-party-backend-and-opt-into-breaking-changes"))
+        doc(
+            cfg(
+                feature = "i-implement-a-third-party-backend-and-opt-into-breaking-changes"
+            )
+        )
     )]
     pub trait DieselReserveSpecialization {}
-
     /// The bind collector type used to collect query binds for this backend
     ///
     /// This trait is separate from [`Backend`](super::Backend) to imitate `type BindCollector<'a>`. It
@@ -438,7 +411,11 @@ mod private {
     /// [`BindCollector`]: super::BindCollector
     #[cfg_attr(
         doc_cfg,
-        doc(cfg(feature = "i-implement-a-third-party-backend-and-opt-into-breaking-changes"))
+        doc(
+            cfg(
+                feature = "i-implement-a-third-party-backend-and-opt-into-breaking-changes"
+            )
+        )
     )]
     pub trait HasBindCollector<'a>: TypeMetadata + Sized {
         /// The concrete [`BindCollector`](crate::query_builder::bind_collector::BindCollector)
@@ -447,16 +424,20 @@ mod private {
         /// Most backends should use [`RawBytesBindCollector`].
         ///
         /// [`RawBytesBindCollector`]: crate::query_builder::bind_collector::RawBytesBindCollector
-        type BindCollector: crate::query_builder::bind_collector::BindCollector<'a, Self> + 'a;
+        type BindCollector: crate::query_builder::bind_collector::BindCollector<'a, Self>
+            + 'a;
     }
-
     /// This trait just indicates that noone implements
     /// [`SqlDialect`](super::SqlDialect) without enabling the
     /// `i-implement-a-third-party-backend-and-opt-into-breaking-changes`
     /// feature flag.
     #[cfg_attr(
         doc_cfg,
-        doc(cfg(feature = "i-implement-a-third-party-backend-and-opt-into-breaking-changes"))
+        doc(
+            cfg(
+                feature = "i-implement-a-third-party-backend-and-opt-into-breaking-changes"
+            )
+        )
     )]
     pub trait TrustedBackend {}
 }

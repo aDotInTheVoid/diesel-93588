@@ -1,12 +1,11 @@
 pub(crate) mod changeset;
 pub(super) mod target;
-
 use self::target::UpdateTarget;
-
 use crate::backend::{Backend, DieselReserveSpecialization};
 use crate::dsl::{Filter, IntoBoxed};
 use crate::expression::{
-    is_aggregate, AppearsOnTable, Expression, MixedAggregates, SelectableExpression, ValidGrouping,
+    is_aggregate, AppearsOnTable, Expression, MixedAggregates, SelectableExpression,
+    ValidGrouping,
 };
 use crate::query_builder::returning_clause::*;
 use crate::query_builder::where_clause::*;
@@ -16,17 +15,10 @@ use crate::query_source::Table;
 use crate::result::Error::QueryBuilderError;
 use crate::result::QueryResult;
 use crate::{query_builder::*, QuerySource};
-
 impl<T: QuerySource, U> UpdateStatement<T, U, SetNotCalled> {
     pub(crate) fn new(target: UpdateTarget<T, U>) -> Self {
-        UpdateStatement {
-            from_clause: target.table.from_clause(),
-            where_clause: target.where_clause,
-            values: SetNotCalled,
-            returning: NoReturningClause,
-        }
+        loop {}
     }
-
     /// Provides the `SET` clause of the `UPDATE` statement.
     ///
     /// See [`update`](crate::update()) for usage examples, or [the update
@@ -38,15 +30,9 @@ impl<T: QuerySource, U> UpdateStatement<T, U, SetNotCalled> {
         V: changeset::AsChangeset<Target = T>,
         UpdateStatement<T, U, V::Changeset>: AsQuery,
     {
-        UpdateStatement {
-            from_clause: self.from_clause,
-            where_clause: self.where_clause,
-            values: values.as_changeset(),
-            returning: self.returning,
-        }
+        loop {}
     }
 }
-
 #[derive(Clone, Debug)]
 #[must_use = "Queries are only executed when calling `load`, `get_result` or similar."]
 /// Represents a complete `UPDATE` statement.
@@ -54,17 +40,24 @@ impl<T: QuerySource, U> UpdateStatement<T, U, SetNotCalled> {
 /// See [`update`](crate::update()) for usage examples, or [the update
 /// guide](https://diesel.rs/guides/all-about-updates/) for a more exhaustive
 /// set of examples.
-pub struct UpdateStatement<T: QuerySource, U, V = SetNotCalled, Ret = NoReturningClause> {
+pub struct UpdateStatement<
+    T: QuerySource,
+    U,
+    V = SetNotCalled,
+    Ret = NoReturningClause,
+> {
     from_clause: T::FromClause,
     where_clause: U,
     values: V,
     returning: Ret,
 }
-
 /// An `UPDATE` statement with a boxed `WHERE` clause.
-pub type BoxedUpdateStatement<'a, DB, T, V = SetNotCalled, Ret = NoReturningClause> =
-    UpdateStatement<T, BoxedWhereClause<'a, DB>, V, Ret>;
-
+pub type BoxedUpdateStatement<'a, DB, T, V = SetNotCalled, Ret = NoReturningClause> = UpdateStatement<
+    T,
+    BoxedWhereClause<'a, DB>,
+    V,
+    Ret,
+>;
 impl<T: QuerySource, U, V, Ret> UpdateStatement<T, U, V, Ret> {
     /// Adds the given predicate to the `WHERE` clause of the statement being
     /// constructed.
@@ -97,9 +90,8 @@ impl<T: QuerySource, U, V, Ret> UpdateStatement<T, U, V, Ret> {
     where
         Self: FilterDsl<Predicate>,
     {
-        FilterDsl::filter(self, predicate)
+        loop {}
     }
-
     /// Boxes the `WHERE` clause of this update statement.
     ///
     /// This is useful for cases where you want to conditionally modify a query,
@@ -149,10 +141,9 @@ impl<T: QuerySource, U, V, Ret> UpdateStatement<T, U, V, Ret> {
         DB: Backend,
         Self: BoxedDsl<'a, DB>,
     {
-        BoxedDsl::internal_into_boxed(self)
+        loop {}
     }
 }
-
 impl<T, U, V, Ret, Predicate> FilterDsl<Predicate> for UpdateStatement<T, U, V, Ret>
 where
     T: QuerySource,
@@ -160,34 +151,20 @@ where
     Predicate: AppearsOnTable<T>,
 {
     type Output = UpdateStatement<T, U::Output, V, Ret>;
-
     fn filter(self, predicate: Predicate) -> Self::Output {
-        UpdateStatement {
-            from_clause: self.from_clause,
-            where_clause: self.where_clause.and(predicate),
-            values: self.values,
-            returning: self.returning,
-        }
+        loop {}
     }
 }
-
 impl<'a, T, U, V, Ret, DB> BoxedDsl<'a, DB> for UpdateStatement<T, U, V, Ret>
 where
     T: QuerySource,
     U: Into<BoxedWhereClause<'a, DB>>,
 {
     type Output = BoxedUpdateStatement<'a, DB, T, V, Ret>;
-
     fn internal_into_boxed(self) -> Self::Output {
-        UpdateStatement {
-            from_clause: self.from_clause,
-            where_clause: self.where_clause.into(),
-            values: self.values,
-            returning: self.returning,
-        }
+        loop {}
     }
 }
-
 impl<T, U, V, Ret, DB> QueryFragment<DB> for UpdateStatement<T, U, V, Ret>
 where
     DB: Backend + DieselReserveSpecialization,
@@ -198,48 +175,31 @@ where
     Ret: QueryFragment<DB>,
 {
     fn walk_ast<'b>(&'b self, mut out: AstPass<'_, 'b, DB>) -> QueryResult<()> {
-        if self.values.is_noop(out.backend())? {
-            return Err(QueryBuilderError(
-                "There are no changes to save. This query cannot be built".into(),
-            ));
-        }
-
-        out.unsafe_to_cache_prepared();
-        out.push_sql("UPDATE ");
-        self.from_clause.walk_ast(out.reborrow())?;
-        out.push_sql(" SET ");
-        self.values.walk_ast(out.reborrow())?;
-        self.where_clause.walk_ast(out.reborrow())?;
-        self.returning.walk_ast(out.reborrow())?;
-        Ok(())
+        loop {}
     }
 }
-
 impl<T, U, V, Ret> QueryId for UpdateStatement<T, U, V, Ret>
 where
     T: QuerySource,
 {
     type QueryId = ();
-
     const HAS_STATIC_QUERY_ID: bool = false;
 }
-
 impl<T, U, V> AsQuery for UpdateStatement<T, U, V, NoReturningClause>
 where
     T: Table,
     UpdateStatement<T, U, V, ReturningClause<T::AllColumns>>: Query,
     T::AllColumns: ValidGrouping<()>,
-    <T::AllColumns as ValidGrouping<()>>::IsAggregate:
-        MixedAggregates<is_aggregate::No, Output = is_aggregate::No>,
+    <T::AllColumns as ValidGrouping<
+        (),
+    >>::IsAggregate: MixedAggregates<is_aggregate::No, Output = is_aggregate::No>,
 {
     type SqlType = <Self::Query as Query>::SqlType;
     type Query = UpdateStatement<T, U, V, ReturningClause<T::AllColumns>>;
-
     fn as_query(self) -> Self::Query {
-        self.returning(T::all_columns())
+        loop {}
     }
 }
-
 impl<T, U, V, Ret> Query for UpdateStatement<T, U, V, ReturningClause<Ret>>
 where
     T: Table,
@@ -248,9 +208,8 @@ where
 {
     type SqlType = Ret::SqlType;
 }
-
-impl<T: QuerySource, U, V, Ret, Conn> RunQueryDsl<Conn> for UpdateStatement<T, U, V, Ret> {}
-
+impl<T: QuerySource, U, V, Ret, Conn> RunQueryDsl<Conn>
+for UpdateStatement<T, U, V, Ret> {}
 impl<T: QuerySource, U, V> UpdateStatement<T, U, V, NoReturningClause> {
     /// Specify what expression is returned after execution of the `update`.
     /// # Examples
@@ -278,15 +237,9 @@ impl<T: QuerySource, U, V> UpdateStatement<T, U, V, NoReturningClause> {
         T: Table,
         UpdateStatement<T, U, V, ReturningClause<E>>: Query,
     {
-        UpdateStatement {
-            from_clause: self.from_clause,
-            where_clause: self.where_clause,
-            values: self.values,
-            returning: ReturningClause(returns),
-        }
+        loop {}
     }
 }
-
 /// Indicates that you have not yet called `.set` on an update statement
 #[derive(Debug, Clone, Copy)]
 pub struct SetNotCalled;

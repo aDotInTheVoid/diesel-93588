@@ -1,66 +1,31 @@
 #![allow(clippy::too_many_arguments)]
-
 extern crate pq_sys;
-
 use self::pq_sys::*;
 use std::ffi::{CStr, CString};
 use std::os::raw as libc;
 use std::ptr::NonNull;
 use std::{ptr, str};
-
 use crate::result::*;
-
 #[allow(missing_debug_implementations, missing_copy_implementations)]
 pub(super) struct RawConnection {
     internal_connection: NonNull<PGconn>,
 }
-
 impl RawConnection {
     pub(super) fn establish(database_url: &str) -> ConnectionResult<Self> {
-        let connection_string = CString::new(database_url)?;
-        let connection_ptr = unsafe { PQconnectdb(connection_string.as_ptr()) };
-        let connection_status = unsafe { PQstatus(connection_ptr) };
-
-        match connection_status {
-            ConnStatusType::CONNECTION_OK => {
-                let connection_ptr = unsafe { NonNull::new_unchecked(connection_ptr) };
-                Ok(RawConnection {
-                    internal_connection: connection_ptr,
-                })
-            }
-            _ => {
-                let message = last_error_message(connection_ptr);
-
-                if !connection_ptr.is_null() {
-                    // Note that even if the server connection attempt fails (as indicated by PQstatus),
-                    // the application should call PQfinish to free the memory used by the PGconn object.
-                    // https://www.postgresql.org/docs/current/libpq-connect.html
-                    unsafe { PQfinish(connection_ptr) }
-                }
-
-                Err(ConnectionError::BadConnection(message))
-            }
-        }
+        loop {}
     }
-
     pub(super) fn last_error_message(&self) -> String {
-        last_error_message(self.internal_connection.as_ptr())
+        loop {}
     }
-
     pub(super) fn set_notice_processor(&self, notice_processor: NoticeProcessor) {
-        unsafe {
-            PQsetNoticeProcessor(
-                self.internal_connection.as_ptr(),
-                Some(notice_processor),
-                ptr::null_mut(),
-            );
-        }
+        loop {}
     }
-
-    pub(super) unsafe fn exec(&self, query: *const libc::c_char) -> QueryResult<RawResult> {
-        RawResult::new(PQexec(self.internal_connection.as_ptr(), query), self)
+    pub(super) unsafe fn exec(
+        &self,
+        query: *const libc::c_char,
+    ) -> QueryResult<RawResult> {
+        loop {}
     }
-
     pub(super) unsafe fn exec_prepared(
         &self,
         stmt_name: *const libc::c_char,
@@ -70,18 +35,8 @@ impl RawConnection {
         param_formats: *const libc::c_int,
         result_format: libc::c_int,
     ) -> QueryResult<RawResult> {
-        let ptr = PQexecPrepared(
-            self.internal_connection.as_ptr(),
-            stmt_name,
-            param_count,
-            param_values,
-            param_lengths,
-            param_formats,
-            result_format,
-        );
-        RawResult::new(ptr, self)
+        loop {}
     }
-
     pub(super) unsafe fn prepare(
         &self,
         stmt_name: *const libc::c_char,
@@ -89,25 +44,15 @@ impl RawConnection {
         param_count: libc::c_int,
         param_types: *const Oid,
     ) -> QueryResult<RawResult> {
-        let ptr = PQprepare(
-            self.internal_connection.as_ptr(),
-            stmt_name,
-            query,
-            param_count,
-            param_types,
-        );
-        RawResult::new(ptr, self)
+        loop {}
     }
-
     pub(super) fn transaction_status(&self) -> PgTransactionStatus {
-        unsafe { PQtransactionStatus(self.internal_connection.as_ptr()) }.into()
+        loop {}
     }
-
     pub(super) fn get_status(&self) -> ConnStatusType {
-        unsafe { PQstatus(self.internal_connection.as_ptr()) }
+        loop {}
     }
 }
-
 /// Represents the current in-transaction status of the connection
 #[derive(Debug, PartialEq, Eq, Clone, Copy)]
 pub(super) enum PgTransactionStatus {
@@ -122,36 +67,23 @@ pub(super) enum PgTransactionStatus {
     /// Bad connection
     Unknown,
 }
-
 impl From<PGTransactionStatusType> for PgTransactionStatus {
     fn from(trans_status_type: PGTransactionStatusType) -> Self {
-        match trans_status_type {
-            PGTransactionStatusType::PQTRANS_IDLE => PgTransactionStatus::Idle,
-            PGTransactionStatusType::PQTRANS_ACTIVE => PgTransactionStatus::Active,
-            PGTransactionStatusType::PQTRANS_INTRANS => PgTransactionStatus::InTransaction,
-            PGTransactionStatusType::PQTRANS_INERROR => PgTransactionStatus::InError,
-            PGTransactionStatusType::PQTRANS_UNKNOWN => PgTransactionStatus::Unknown,
-        }
+        loop {}
     }
 }
-
-pub(super) type NoticeProcessor =
-    extern "C" fn(arg: *mut libc::c_void, message: *const libc::c_char);
-
+pub(super) type NoticeProcessor = extern "C" fn(
+    arg: *mut libc::c_void,
+    message: *const libc::c_char,
+);
 impl Drop for RawConnection {
     fn drop(&mut self) {
-        unsafe { PQfinish(self.internal_connection.as_ptr()) };
+        loop {}
     }
 }
-
 fn last_error_message(conn: *const PGconn) -> String {
-    unsafe {
-        let error_ptr = PQerrorMessage(conn);
-        let bytes = CStr::from_ptr(error_ptr).to_bytes();
-        String::from_utf8_lossy(bytes).to_string()
-    }
+    loop {}
 }
-
 /// Internal wrapper around a `*mut PGresult` which is known to be not-null, and
 /// have no aliases.  This wrapper is to ensure that it's always properly
 /// dropped.
@@ -159,34 +91,22 @@ fn last_error_message(conn: *const PGconn) -> String {
 /// If `Unique` is ever stabilized, we should use it here.
 #[allow(missing_debug_implementations)]
 pub(super) struct RawResult(NonNull<PGresult>);
-
 unsafe impl Send for RawResult {}
 unsafe impl Sync for RawResult {}
-
 impl RawResult {
     #[allow(clippy::new_ret_no_self)]
     fn new(ptr: *mut PGresult, conn: &RawConnection) -> QueryResult<Self> {
-        NonNull::new(ptr).map(RawResult).ok_or_else(|| {
-            Error::DatabaseError(
-                DatabaseErrorKind::UnableToSendCommand,
-                Box::new(conn.last_error_message()),
-            )
-        })
+        loop {}
     }
-
     pub(super) fn as_ptr(&self) -> *mut PGresult {
-        self.0.as_ptr()
+        loop {}
     }
-
     pub(super) fn error_message(&self) -> &str {
-        let ptr = unsafe { PQresultErrorMessage(self.0.as_ptr()) };
-        let cstr = unsafe { CStr::from_ptr(ptr) };
-        cstr.to_str().unwrap_or_default()
+        loop {}
     }
 }
-
 impl Drop for RawResult {
     fn drop(&mut self) {
-        unsafe { PQclear(self.0.as_ptr()) }
+        loop {}
     }
 }
