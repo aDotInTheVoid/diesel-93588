@@ -1,14 +1,10 @@
 extern crate diesel_derives;
 #[macro_use]
-#[doc(hidden)]
 pub mod macros;
-#[doc(hidden)]
 pub mod internal;
 #[cfg(test)]
 #[macro_use]
 extern crate cfg_if;
-#[cfg(test)]
-pub mod test_helpers;
 pub mod associations;
 pub mod backend;
 pub mod connection;
@@ -17,28 +13,20 @@ pub mod deserialize;
 #[macro_use]
 pub mod expression;
 pub mod expression_methods;
-#[doc(hidden)]
 pub mod insertable;
 pub mod query_builder;
 pub mod query_dsl;
 pub mod query_source;
-#[cfg(feature = "r2d2")]
-pub mod r2d2;
 pub mod result;
 pub mod serialize;
-pub mod upsert;
 #[macro_use]
 pub mod sql_types;
 pub mod migration;
 pub mod row;
-#[cfg(feature = "mysql_backend")]
-pub mod mysql;
-#[cfg(feature = "postgres_backend")]
-pub mod pg;
-#[cfg(feature = "sqlite")]
-pub mod sqlite;
+
 mod type_impls;
 mod util;
+
 #[doc(hidden)]
 #[cfg(all(feature = "with-deprecated", not(feature = "without-deprecated")))]
 #[deprecated(since = "2.0.0", note = "Use explicit macro imports instead")]
